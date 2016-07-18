@@ -23,6 +23,9 @@ gem 'figaro'
 gem 'httparty'
 gem 'omniauth-fitbit-oauth2'
 
+gem 'bootstrap-sass', '~> 3.3.6'
+gem 'bootswatch-rails', '~> 3.3', '>= 3.3.5'
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.4', '>= 3.4.2'
   gem 'capybara', '~> 2.6', '>= 2.6.2'
