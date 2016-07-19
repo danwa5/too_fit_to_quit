@@ -4,12 +4,21 @@
   <%= link_to "Signup",new_user_registration_path %>
 <% end %>
 
+<ul class="nav nav-tabs">
+  <li role="presentation" class="active"><a href="#">Steps</a></li>
+  <li role="presentation"><a href="#">Runs</a></li>
+</ul>
+
 <div class="row">
   <div class="col-sm-12" style="margin-top: 20px; margin-bottom: 75px;">
     <%= form_tag(index_path, method: :get, class: 'form-inline') do |f| %>
       <div class="form-group">
-        <%= label_tag :steps, 'Steps' %>&nbsp;
-        <%= select_tag :steps, options_for_select(fitbit_periods), { class: 'form-control' } %>
+        <%= label_tag :steps, 'Daily steps for' %>&nbsp;
+        <%= select_tag :steps, options_for_select(fitbit_periods, @options[:period]), { class: 'form-control' } %>
+      </div>
+      <div class="form-group">
+        <%= label_tag :date, 'ending on' %>&nbsp;
+        <%= text_field_tag :date, (@options[:date] || Date.today), { class: 'form-control' } %>
       </div>
       <div class="form-group">
         <div class="form-group">
@@ -31,12 +40,12 @@
         </tr>
       </thead>
       <tbody>
-    <% @steps_data.each do |step_data| %>
-      <tr>
-        <td><%= format_date(step_data['dateTime']) %></td>
-        <td><%= step_data['value'] %></td>
-      </tr>
-    <% end %>
+      <% @steps_data.each do |step_data| %>
+        <tr>
+          <td><%= format_date(step_data['dateTime']) %></td>
+          <td><%= step_data['value'] %></td>
+        </tr>
+      <% end %>
       </tbody>
     </table>
   </div>
