@@ -8,14 +8,18 @@ class User < ActiveRecord::Base
 
   has_many :identities, :dependent => :destroy
 
-  def self.from_omniauth(auth)
+  def self.from_omniauth(auth, current_user)
     identity = Identity.where(provider: auth.provider, uid: auth.uid).first_or_create do |identity|
       if identity.user == nil
-        user = User.new
-        user.email = auth.info.email || "#{auth.uid}@#{auth.provider}.generated"
-        user.password = Devise.friendly_token[0,20]
+        if current_user.present?
+          identity.user = current_user
+        else
+          user = User.new
+          user.email = auth.info.email || "#{auth.uid}@#{auth.provider}.generated"
+          user.password = Devise.friendly_token[0,20]
+          identity.user = user
+        end
       end
-      identity.user = user
     end
 
     identity.access_token = auth['credentials']['token']

@@ -6,8 +6,12 @@ class StaticPagesController < ApplicationController
       date = parse_date(steps_params[:date])
       @options = {period: steps_params[:steps]}
       @options.merge!({date: date}) if date.present?
-      results = FitbitService.get_steps(Identity.first, @options)
-      @steps_data = results.parsed_response['activities-steps']
+      results = FitbitService.get_steps(Identity.first, @options).parsed_response
+      @steps_data = results['activities-steps']
+
+      if results['success'] == false
+        flash[:alert] = '<a href="/users/auth/fitbit_oauth2">Please request authorization from Fitbit to access your private data</a>.'.html_safe
+      end
     end
   end
 

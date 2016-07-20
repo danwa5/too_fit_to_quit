@@ -9,17 +9,19 @@
 <body>
   <%= render 'layouts/header' %>
 
-  <div class="flash-messages">
-    <% flash.each do |key, value| %>
-      <div class="alert alert-<%= key == 'alert' ? 'danger' : 'success' %>">
-        <a class="close" data-dismiss="alert">×</a>
-        <%= value %>
-      </div>
-    <% end %>
-  </div>
-  
   <div class="container">
-    <%= yield %>
+    <div class="row">
+      <div class="col-sm-12">
+        <% flash.each do |key, value| %>
+          <div class="alert alert-<%= key == 'alert' ? 'danger' : 'success' %>">
+            <a class="close" data-dismiss="alert">×</a>
+            <%= value %>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </div>
   </div>
 
 </body>
