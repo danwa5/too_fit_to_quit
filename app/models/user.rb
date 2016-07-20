@@ -29,4 +29,8 @@ class User < ActiveRecord::Base
     identity.save
     identity.user
   end
+
+  def fitbit_identity
+    self.identities.where(provider: 'fitbit_oauth2').first
+  end
 end

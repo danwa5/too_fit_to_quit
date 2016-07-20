@@ -1,5 +1,8 @@
 FactoryGirl.define do
-  factory :user
+  factory :user do
+    email { Faker::Internet.email }
+    password 'abc123'
+  end
 
   factory :identity do
     # association :user

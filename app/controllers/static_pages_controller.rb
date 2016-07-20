@@ -6,7 +6,7 @@ class StaticPagesController < ApplicationController
       date = parse_date(steps_params[:date])
       @options = {period: steps_params[:steps]}
       @options.merge!({date: date}) if date.present?
-      results = FitbitService.get_steps(Identity.first, @options).parsed_response
+      results = FitbitService.get_steps(current_user.fitbit_identity, @options).parsed_response
       @steps_data = results['activities-steps']
 
       if results['success'] == false
