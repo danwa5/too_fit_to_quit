@@ -1,14 +1,20 @@
 <div class="page-header">
-  <h1><%= current_user.email %></h1>
+  <h2><%= current_user.email %></h2>
 </div>
 
-<ul class="nav nav-tabs">
-  <li role="presentation" class="active"><a href="#">Steps</a></li>
-  <li role="presentation"><a href="#">Runs</a></li>
+<!-- Nav Tabs -->
+<ul id="activity-tabs" class="nav nav-tabs">
+  <li role="presentation" class="active">
+    <a href="#steps" id="steps-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Steps</a>
+  </li>
+  <li role="presentation">
+    <a href="#runs" id="runs-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Runs</a>
+  </li>
 </ul>
 
-<div class="row">
-  <div class="col-sm-12" style="margin-top: 20px; margin-bottom: 75px;">
+<!-- Tab Panes -->
+<div class="tab-content">
+  <div role="tabpanel" class="tab-pane active" id="steps">
     <%= form_tag(index_path, method: :get, class: 'form-inline') do |f| %>
       <div class="form-group">
         <%= label_tag :steps, 'Daily steps for' %>&nbsp;
@@ -24,31 +30,29 @@
         </div>
       </div>
     <% end %>
-  </div>
-</div>
 
-<% if @steps_data.present? %>
-<div class="row">
-  <div class="col-sm-4">
-    <table class="table table-condensed">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Steps</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% @steps_data.each do |step_data| %>
-        <tr>
-          <td><%= format_date(step_data['dateTime']) %></td>
-          <td><%= step_data['value'] %></td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
+    <% if @steps_data.present? %>
+      <div class="row">
+        <div class="col-sm-6">
+          <table id="steps-table" class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Steps</th>
+              </tr>
+            </thead>
+            <tbody>
+            <% @steps_data.each do |step_data| %>
+              <tr>
+                <td><%= format_date(step_data['dateTime']) %></td>
+                <td><%= step_data['value'] %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
   </div>
+  <div role="tabpanel" class="tab-pane" id="runs">RUN DATA</div>
 </div>
-<% end %>
-
-<%= render partial: 'devise/shared/links' if user_signed_in? %>
-<%#= render 'devise/shared/links' %>
