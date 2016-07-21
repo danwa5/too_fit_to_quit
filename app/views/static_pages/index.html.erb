@@ -54,5 +54,18 @@
       </div>
     <% end %>
   </div>
-  <div role="tabpanel" class="tab-pane" id="runs">RUN DATA</div>
+  <div role="tabpanel" class="tab-pane" id="runs">
+    <%= form_tag(index_path, method: :get, class: 'form-inline') do |f| %>
+      <div class="form-group">
+        <%= label_tag :after_date, 'Runs on or after' %>&nbsp;
+        <%= text_field_tag :after_date, (@runs_options[:date] || Date.today), { class: 'form-control' } %>
+      </div>
+      <div class="form-group">
+        <div class="form-group">
+          <%= submit_tag 'Display', class: 'btn btn-primary' %>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
 </div>
