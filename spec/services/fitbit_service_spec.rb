@@ -19,7 +19,7 @@ RSpec.describe FitbitService, type: :model do
           'city' => 'CITY',
           'country' => 'COUNTRY',
           'dateOfBirth' => '1993-01-02',
-          'displayName' => 'DISPLAY_NAME',
+          'displayName' => 'DISPLAY_NAME'
         }
       }
       stub_req = stub_request(:get, Figaro.env.fitbit_api_url + "/1/user/#{identity.uid}/profile.json").to_return(status: 200, body: expected.to_json)
@@ -45,6 +45,26 @@ RSpec.describe FitbitService, type: :model do
       stub_req = stub_request(:get, Figaro.env.fitbit_api_url + "/1/user/#{identity.uid}/activities/steps/date/#{today}/1d.json").to_return(status: 200, body: expected.to_json)
 
       response = FitbitService.get_steps(identity)
+      expect(stub_req).to have_been_made
+      expect(response.class).to eq(HTTParty::Response)
+    end
+  end
+
+  describe '.get_activities_list' do
+    let(:today) { Date.today.strftime('%Y-%m-%d') }
+
+    it 'makes a request to the fitbit api' do
+      expected = {
+        "activities"=>[
+          {
+            "activityName"=>"Run",
+            "activityTypeId"=>90009
+          }
+        ]
+      }
+      stub_req = stub_request(:get, Figaro.env.fitbit_api_url + "/1/user/#{identity.uid}/activities/list.json?afterDate=#{today}&sort=asc&limit=20&offset=0").to_return(status: 200, body: expected.to_json)
+
+      response = FitbitService.get_activities_list(identity)
       expect(stub_req).to have_been_made
       expect(response.class).to eq(HTTParty::Response)
     end
