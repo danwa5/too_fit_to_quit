@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe FitbitService, type: :model do
-  let(:identity) { FactoryGirl.create(:identity) }
+  let(:identity) { FactoryGirl.create(:identity, :fitbit) }
 
   describe '.base_uri' do
     it { expect(described_class.base_uri).to eq(Figaro.env.fitbit_api_url) }
@@ -24,7 +24,7 @@ RSpec.describe FitbitService, type: :model do
       }
       stub_req = stub_request(:get, Figaro.env.fitbit_api_url + "/1/user/#{identity.uid}/profile.json").to_return(status: 200, body: expected.to_json)
 
-      response = FitbitService.get_profile(identity)
+      response = described_class.get_profile(identity)
       expect(stub_req).to have_been_made
       expect(response.class).to eq(HTTParty::Response)
     end
@@ -44,7 +44,7 @@ RSpec.describe FitbitService, type: :model do
       }
       stub_req = stub_request(:get, Figaro.env.fitbit_api_url + "/1/user/#{identity.uid}/activities/steps/date/#{today}/1d.json").to_return(status: 200, body: expected.to_json)
 
-      response = FitbitService.get_steps(identity)
+      response = described_class.get_steps(identity)
       expect(stub_req).to have_been_made
       expect(response.class).to eq(HTTParty::Response)
     end
@@ -55,16 +55,16 @@ RSpec.describe FitbitService, type: :model do
 
     it 'makes a request to the fitbit api' do
       expected = {
-        "activities"=>[
+        'activities' => [
           {
-            "activityName"=>"Run",
-            "activityTypeId"=>90009
+            'activityName' => 'Run',
+            'activityTypeId' => 90009
           }
         ]
       }
       stub_req = stub_request(:get, Figaro.env.fitbit_api_url + "/1/user/#{identity.uid}/activities/list.json?afterDate=#{today}&sort=asc&limit=20&offset=0").to_return(status: 200, body: expected.to_json)
 
-      response = FitbitService.get_activities_list(identity)
+      response = described_class.get_activities_list(identity)
       expect(stub_req).to have_been_made
       expect(response.class).to eq(HTTParty::Response)
     end

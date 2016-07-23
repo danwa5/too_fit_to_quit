@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  devise :omniauthable, :omniauth_providers => [:fitbit_oauth2]
+  devise :omniauthable, :omniauth_providers => [:fitbit_oauth2, :strava]
 
   has_many :identities, :dependent => :destroy
 
@@ -25,12 +25,15 @@ class User < ActiveRecord::Base
     identity.access_token = auth['credentials']['token']
     identity.refresh_token = auth['credentials']['refresh_token']
     identity.expires_at = auth['credentials']['expires_at']
-    # identity.timezone = auth['info']['timezone']
     identity.save
     identity.user
   end
 
   def fitbit_identity
     self.identities.where(provider: 'fitbit_oauth2').first
+  end
+
+  def strava_identity
+    self.identities.where(provider: 'strava').first
   end
 end

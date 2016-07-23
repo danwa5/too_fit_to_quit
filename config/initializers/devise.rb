@@ -248,6 +248,10 @@ Devise.setup do |config|
     redirect_uri: 'http://localhost:3000',
     expires_in: '2592000'
 
+  config.omniauth :strava, Figaro.env.strava_client_id, Figaro.env.strava_client_secret,
+    response_type: 'code',
+    redirect_uri: 'http://localhost:3000'
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
