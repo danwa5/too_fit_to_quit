@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   devise :omniauthable, :omniauth_providers => [:fitbit_oauth2, :strava]
 
   has_many :identities, :dependent => :destroy
+  has_many :user_activities
 
   def self.from_omniauth(auth, current_user)
     identity = Identity.where(provider: auth.provider, uid: auth.uid).first_or_create do |identity|

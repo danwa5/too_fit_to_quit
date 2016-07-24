@@ -16,4 +16,7 @@ FactoryGirl.define do
       provider { 'strava' }
     end
   end
+
+  factory :user_activity do
+  end
 end

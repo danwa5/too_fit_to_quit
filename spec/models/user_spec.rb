@@ -7,6 +7,7 @@ RSpec.describe User, type: :model do
   
   describe 'associations' do
     it { is_expected.to have_many(:identities) }
+    it { is_expected.to have_many(:user_activities) }
   end
 
   describe '#fitbit_identity' do
