@@ -23,6 +23,8 @@ gem 'omniauth-strava-oauth2', '~> 0.0.2'
 
 gem 'figaro'
 gem 'httparty'
+gem 'redis', '~> 3.3', '>= 3.3.1'
+gem 'sidekiq', '~> 4.1', '>= 4.1.4'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.4', '>= 3.4.2'
@@ -34,6 +36,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'database_cleaner', '~> 1.3.0'
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
   gem 'webmock'
