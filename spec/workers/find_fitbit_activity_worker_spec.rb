@@ -20,7 +20,7 @@ RSpec.describe FindFitbitActivityWorker, type: :model do
   describe '#perform' do
     context 'when user is nil' do
       it 'returns false' do
-        expect(subject.perform(nil)).to be_falsey
+        expect(subject.perform('')).to be_falsey
       end
     end
 
@@ -28,7 +28,7 @@ RSpec.describe FindFitbitActivityWorker, type: :model do
       let(:response) { { 'success' => false } }
       it 'returns false' do
         make_request(response)
-        expect(subject.perform(user)).to be_falsey
+        expect(subject.perform(user.id)).to be_falsey
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe FindFitbitActivityWorker, type: :model do
       let(:response) { { 'success' => true, 'activities' => [] } }
       it 'returns true' do
         make_request(response)
-        expect(subject.perform(user)).to be_truthy
+        expect(subject.perform(user.id)).to be_truthy
       end
     end
 
@@ -51,15 +51,17 @@ RSpec.describe FindFitbitActivityWorker, type: :model do
           ]
         }
       end
+
       it 'enqueues ImportFitbitRunWorker for every run activity' do
         make_request(response)
         expect {
-          subject.perform(user)
+          subject.perform(user.id)
         }.to change(ImportFitbitRunWorker.jobs, :count).by(2)
       end
+
       it 'returns true' do
         make_request(response)
-        expect(subject.perform(user)).to be_truthy
+        expect(subject.perform(user.id)).to be_truthy
       end
     end
   end

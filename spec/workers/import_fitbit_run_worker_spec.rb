@@ -7,7 +7,6 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
       'activeDuration' => 4113000,
       'activityName' => 'Run',
       'activityTypeId' => 90009,
-      'averageHeartRate' => 147,
       'distance' => 14.677219,
       'distanceUnit' => 'Kilometer',
       'lastModified' => '2016-07-17T23:47:51.000Z',
@@ -29,25 +28,25 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
     context 'when activity hash does not contain all required keys' do
       let(:activity_hash) { { 'activityName' => 'Run' } }
       it 'returns false' do
-        expect(subject.perform(user, activity_hash)).to be_falsey
+        expect(subject.perform(user.id, activity_hash)).to be_falsey
       end
     end
 
     context 'when activity hash is imported for the first time' do
       it 'creates a new UserActivity record' do
         expect {
-          subject.perform(user, activity_hash)
+          subject.perform(user.id, activity_hash)
         }.to change(UserActivity, :count).by(1)
       end
 
       it 'creates a new Activity::FitbitRun record' do
         expect {
-          subject.perform(user, activity_hash)
+          subject.perform(user.id, activity_hash)
         }.to change(Activity::FitbitRun, :count).by(1)
       end
 
       it 'creates a new UserActivity record with the correct attributes' do
-        subject.perform(user, activity_hash)
+        subject.perform(user.id, activity_hash)
         user_activity = UserActivity.last
         expect(user_activity.activity_type).to eq('Activity::FitbitRun')
         expect(user_activity.uid).to eq('1234567890')
@@ -58,16 +57,15 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
       end
 
       it 'creates a new UserActivity record with the correct attributes' do
-        subject.perform(user, activity_hash)
+        subject.perform(user.id, activity_hash)
         fitbit_run = Activity::FitbitRun.last
         expect(fitbit_run.user_id).to eq(user.id)
         expect(fitbit_run.activity_type_id).to eq(90009)
-        expect(fitbit_run.avg_heart_rate).to eq(147)
         expect(fitbit_run.steps).to eq(12000)
       end
 
       it 'returns true' do
-        expect(subject.perform(user, activity_hash)).to be_truthy
+        expect(subject.perform(user.id, activity_hash)).to be_truthy
       end
     end
 
@@ -87,25 +85,24 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
           user_activity: user_activity,
           user: user,
           activity_type_id: 0,
-          avg_heart_rate: 0,
           steps: 0
         )
       end
 
       it 'does not create a new UserActivity record' do
         expect {
-          subject.perform(user, activity_hash)
+          subject.perform(user.id, activity_hash)
         }.not_to change(UserActivity, :count)
       end
 
       it 'does not create a new Activity::FitbitRun record' do
         expect {
-          subject.perform(user, activity_hash)
+          subject.perform(user.id, activity_hash)
         }.not_to change(Activity::FitbitRun, :count)
       end
 
       it 'updates UserActivity with the correct attributes' do
-        subject.perform(user, activity_hash)
+        subject.perform(user.id, activity_hash)
         user_activity.reload
         expect(user_activity.activity_type).to eq('Activity::FitbitRun')
         expect(user_activity.uid).to eq('1234567890')
@@ -115,11 +112,10 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
       end
 
       it 'updates Activity::FitbitRun with the correct attributes' do
-        subject.perform(user, activity_hash)
+        subject.perform(user.id, activity_hash)
         fitbit_run.reload
         expect(fitbit_run.user_id).to eq(user.id)
         expect(fitbit_run.activity_type_id).to eq(90009)
-        expect(fitbit_run.avg_heart_rate).to eq(147)
         expect(fitbit_run.steps).to eq(12000)
       end
     end

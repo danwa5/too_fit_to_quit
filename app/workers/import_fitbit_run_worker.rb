@@ -1,11 +1,12 @@
 class ImportFitbitRunWorker
   include Sidekiq::Worker
 
-  def perform(user, activity_hash)
+  def perform(user_id, activity_hash)
+    user = User.find_by(id: user_id)
     return false if user.nil?
 
     keys = activity_hash.keys
-    required_keys = %w(activeDuration activityName activityTypeId averageHeartRate distance distanceUnit logId startTime steps)
+    required_keys = %w(activeDuration activityName activityTypeId distance distanceUnit logId startTime steps)
 
     # all required keys should be present
     return false unless (required_keys - keys).empty?
@@ -25,7 +26,6 @@ class ImportFitbitRunWorker
 
     run_attributes = {
       activity_type_id: activity_hash['activityTypeId'].to_i,
-      avg_heart_rate: activity_hash['averageHeartRate'].to_i,
       steps: activity_hash['steps'].to_i
     }
 
