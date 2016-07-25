@@ -11,10 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160724005338) do
+ActiveRecord::Schema.define(version: 20160724103137) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activity_fitbit_runs", force: :cascade do |t|
+    t.integer  "user_id",          null: false
+    t.integer  "activity_type_id"
+    t.integer  "avg_heart_rate"
+    t.integer  "steps"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "activity_fitbit_runs", ["user_id"], name: "index_activity_fitbit_runs_on_user_id", using: :btree
 
   create_table "identities", force: :cascade do |t|
     t.string   "uid"
@@ -31,8 +42,9 @@ ActiveRecord::Schema.define(version: 20160724005338) do
     t.integer  "user_id",       null: false
     t.integer  "activity_id"
     t.string   "activity_type"
+    t.string   "uid",           null: false
     t.decimal  "distance"
-    t.decimal  "duration"
+    t.integer  "duration"
     t.datetime "start_time"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
@@ -40,6 +52,7 @@ ActiveRecord::Schema.define(version: 20160724005338) do
 
   add_index "user_activities", ["activity_type", "activity_id"], name: "index_user_activities_on_activity_type_and_activity_id", using: :btree
   add_index "user_activities", ["user_id", "activity_type", "activity_id"], name: "index_user_and_activity", unique: true, using: :btree
+  add_index "user_activities", ["user_id", "activity_type", "uid"], name: "index_user_activities_on_user_id_and_activity_type_and_uid", unique: true, using: :btree
   add_index "user_activities", ["user_id"], name: "index_user_activities_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
@@ -60,5 +73,6 @@ ActiveRecord::Schema.define(version: 20160724005338) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "activity_fitbit_runs", "users"
   add_foreign_key "user_activities", "users"
 end

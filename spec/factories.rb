@@ -18,5 +18,12 @@ FactoryGirl.define do
   end
 
   factory :user_activity do
+    trait :fitbit do
+      activity_type { 'Activity::FitbitRun' }
+    end
+  end
+
+  factory :activity_fitbit_run, class: 'Activity::FitbitRun' do
+    association :user_activity
   end
 end
