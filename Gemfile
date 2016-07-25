@@ -24,6 +24,7 @@ gem 'omniauth-strava-oauth2', '~> 0.0.2'
 gem 'figaro'
 gem 'httparty'
 gem 'redis', '~> 3.3', '>= 3.3.1'
+gem 'redis-namespace', '~> 1.5', '>= 1.5.2'
 gem 'sidekiq', '~> 4.1', '>= 4.1.4'
 
 group :development, :test do
