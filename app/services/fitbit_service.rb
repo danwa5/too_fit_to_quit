@@ -26,6 +26,10 @@ class FitbitService
       options = defaults.merge(options)
       new(client_identity, options).get_activities_list
     end
+
+    def get_activity_tcx(client_identity, options={})
+      new(client_identity, options).get_activity_tcx
+    end
   end
 
   def initialize(client_identity, options={})
@@ -44,9 +48,14 @@ class FitbitService
     self.class.get(Figaro.env.fitbit_api_url + "/1/user/#{@client_uid}/activities/steps/date/#{@options[:date]}/#{@options[:period]}.json", headers: headers)
   end
 
-  # GET https://api.fitbit.com/1/user/-/activities/list.json
+  # GET https://api.fitbit.com/1/user/[user-id]/activities/list.json
   def get_activities_list
     self.class.get(Figaro.env.fitbit_api_url + "/1/user/#{@client_uid}/activities/list.json?afterDate=#{@options[:date]}&sort=asc&limit=20&offset=0", headers: headers)
+  end
+
+  # GET https://api.fitbit.com/1/user/[user-id]/activities/[log-id].tcx
+  def get_activity_tcx
+    self.class.get(Figaro.env.fitbit_api_url + "/1/user/#{@client_uid}/activities/#{@options[:log_id]}.tcx", headers: headers)
   end
 
   private
