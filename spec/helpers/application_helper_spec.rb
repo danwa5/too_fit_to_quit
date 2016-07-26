@@ -31,13 +31,13 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe '#format_duration' do
     context 'when duration is 30 min, 10 sec' do
-      it 'coverts milliseconds to 0:30:10' do
-        expect(helper.format_duration(1810000)).to eq('0:30:10')
+      it 'coverts seconds to 0:30:10' do
+        expect(helper.format_duration(1810)).to eq('0:30:10')
       end
     end
     context 'when duration is 1 hr, 30 min, 40 sec' do
-      it 'coverts milliseconds to 1:30:40' do
-        expect(helper.format_duration(5440000)).to eq('1:30:40')
+      it 'coverts seconds to 1:30:40' do
+        expect(helper.format_duration(5440)).to eq('1:30:40')
       end
     end
   end

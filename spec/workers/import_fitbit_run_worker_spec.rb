@@ -52,7 +52,7 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
         expect(user_activity.uid).to eq('1234567890')
         expect(user_activity.user_id).to eq(user.id)
         expect(user_activity.distance).to eq(14677.219)
-        expect(user_activity.duration).to eq(4113000)
+        expect(user_activity.duration).to eq(4113)
         expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
       end
 
@@ -107,7 +107,7 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
         expect(user_activity.activity_type).to eq('Activity::FitbitRun')
         expect(user_activity.uid).to eq('1234567890')
         expect(user_activity.distance).to eq(14677.219)
-        expect(user_activity.duration).to eq(4113000)
+        expect(user_activity.duration).to eq(4113)
         expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
       end
 

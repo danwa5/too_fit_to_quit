@@ -22,8 +22,7 @@ module ApplicationHelper
     (meters * 0.00062137).round(2)
   end
 
-  def format_duration(milliseconds)
-    seconds = milliseconds / 1000
+  def format_duration(seconds)
     f_seconds = seconds % 60
     minutes = seconds / 60
     f_minutes = minutes % 60
