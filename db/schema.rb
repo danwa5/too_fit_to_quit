@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160724103137) do
+ActiveRecord::Schema.define(version: 20160727001507) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20160724103137) do
     t.datetime "start_time"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.json     "activity_data"
   end
 
   add_index "user_activities", ["activity_type", "activity_id"], name: "index_user_activities_on_activity_type_and_activity_id", using: :btree

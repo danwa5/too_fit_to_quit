@@ -9,7 +9,6 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
       'activityTypeId' => 90009,
       'distance' => 14.677219,
       'distanceUnit' => 'Kilometer',
-      'lastModified' => '2016-07-17T23:47:51.000Z',
       'logId' => 1234567890,
       'startTime' => '2016-07-17T15:28:43.000-07:00',
       'steps' => 12000,
@@ -54,6 +53,7 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
         expect(user_activity.distance).to eq(14677.219)
         expect(user_activity.duration).to eq(4113)
         expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
+        expect(user_activity.activity_data).to be_present
       end
 
       it 'creates a new UserActivity record with the correct attributes' do
@@ -76,7 +76,8 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
           uid: '1234567890',
           distance: 0,
           duration: 0,
-          start_time: '2016-07-10 00:00:00'
+          start_time: '2016-07-10 00:00:00',
+          activity_data: nil
         )
       end
 
@@ -109,6 +110,7 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
         expect(user_activity.distance).to eq(14677.219)
         expect(user_activity.duration).to eq(4113)
         expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
+        expect(user_activity.activity_data).to be_present
       end
 
       it 'updates Activity::FitbitRun with the correct attributes' do

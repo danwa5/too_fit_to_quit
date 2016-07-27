@@ -13,10 +13,10 @@ class ImportFitbitRunWorker
 
     user_activity = UserActivity.where(user_id: user.id, activity_type: 'Activity::FitbitRun', uid: activity_hash['logId']).first_or_create!
 
-    # parse attributes
     user_activity_attributes = {
       duration: (activity_hash['activeDuration'].to_i / 1000),
-      start_time: DateTime.parse(activity_hash['startTime'])
+      start_time: DateTime.parse(activity_hash['startTime']),
+      activity_data: activity_hash
     }
     user_activity_attributes[:distance] = (activity_hash['distance'].to_f) * 1000 if activity_hash['distanceUnit'] == 'Kilometer'
 
