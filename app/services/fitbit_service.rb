@@ -3,7 +3,7 @@ class FitbitService
 
   base_uri Figaro.env.fitbit_api_url
 
-  format :json
+  # format :json
 
   class << self
     def get_profile(client_identity)

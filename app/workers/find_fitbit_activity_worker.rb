@@ -12,6 +12,7 @@ class FindFitbitActivityWorker
     end
 
     results = FitbitService.get_activities_list(user.fitbit_identity, options).parsed_response
+    results = JSON.parse(results)
 
     return false if results['success'] == false
 

@@ -64,6 +64,12 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
         expect(fitbit_run.steps).to eq(12000)
       end
 
+      it 'enqueues a ImportFitbitRunTcxWorker' do
+        expect {
+          subject.perform(user.id, activity_hash)
+        }.to change(ImportFitbitRunTcxWorker.jobs, :count).by(1)
+      end
+
       it 'returns true' do
         expect(subject.perform(user.id, activity_hash)).to be_truthy
       end

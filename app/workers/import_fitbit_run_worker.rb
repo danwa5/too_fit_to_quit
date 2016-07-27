@@ -32,6 +32,8 @@ class ImportFitbitRunWorker
     user_activity.activity.update_attributes(run_attributes)
     user_activity.update_attributes(user_activity_attributes)
 
+    ImportFitbitRunTcxWorker.perform_async(user.id, activity_hash['logId'])
+
     return true
   end
 end
