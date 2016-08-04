@@ -6,26 +6,25 @@ gem 'rails', '4.2.6'
 gem 'puma', '~> 3.4'
 gem 'pg', '~> 0.18.4'
 
-gem 'bootstrap-sass', '~> 3.3.6'
-gem 'bootswatch-rails', '~> 3.3', '>= 3.3.5'
-gem 'sass-rails', '~> 5.0'
-gem 'uglifier', '>= 1.3.0'
-gem 'jquery-rails'
-gem 'turbolinks'
-gem 'sdoc', '~> 0.4.0', group: :doc
-
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
+# authentication
 gem 'devise'
 gem 'omniauth-fitbit-oauth2'
 gem 'omniauth-strava-oauth2', '~> 0.0.2'
 
+gem 'bootstrap-sass', '~> 3.3.6'
+gem 'bootswatch-rails', '~> 3.3', '>= 3.3.5'
 gem 'figaro'
+gem 'gmaps4rails', '~> 2.1', '>= 2.1.2'
 gem 'httparty'
+gem 'jquery-rails'
 gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-namespace', '~> 1.5', '>= 1.5.2'
+gem 'sass-rails', '~> 5.0'
+gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'sidekiq', '~> 4.1', '>= 4.1.4'
+gem 'turbolinks'
+gem 'uglifier', '>= 1.3.0'
+gem 'underscore-rails', '~> 1.8', '>= 1.8.3'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.4', '>= 3.4.2'

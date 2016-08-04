@@ -8,7 +8,7 @@ RSpec.describe ImportFitbitRunTcxWorker, type: :model do
 
   def make_request(response)
     stub_request(:get, /https:\/\/api.fitbit.com\/1\/user\/\d+\/activities\/#{user_activity.uid}.tcx/).
-      to_return(status: 200, body: response)
+      to_return(status: 200, body: response.to_json)
   end
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
@@ -26,21 +26,54 @@ RSpec.describe ImportFitbitRunTcxWorker, type: :model do
       end
     end
 
-    context 'when no xml data is returned' do
+    context 'when no data is returned' do
       it 'returns false' do
         make_request(nil)
         expect(subject.perform(user.id, '1234')).to be_falsey
       end
     end
 
-    context 'when xml data is returned' do
-      before { make_request('<Activities><Activity Sport="Running"></Activity></Activities>') }
+    context 'when data is returned' do
+      let(:response) do
+        {
+          'TrainingCenterDatabase' => {
+            'Activities' => {
+              'Activity' => {
+                'Lap' => [
+                  {
+                    'Track' => {
+                      'Trackpoint' => [{
+                        'Position' => {
+                          'LatitudeDegrees' => 12.34,
+                          'LongitudeDegrees' => -98.76
+                        }
+                      }]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      end
 
-      it 'saves xml data' do
+      before do
+        make_request(response)
+        allow(FitbitService).to receive_message_chain(:get_activity_tcx, :parsed_response).and_return(response)
+      end
+
+      it 'saves tcx data' do
         expect(user_activity.activity.tcx_data).to be_nil
         subject.perform(user.id, '1234')
         user_activity.activity.reload
         expect(user_activity.activity.tcx_data).to be_present
+      end
+
+      it 'saves gps data' do
+        expect(user_activity.activity.gps_data).to be_nil
+        subject.perform(user.id, '1234')
+        user_activity.activity.reload
+        expect(user_activity.activity.gps_data).to eq({'coordinates' => [{'lat'=>12.34, 'lng'=>-98.76}]})
       end
 
       it 'returns true' do

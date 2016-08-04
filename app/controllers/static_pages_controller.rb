@@ -2,7 +2,7 @@ class StaticPagesController < ApplicationController
 
   def index
     @options = {}
-    @runs_options = { }
+    @runs_options = {}
 
     if steps_params[:steps].present?
       date = parse_date(steps_params[:date])
@@ -18,17 +18,20 @@ class StaticPagesController < ApplicationController
 
     if runs_params[:after_date].present?
       date = parse_date(runs_params[:after_date])
-      @runs_options = { date: date }
-      results = FitbitService.get_activities_list(current_user.fitbit_identity, @runs_options).parsed_response
+      @runs_data = current_user.user_activities.where(activity_type: 'Activity::FitbitRun').where('start_time >= ?', date)
+      
+      user_activity = @runs_data.first
+      gps_data = user_activity.activity.gps_data
+      @loc_arr = gps_data['coordinates']
+    end
 
-      if results['success'] == false
-        flash[:alert] = '<a href="/users/auth/fitbit_oauth2">Please request authorization from Fitbit to access your private data</a>.'.html_safe
+    if strava_params[:commit].present? && strava_params[:commit] == 'Display Profile'
+      @results = StravaService.get_athlete(current_user.strava_identity).parsed_response
+
+      if @results['success'] == false
+        flash[:alert] = '<a href="/users/auth/strava">Please request authorization from Strava to access your private data</a>.'.html_safe
       else
-        @runs_data = []
-        results['activities'].each do |activity_hash|
-          @runs_data << activity_hash if activity_hash['activityName'] == 'Run'
-        end
-        render json: @runs_data
+        render json: @results
       end
     end
   end
@@ -41,6 +44,10 @@ class StaticPagesController < ApplicationController
 
   def runs_params
     params.permit(:after_date)
+  end
+
+  def strava_params
+    params.permit(:commit)
   end
 
   def parse_date(date)

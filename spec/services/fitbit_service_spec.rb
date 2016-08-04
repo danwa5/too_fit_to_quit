@@ -7,9 +7,9 @@ RSpec.describe FitbitService, type: :model do
     it { expect(described_class.base_uri).to eq(Figaro.env.fitbit_api_url) }
   end
 
-  # describe '.format' do
-  #   it { expect(described_class.format).to eq(:json) }
-  # end
+  describe '.format' do
+    it { expect(described_class.format).to eq(:json) }
+  end
 
   describe '.get_profile' do
     it 'makes a request to the fitbit api' do
