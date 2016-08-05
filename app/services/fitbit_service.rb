@@ -40,22 +40,22 @@ class FitbitService
 
   # GET https://api.fitbit.com/1/user/[user-id]/profile.json
   def get_profile
-    self.class.get(Figaro.env.fitbit_api_url + "/1/user/#{@client_uid}/profile.json", headers: headers)
+    self.class.get("/1/user/#{@client_uid}/profile.json", headers: headers)
   end
 
   # GET https://api.fitbit.com/1/user/[user-id]/activities/steps/date/today/1m.json
   def get_steps
-    self.class.get(Figaro.env.fitbit_api_url + "/1/user/#{@client_uid}/activities/steps/date/#{@options[:date]}/#{@options[:period]}.json", headers: headers)
+    self.class.get("/1/user/#{@client_uid}/activities/steps/date/#{@options[:date]}/#{@options[:period]}.json", headers: headers)
   end
 
   # GET https://api.fitbit.com/1/user/[user-id]/activities/list.json
   def get_activities_list
-    self.class.get(Figaro.env.fitbit_api_url + "/1/user/#{@client_uid}/activities/list.json?afterDate=#{@options[:date]}&sort=asc&limit=20&offset=0", headers: headers)
+    self.class.get("/1/user/#{@client_uid}/activities/list.json", query: { afterDate: @options[:date], sort: 'asc', limit: 20, offset: 0 }, headers: headers)
   end
 
   # GET https://api.fitbit.com/1/user/[user-id]/activities/[log-id].tcx
   def get_activity_tcx
-    self.class.get(Figaro.env.fitbit_api_url + "/1/user/#{@client_uid}/activities/#{@options[:log_id]}.tcx", headers: headers, format: :xml)
+    self.class.get("/1/user/#{@client_uid}/activities/#{@options[:log_id]}.tcx", headers: headers, format: :xml)
   end
 
   private
