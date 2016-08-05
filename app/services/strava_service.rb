@@ -22,12 +22,12 @@ class StravaService
 
   # GET https://www.strava.com/api/v3/athlete
   def get_profile
-    self.class.get(Figaro.env.strava_api_url + "/v3/athlete", headers: headers)
+    self.class.get("/v3/athlete", headers: headers)
   end
 
   # GET https://www.strava.com/api/v3/athlete/activities
   def get_activities_list
-    self.class.get(Figaro.env.strava_api_url + "/v3/athlete/activities", headers: headers)
+    self.class.get("/v3/athlete/activities", headers: headers)
   end
 
   private

@@ -26,7 +26,7 @@ class StaticPagesController < ApplicationController
     end
 
     if strava_params[:commit].present? && strava_params[:commit] == 'Display Profile'
-      @results = StravaService.get_athlete(current_user.strava_identity).parsed_response
+      @results = StravaService.get_profile(current_user.strava_identity).parsed_response
 
       if @results['success'] == false
         flash[:alert] = '<a href="/users/auth/strava">Please request authorization from Strava to access your private data</a>.'.html_safe
