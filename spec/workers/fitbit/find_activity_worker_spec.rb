@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe FindFitbitActivityWorker, type: :model do
+RSpec.describe Fitbit::FindActivityWorker, type: :model do
   let(:user) { create(:user) }
   let!(:identity) { create(:identity, :fitbit, user: user) }
   let(:date) { Date.today.strftime('%Y-%m-%d') }
@@ -56,7 +56,7 @@ RSpec.describe FindFitbitActivityWorker, type: :model do
         make_request(response)
         expect {
           subject.perform(user.id)
-        }.to change(ImportFitbitRunWorker.jobs, :count).by(2)
+        }.to change(Fitbit::ImportRunWorker.jobs, :count).by(2)
       end
 
       it 'returns true' do

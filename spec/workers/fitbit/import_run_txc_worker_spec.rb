@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ImportFitbitRunTcxWorker, type: :model do
+RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
   let(:user) { create(:user) }
   let!(:identity) { create(:identity, :fitbit, user: user) }
   let(:user_activity) { create(:user_activity, :fitbit, user: user, uid: '1234') }

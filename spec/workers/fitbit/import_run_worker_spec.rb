@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ImportFitbitRunWorker, type: :model do
+RSpec.describe Fitbit::ImportRunWorker, type: :model do
   let(:user) { create(:user) }
   let(:activity_hash) do
     {
@@ -64,10 +64,10 @@ RSpec.describe ImportFitbitRunWorker, type: :model do
         expect(fitbit_run.steps).to eq(12000)
       end
 
-      it 'enqueues a ImportFitbitRunTcxWorker' do
+      it 'enqueues a Fitbit::ImportRunTcxWorker' do
         expect {
           subject.perform(user.id, activity_hash)
-        }.to change(ImportFitbitRunTcxWorker.jobs, :count).by(1)
+        }.to change(Fitbit::ImportRunTcxWorker.jobs, :count).by(1)
       end
 
       it 'returns true' do
