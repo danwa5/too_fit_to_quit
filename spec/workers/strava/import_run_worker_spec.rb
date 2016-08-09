@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-RSpec.describe Fitbit::ImportRunWorker, type: :model do
+RSpec.describe Strava::ImportRunWorker, type: :model do
   let(:user) { create(:user) }
   let(:activity_hash) do
     {
-      'activeDuration' => 4113000,
-      'activityName' => 'Run',
-      'activityTypeId' => 90009,
-      'distance' => 14.677219,
-      'distanceUnit' => 'Kilometer',
-      'logId' => 1234567890,
-      'startTime' => '2016-07-17T15:28:43.000-07:00',
-      'steps' => 12000,
+      'id' => 101,
+      'type' => 'Run',
+      'distance' => 14620.6,
+      'moving_time' => 4111,
+      'start_date' => '2016-07-17T22:28:43',
+      'total_elevation_gain' => 65.0,
+      'elev_high' => 31.0,
+      'elev_low' => 8.4
     }
   end
 
@@ -25,7 +25,7 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
     end
 
     context 'when activity hash does not contain all required keys' do
-      let(:activity_hash) { { 'activityName' => 'Run' } }
+      let(:activity_hash) { { 'type' => 'Run' } }
       it 'returns false' do
         expect(subject.perform(user.id, activity_hash)).to be_falsey
       end
@@ -38,36 +38,31 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
         }.to change(UserActivity, :count).by(1)
       end
 
-      it 'creates a new Activity::FitbitRun record' do
+      it 'creates a new Activity::StravaRun record' do
         expect {
           subject.perform(user.id, activity_hash)
-        }.to change(Activity::FitbitRun, :count).by(1)
+        }.to change(Activity::StravaRun, :count).by(1)
       end
 
       it 'creates a new UserActivity record with the correct attributes' do
         subject.perform(user.id, activity_hash)
         user_activity = UserActivity.last
-        expect(user_activity.activity_type).to eq('Activity::FitbitRun')
-        expect(user_activity.uid).to eq('1234567890')
+        expect(user_activity.activity_type).to eq('Activity::StravaRun')
+        expect(user_activity.uid).to eq('101')
         expect(user_activity.user_id).to eq(user.id)
-        expect(user_activity.distance).to eq(14677.219)
-        expect(user_activity.duration).to eq(4113)
-        expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
+        expect(user_activity.distance).to eq(14620.6)
+        expect(user_activity.duration).to eq(4111)
+        expect(user_activity.start_time).to eq('2016-07-17T22:28:43')
         expect(user_activity.activity_data).to be_present
       end
 
-      it 'creates a new Activity::FitbitRun record with the correct attributes' do
+      it 'creates a new Activity::StravaRun record with the correct attributes' do
         subject.perform(user.id, activity_hash)
-        fitbit_run = Activity::FitbitRun.last
-        expect(fitbit_run.user_id).to eq(user.id)
-        expect(fitbit_run.activity_type_id).to eq(90009)
-        expect(fitbit_run.steps).to eq(12000)
-      end
-
-      it 'enqueues a Fitbit::ImportRunTcxWorker' do
-        expect {
-          subject.perform(user.id, activity_hash)
-        }.to change(Fitbit::ImportRunTcxWorker.jobs, :count).by(1)
+        strava_run = Activity::StravaRun.last
+        expect(strava_run.user_id).to eq(user.id)
+        expect(strava_run.total_elevation_gain).to eq(65.0)
+        expect(strava_run.elevation_high).to eq(31.0)
+        expect(strava_run.elevation_low).to eq(8.4)
       end
 
       it 'returns true' do
@@ -77,9 +72,9 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
 
     context 'when activity hash is imported after the first time' do
       let(:user_activity) do
-        create(:user_activity, :fitbit,
+        create(:user_activity, :strava,
           user: user,
-          uid: '1234567890',
+          uid: '101',
           distance: 0,
           duration: 0,
           start_time: '2016-07-10 00:00:00',
@@ -87,12 +82,13 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
         )
       end
 
-      let!(:fitbit_run) do
-        create(:activity_fitbit_run,
+      let!(:strava_run) do
+        create(:activity_strava_run,
           user_activity: user_activity,
           user: user,
-          activity_type_id: 0,
-          steps: 0
+          total_elevation_gain: 0,
+          elevation_high: 0,
+          elevation_low: 0
         )
       end
 
@@ -102,29 +98,30 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
         }.not_to change(UserActivity, :count)
       end
 
-      it 'does not create a new Activity::FitbitRun record' do
+      it 'does not create a new Activity::StravaRun record' do
         expect {
           subject.perform(user.id, activity_hash)
-        }.not_to change(Activity::FitbitRun, :count)
+        }.not_to change(Activity::StravaRun, :count)
       end
 
       it 'updates UserActivity with the correct attributes' do
         subject.perform(user.id, activity_hash)
         user_activity.reload
-        expect(user_activity.activity_type).to eq('Activity::FitbitRun')
-        expect(user_activity.uid).to eq('1234567890')
-        expect(user_activity.distance).to eq(14677.219)
-        expect(user_activity.duration).to eq(4113)
-        expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
+        expect(user_activity.activity_type).to eq('Activity::StravaRun')
+        expect(user_activity.uid).to eq('101')
+        expect(user_activity.distance).to eq(14620.6)
+        expect(user_activity.duration).to eq(4111)
+        expect(user_activity.start_time).to eq('2016-07-17T22:28:43')
         expect(user_activity.activity_data).to be_present
       end
 
-      it 'updates Activity::FitbitRun with the correct attributes' do
+      it 'updates Activity::StravaRun with the correct attributes' do
         subject.perform(user.id, activity_hash)
-        fitbit_run.reload
-        expect(fitbit_run.user_id).to eq(user.id)
-        expect(fitbit_run.activity_type_id).to eq(90009)
-        expect(fitbit_run.steps).to eq(12000)
+        strava_run.reload
+        expect(strava_run.user_id).to eq(user.id)
+        expect(strava_run.total_elevation_gain).to eq(65.0)
+        expect(strava_run.elevation_high).to eq(31.0)
+        expect(strava_run.elevation_low).to eq(8.4)
       end
     end
   end
