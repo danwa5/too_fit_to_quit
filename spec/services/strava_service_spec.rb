@@ -51,7 +51,7 @@ RSpec.describe StravaService, type: :model do
         'type' => 'Run',
         'distance' => '1000'
       }
-      stub_req = stub_request(:get, /#{Figaro.env.strava_api_url}\/v3\/activities\/\d+/).to_return(status: 200, body: expected.to_json)
+      stub_req = stub_request(:get, /#{Figaro.env.strava_api_url}\/v3\/activities\/101/).to_return(status: 200, body: expected.to_json)
 
       response = described_class.get_activity(identity, {uid: 101})
       expect(stub_req).to have_been_made
