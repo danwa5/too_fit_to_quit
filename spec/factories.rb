@@ -21,9 +21,17 @@ FactoryGirl.define do
     trait :fitbit do
       activity_type { 'Activity::FitbitRun' }
     end
+
+    trait :strava do
+      activity_type { 'Activity::StravaRun' }
+    end
   end
 
   factory :activity_fitbit_run, class: 'Activity::FitbitRun' do
+    association :user_activity
+  end
+
+  factory :activity_strava_run, class: 'Activity::StravaRun' do
     association :user_activity
   end
 end

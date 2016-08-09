@@ -3,12 +3,6 @@ require 'rails_helper'
 RSpec.describe Strava::FindActivityWorker, type: :model do
   let(:user) { create(:user) }
   let!(:identity) { create(:identity, :strava, user: user) }
-  # let(:date) { Date.today.strftime('%Y-%m-%d') }
-  # let(:response) do
-  #   {
-  #     'activities' => {}
-  #   }
-  # end
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
