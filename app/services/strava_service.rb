@@ -18,6 +18,10 @@ class StravaService
       end
       new(client_identity, options).get_activities_list
     end
+
+    def get_activity(client_identity, options={})
+      new(client_identity, options).get_activity
+    end
   end
 
   def initialize(client_identity, options={})
@@ -33,6 +37,11 @@ class StravaService
   # GET https://www.strava.com/api/v3/athlete/activities
   def get_activities_list
     self.class.get("/v3/athlete/activities", query: { after: @options[:epoch] }, headers: headers)
+  end
+
+  # GET https://www.strava.com/api/v3/activities/:id
+  def get_activity
+    self.class.get("/v3/activities/#{@options[:uid]}", headers: headers)
   end
 
   private
