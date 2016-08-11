@@ -9,3 +9,45 @@
 #steps-table {
   margin-top: 30px;
 }
+
+.steps-form {
+  padding: 30px 0px;
+}
+
+#steps-container {
+  width: 35%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-bottom: 30px;
+  float: left;
+}
+
+.chart1-container {
+  width: 65%;
+  position: relative;
+  padding: 60px 15px 0 15px;
+  float: left;
+}
+
+.chart2-container {
+  width: 100%;
+  position: relative;
+  padding: 0 15px 50px 15px;
+  float: left;
+}
+
+#chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 8px;
+  margin: 2px;
+  color: white;
+}
+
+div.bar {
+  display: inline-block;
+  width: 20px;
+  background-color: teal;
+  margin-right: 2px;
+}

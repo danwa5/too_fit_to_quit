@@ -15,6 +15,8 @@ Rails.application.routes.draw do
 
   get '/index', to: 'static_pages#index'
 
+  resources :steps, only: [:index]
+
   root 'static_pages#index'
 
   # The priority is based upon order of creation: first created -> highest priority.

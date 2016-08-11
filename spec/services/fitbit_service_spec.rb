@@ -72,7 +72,6 @@ RSpec.describe FitbitService, type: :model do
 
   describe '.get_activity_tcx' do
     it 'makes a request to fitbit api for detailed GPS and heart rate data for a specific activity' do
-      # stub_req = stub_request(:get, Figaro.env.fitbit_api_url + "/1/user/#{identity.uid}/activities/1.tcx").to_return(status: 200)
       stub_req = stub_request(:get, /#{Figaro.env.fitbit_api_url}\/1\/user\/#{identity.uid}\/activities\/123.tcx/).to_return(status: 200)
       response = described_class.get_activity_tcx(identity, {log_id: 123})
       expect(stub_req).to have_been_made

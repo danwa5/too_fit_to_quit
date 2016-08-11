@@ -1,0 +1,101 @@
+<div class="steps-form">
+  <%= form_tag(steps_path, method: :get, class: 'form-inline') do |f| %>
+    <div class="form-group">
+      <%= label_tag :steps, 'Daily steps for' %>
+      <%= select_tag :steps, options_for_select(fitbit_periods, @options[:period]), { class: 'form-control' } %>
+    </div>
+    <div class="form-group">
+      <%= label_tag :date, 'ending on' %>
+      <%= text_field_tag :date, (@options[:date] || Date.today), { class: 'form-control' } %>
+    </div>
+    <div class="form-group">
+      <%= submit_tag 'Display', class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+</div>
+
+<% if @steps_data.present? %>
+  <div class="row">
+    <div id="steps-container">
+      <table id="steps-table" class="table table-condensed">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Steps</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% @steps_data.each do |step_data| %>
+          <tr>
+            <td><%= format_date(step_data['dateTime']) %></td>
+            <td><%= step_data['value'] %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="chart1-container">
+      <div id="chart"></div>
+    </div>
+  </div>
+
+  <div class="chart2-container">
+    <div id="v-bar-chart"></div>
+  </div>
+<% end %>
+
+
+<script>
+var dataset = <%= @steps_arr %>;
+var dataset_hi = Math.round(d3.max(dataset))
+var scale_max = dataset_hi > 18000 ? 18000 : dataset_hi;
+var factor = Math.round(scale_max / 255);
+var goal_hi = 10000;
+var goal_lo = 5000;
+
+// horizontal bar chart
+var x = d3.scale.linear()
+    .domain([0, d3.max(dataset)])
+    .range([0, 420]);
+
+d3.select("#chart")
+  .selectAll("div")
+    .data(dataset)
+  .enter()
+    .append("div")
+    .style("width", function(d) {
+      return x(d) + "px";
+    })
+    .style("background-color", function(d) {
+      if (d >= goal_hi) {
+        return 'green';
+      } else if (d < goal_lo) {
+        return 'red';
+      } else {
+        return 'grey';
+      }
+    })
+    .text(function(d) { return d; });
+
+
+// vertical bar chart
+var x2 = d3.scale.linear()
+    .domain([0, d3.max(dataset)])
+    .range([0, 300]);
+
+d3.select("#v-bar-chart")
+  .selectAll("div")
+    .data(dataset)
+  .enter()
+    .append("div")
+    .attr("class", "bar")
+    .style("height", function(d) {
+      return x2(d) + "px";
+    })
+    .style("background-color", function(d) {
+      return "rgb(0, " + (Math.round(d / factor)) + ", 0)"
+    });
+
+</script>
+
