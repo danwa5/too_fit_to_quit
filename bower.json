@@ -1,0 +1,21 @@
+{
+  "name": "too_fit_to_quit",
+  "homepage": "https://github.com/danwa5/too_fit_to_quit",
+  "authors": [
+    "Daniel Lee <danwa5@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor/assets/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "^4.2.1"
+  }
+}

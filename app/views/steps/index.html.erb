@@ -55,7 +55,7 @@ var goal_hi = 10000;
 var goal_lo = 5000;
 
 // horizontal bar chart
-var x = d3.scale.linear()
+var x = d3.scaleLinear()
     .domain([0, d3.max(dataset)])
     .range([0, 420]);
 
@@ -80,7 +80,7 @@ d3.select("#chart")
 
 
 // vertical bar chart
-var x2 = d3.scale.linear()
+var x2 = d3.scaleLinear()
     .domain([0, d3.max(dataset)])
     .range([0, 300]);
 

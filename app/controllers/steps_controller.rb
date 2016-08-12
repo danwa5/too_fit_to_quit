@@ -8,11 +8,12 @@ class StepsController < ApplicationController
       @options = {period: steps_params[:steps]}
       @options.merge!({date: date}) if date.present?
       results = FitbitService.get_steps(current_user.fitbit_identity, @options).parsed_response
-      @steps_data = results['activities-steps']
-      @steps_arr = @steps_data.map { |day| day['value'].to_i }.to_s
 
       if results['success'] == false
         flash[:alert] = '<a href="/users/auth/fitbit_oauth2">Please request authorization from Fitbit to access your private data</a>.'.html_safe
+      else
+        @steps_data = results['activities-steps']
+        @steps_arr = @steps_data.map { |day| day['value'].to_i }.to_s
       end
     end
   end
