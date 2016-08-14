@@ -1,4 +1,6 @@
 module ApplicationHelper
+
+  MILES_PER_METER = 0.00062137
   
   def format_date(date_string)
     return 'N/A' unless date_string.present?
@@ -19,14 +21,20 @@ module ApplicationHelper
   end
 
   def format_distance(meters)
-    (meters * 0.00062137).round(2)
+    (meters * MILES_PER_METER).round(2)
   end
 
   def format_duration(seconds)
     f_seconds = seconds % 60
     minutes = seconds / 60
     f_minutes = minutes % 60
-    hours = minutes / 60
-    "#{hours}:#{f_minutes.to_s.rjust(2,'0')}:#{f_seconds.to_s.rjust(2,'0')}"
+    hours = minutes < 60 ? '' : "#{(minutes / 60).to_s}:"
+    "#{hours}#{f_minutes.to_s.rjust(2,'0')}:#{f_seconds.to_s.rjust(2,'0')}"
+  end
+
+  def format_pace(seconds, meters)
+    f_minutes = (seconds / (meters * MILES_PER_METER * 60)).floor
+    f_seconds = seconds % 60
+    "#{f_minutes.to_s}:#{f_seconds.to_s.rjust(2,'0')}"
   end
 end

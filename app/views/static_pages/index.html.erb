@@ -33,6 +33,7 @@
             <th>Date</th>
             <th>Distance (miles)</th>
             <th>Duration</th>
+            <th>Pace (min/mile)</th>
             <th>Steps</th>
             <th>Log ID</th>
           </tr>
@@ -43,6 +44,7 @@
             <td><%= run_data.start_time %></td>
             <td><%= format_distance(run_data.distance) %></td>
             <td><%= format_duration(run_data.duration) %></td>
+            <td><%= format_pace(run_data.duration, run_data.distance) %></td>
             <td><%= run_data.activity.steps %></td>
             <td><%= run_data.uid %></td>
           </tr>
@@ -77,7 +79,6 @@ handler.buildMap({
     // handler.bounds.extendWith(markers);
     handler.bounds.extendWith(polylines);
     handler.fitMapToBounds();
-    handler.getMap().setZoom(14);
   }
 );
 </script>

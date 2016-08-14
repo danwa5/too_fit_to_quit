@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe ApplicationHelper, type: :helper do
+  describe 'MILES_PER_METER' do
+    it { expect(described_class::MILES_PER_METER).to eq(0.00062137) }
+  end
+
   describe '#format_date' do
     context 'when argument is nil' do
       it 'returns N/A' do
@@ -32,13 +36,19 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe '#format_duration' do
     context 'when duration is 30 min, 10 sec' do
       it 'coverts seconds to 0:30:10' do
-        expect(helper.format_duration(1810)).to eq('0:30:10')
+        expect(helper.format_duration(1810)).to eq('30:10')
       end
     end
     context 'when duration is 1 hr, 30 min, 40 sec' do
       it 'coverts seconds to 1:30:40' do
         expect(helper.format_duration(5440)).to eq('1:30:40')
       end
+    end
+  end
+
+  describe '#format_pace' do
+    it 'calculates pace in minutes/mile' do
+      expect(helper.format_pace(5645, 21396.599)).to eq('7:05')
     end
   end
 end
