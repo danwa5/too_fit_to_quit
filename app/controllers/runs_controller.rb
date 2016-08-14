@@ -14,7 +14,7 @@ class RunsController < ApplicationController
 
   def show
     @run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).first
-    @loc_arr = @run.activity.gps_data['coordinates']
+    @coordinates = @run.activity.gps_data['coordinates']
   end
 
   private
