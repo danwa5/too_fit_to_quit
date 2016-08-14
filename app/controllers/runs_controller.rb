@@ -5,21 +5,22 @@ class RunsController < ApplicationController
 
     if runs_params[:after_date].present?
       date = parse_date(runs_params[:after_date])
-      @runs_data = current_user.user_activities.where(activity_type: 'Activity::FitbitRun')
+      @dataset = current_user.user_activities.where(activity_type: 'Activity::FitbitRun')
                                                .where('start_time >= ?', date)
                                                .order(:start_time)
-      
-      # user_activity = @runs_data.first
-      # gps_data = user_activity.activity.gps_data
-      # @loc_arr = gps_data['coordinates']
-      # @runs_options[:date] = date
+      @runs_options[:date] = date
     end
+  end
+
+  def show
+    @run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).first
+    @loc_arr = @run.activity.gps_data['coordinates']
   end
 
   private
 
   def runs_params
-    params.permit(:after_date)
+    params.permit(:id, :after_date)
   end
 
   def parse_date(date)
