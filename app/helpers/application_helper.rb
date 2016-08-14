@@ -33,8 +33,8 @@ module ApplicationHelper
   end
 
   def format_pace(seconds, meters)
-    f_minutes = (seconds / (meters * MILES_PER_METER * 60)).floor
-    f_seconds = seconds % 60
-    "#{f_minutes.to_s}:#{f_seconds.to_s.rjust(2,'0')}"
+    min_per_mile = seconds / (meters * MILES_PER_METER * 60)
+    f_seconds = (min_per_mile.modulo(1) * 60).round
+    "#{min_per_mile.floor.to_s}:#{f_seconds.to_s.rjust(2,'0')}"
   end
 end
