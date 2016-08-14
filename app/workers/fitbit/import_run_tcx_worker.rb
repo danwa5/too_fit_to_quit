@@ -29,10 +29,7 @@ module Fitbit
 
       tcx_data['TrainingCenterDatabase']['Activities']['Activity']['Lap'].each do |lap|
         lap['Track']['Trackpoint'].each_with_index do |track_point, index|
-          point = {
-            :lat => track_point['Position']['LatitudeDegrees'],
-            :lng => track_point['Position']['LongitudeDegrees']
-          }
+          point = [track_point['Position']['LongitudeDegrees'], track_point['Position']['LatitudeDegrees']]
           coordinates << point if index == 0 || index % 15 == 0 || index == lap['Track']['Trackpoint'].length
         end
       end
