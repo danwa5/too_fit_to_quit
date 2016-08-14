@@ -13,11 +13,10 @@ Rails.application.routes.draw do
     delete 'signout', to: 'devise/sessions#destroy'#, :as => :destroy_user_session
   end
 
-  get '/index', to: 'static_pages#index'
-
+  resources :runs, only: [:index, :show]
   resources :steps, only: [:index]
 
-  root 'static_pages#index'
+  root 'runs#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
