@@ -1,9 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'rails', '4.2.6'
-
-# web server
-gem 'puma', '~> 3.4'
 gem 'pg', '~> 0.18.4'
 
 # authentication
@@ -14,7 +11,6 @@ gem 'omniauth-strava-oauth2', '~> 0.0.2'
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'bootswatch-rails', '~> 3.3', '>= 3.3.5'
 gem 'figaro'
-gem 'gmaps4rails', '~> 2.1', '>= 2.1.2'
 gem 'httparty'
 gem 'jquery-rails'
 gem 'redis', '~> 3.3', '>= 3.3.1'
@@ -25,6 +21,10 @@ gem 'sidekiq', '~> 4.1', '>= 4.1.4'
 gem 'turbolinks'
 gem 'uglifier', '>= 1.3.0'
 gem 'underscore-rails', '~> 1.8', '>= 1.8.3'
+
+group :production do
+  gem 'puma', '~> 3.4'
+end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.4', '>= 3.4.2'

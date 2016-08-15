@@ -28,6 +28,7 @@
             <th>Pace (min/mile)</th>
             <th>Steps</th>
             <th>Log ID</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -39,6 +40,7 @@
             <td><%= format_pace(run.duration, run.distance) %></td>
             <td><%= run.activity.steps %></td>
             <td><%= run.uid %></td>
+            <td><%= link_to 'Show', run_path(run.id) %></td>
           </tr>
         <% end %>
         </tbody>

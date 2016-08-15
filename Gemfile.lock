@@ -94,7 +94,6 @@ GEM
       thor (~> 0.14)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
-    gmaps4rails (2.1.2)
     hashdiff (0.3.0)
     hashie (3.4.4)
     httparty (0.13.7)
@@ -269,7 +268,6 @@ DEPENDENCIES
   factory_girl_rails (~> 4.6)
   faker
   figaro
-  gmaps4rails (~> 2.1, >= 2.1.2)
   httparty
   jquery-rails
   omniauth-fitbit-oauth2

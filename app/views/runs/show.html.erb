@@ -11,11 +11,6 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/streets-v9'
 });
 
-var west = <%= @coordinates.map { |set| set[0] }.min %>;
-var east = <%= @coordinates.map { |set| set[0] }.max %>;
-var south = <%= @coordinates.map { |set| set[1] }.min %>;
-var north = <%= @coordinates.map { |set| set[1] }.max %>;
-
 map.on('load', function () {
   map.addSource("route", {
     "type": "geojson",
@@ -44,6 +39,6 @@ map.on('load', function () {
   });
 });
 
-map.fitBounds([[west-0.007, south-0.007], [east+0.007, north+0.007]]);
+map.fitBounds(<%= @bounds_coordinates %>);
 
 </script>

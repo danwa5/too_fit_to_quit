@@ -42,12 +42,26 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
                 'Lap' => [
                   {
                     'Track' => {
-                      'Trackpoint' => [{
-                        'Position' => {
-                          'LatitudeDegrees' => 12.34,
-                          'LongitudeDegrees' => -98.76
+                      'Trackpoint' => [
+                        {
+                          'Position' => {
+                            'LatitudeDegrees' => 37.7749,
+                            'LongitudeDegrees' => -122.4194
+                          }
+                        },
+                        {
+                          'Position' => {
+                            'LatitudeDegrees' => 43.6532,
+                            'LongitudeDegrees' => -79.3832
+                          }
+                        },
+                        {
+                          'Position' => {
+                            'LatitudeDegrees' => 40.7128,
+                            'LongitudeDegrees' => -74.0059
+                          }
                         }
-                      }]
+                      ]
                     }
                   }
                 ]
@@ -69,11 +83,21 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
         expect(user_activity.activity.tcx_data).to be_present
       end
 
-      it 'saves gps data' do
+      it 'saves gps data - coordinates and bounds' do
         expect(user_activity.activity.gps_data).to be_nil
         subject.perform(user.id, '1234')
         user_activity.activity.reload
-        expect(user_activity.activity.gps_data).to eq({'coordinates' => [[-98.76,12.34]]})
+        expect(user_activity.activity.gps_data).to eq(
+          {
+            'coordinates' => [[-122.4194,37.7749], [-74.0059,40.7128]],
+            'bounds' => {
+              'north' => 43.6532,
+              'east' => -74.0059,
+              'south' => 37.7749,
+              'west' => -122.4194
+            }
+          }
+        )
       end
 
       it 'returns true' do
