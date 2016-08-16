@@ -16,7 +16,9 @@
 !/log/.keep
 /tmp
 .byebug_history
+.DS_Store
 coverage/
+dump.rdb
 
 # Ignore application configuration
 /config/application.yml
