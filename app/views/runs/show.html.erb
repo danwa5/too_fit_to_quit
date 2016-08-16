@@ -1,10 +1,46 @@
 <div class="page-header">
-  <h2>Run on <%= @run.start_time %></h2>
+  <h3>Run on <%= @run.start_time %></h3>
 </div>
+
+<style>
+#alt_hr_chart {
+  margin: 30px 0px;
+}
+
+.axis {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  stroke-width: none;
+  shape-rendering: crispEdges;
+}
+
+.axis--x path {
+  /*display: none;*/
+}
+
+.line1 {
+  fill: none;
+  stroke: #e67e22;
+  stroke-width: 1.5px;
+}
+
+.line2 {
+  fill: none;
+  stroke: #2980b9;
+  stroke-width: 1.5px;
+}
+</style>
 
 <div id='map' style='width: 800px; height: 400px;'></div>
 
+<div id='alt_hr_chart'></div>
+
 <script>
+
+// --- MAP ---
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGFud2E1IiwiYSI6ImNpcnVkM244ajBqM2pmOW02eTA4YWUwenUifQ.FfkMklO6SMp3fAQDVcRwYQ';
 var map = new mapboxgl.Map({
     container: 'map',
@@ -39,6 +75,93 @@ map.on('load', function () {
   });
 });
 
-map.fitBounds(<%= @bounds_coordinates %>);
+map.fitBounds(<%= @bounds %>);
+map.scrollZoom.disable();
+
+
+// --- CHART ---
+var data = <%= raw @raw_gps_data.to_json %>;
+
+var margin = {top: 20, right: 40, bottom: 50, left: 30},
+    width = 800 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+var parseTime = d3.utcParse("%Y-%m-%dT%H:%M:%S.%L%Z");
+
+var x = d3.scaleTime().range([0, width]);
+var y1 = d3.scaleLinear().range([height, 0]);
+var y2 = d3.scaleLinear().range([height, 0]);
+
+var x_ticks = data.length > 20 ? 20 : data.length;
+
+var line1 = d3.line()
+    .x(function(d) { return x(d.datetime); })
+    .y(function(d) { return y1(d.heart_rate); });
+
+var line2 = d3.line()
+    .x(function(d) { return x(d.datetime); })
+    .y(function(d) { return y2(d.altitude); });
+
+var svg = d3.select("#alt_hr_chart")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  data.forEach(function(d) {
+    d.datetime = parseTime(d.datetime);
+    d.heart_rate = +d.heart_rate;
+    d.altitude = +d.altitude;
+  });
+
+  x.domain(d3.extent(data, function(d) { return d.datetime; }));
+  y1.domain(d3.extent(data, function(d) { return d.heart_rate; }));
+  y2.domain(d3.extent(data, function(d) { return d.altitude; }));
+
+  svg.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).ticks(x_ticks).tickFormat(d3.timeFormat("%H:%M:%S")))
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)");
+
+  svg.append("g")
+      .attr("class", "axis axis--y")
+      .style("stroke", "#e67e22")
+      .call(d3.axisLeft(y1))
+    .append("text")
+      .attr("class", "axis-title")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Heart Rate (BPM)");
+
+  svg.append("g")
+      .attr("class", "axis axis--y")
+      .attr("transform", "translate(" + width + ",0)")
+      .style("stroke", "#2980b9")
+      .call(d3.axisRight(y2))
+    .append("text")
+      .attr("class", "axis-title")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 25)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Altitude (m)");
+
+  svg.append("path")
+      .datum(data)
+      .attr("class", "line1")
+      .attr("d", line1);
+
+  svg.append("path")
+      .datum(data)
+      .attr("class", "line2")
+      .attr("d", line2);
 
 </script>

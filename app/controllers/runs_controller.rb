@@ -14,9 +14,11 @@ class RunsController < ApplicationController
 
   def show
     @run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).first
-    @coordinates = @run.activity.gps_data['coordinates']
-    bounds = @run.activity.gps_data['bounds']
-    @bounds_coordinates = [
+    @raw_gps_data = @run.activity.gps_data['raw']
+    @coordinates = @raw_gps_data.map { |h| h['coordinate'] }
+
+    bounds = @run.activity.gps_data['derived']['bounds']
+    @bounds = [
       [ bounds['west'].to_f - 0.007, bounds['south'].to_f - 0.007 ],
       [ bounds['east'].to_f + 0.007, bounds['north'].to_f + 0.007 ]
     ]
