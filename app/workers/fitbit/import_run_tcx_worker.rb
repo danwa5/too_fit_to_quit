@@ -38,6 +38,7 @@ module Fitbit
             raw << {
               'datetime' => track_point['Time'],
               'coordinate' => position,
+              'distance' => track_point['DistanceMeters'],
               'altitude' => track_point['AltitudeMeters'],
               'heart_rate' => track_point['HeartRateBpm']['Value']
             }
