@@ -32,6 +32,14 @@
   stroke: #2980b9;
   stroke-width: 1.5px;
 }
+
+.marker {
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+}
 </style>
 
 <div id='map' style='width: 800px; height: 400px;'></div>
@@ -46,6 +54,9 @@ var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9'
 });
+
+var nav = new mapboxgl.Navigation({position: 'top-right'});
+map.addControl(nav);
 
 map.on('load', function () {
   map.addSource("route", {
@@ -71,6 +82,47 @@ map.on('load', function () {
     "paint": {
       "line-color": "#FF0000",
       "line-width": 2
+    }
+  });
+
+  map.addSource("points", {
+    "type": "geojson",
+    "data": {
+      "type": "FeatureCollection",
+      "features": [{
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": <%= raw @coordinates[0] %>
+        },
+        "properties": {
+          // "title": "Start",
+          "icon": "star"
+        }
+      }, {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": <%= raw @coordinates[-1] %>
+        },
+        "properties": {
+          // "title": "Finish",
+          "icon": "embassy"
+        }
+      }]
+    }
+  });
+
+  map.addLayer({
+    "id": "points",
+    "type": "symbol",
+    "source": "points",
+    "layout": {
+      "icon-image": "{icon}-15",
+      "text-field": "{title}",
+      "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+      "text-offset": [0, 0.6],
+      "text-anchor": "top"
     }
   });
 });
