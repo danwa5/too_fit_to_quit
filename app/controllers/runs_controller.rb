@@ -3,13 +3,13 @@ class RunsController < ApplicationController
   def index
     @runs_options = {}
 
-    if runs_params[:after_date].present?
-      date = parse_date(runs_params[:after_date])
-      @dataset = current_user.user_activities.where(activity_type: 'Activity::FitbitRun')
+    search_date = runs_params[:after_date].present? ? runs_params[:after_date] : Date.today - 60
+    date = parse_date(search_date)
+
+    @dataset = current_user.user_activities.where(activity_type: 'Activity::FitbitRun')
                                                .where('start_time >= ?', date)
                                                .order(:start_time)
-      @runs_options[:date] = date
-    end
+    @runs_options[:date] = date
   end
 
   def show

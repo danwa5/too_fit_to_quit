@@ -25,6 +25,20 @@
               </ul>
             </li>
             <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Import Data <span class="caret"></span></a>
+              <ul id="import-runs-dropdown" class="dropdown-menu" aria-labelledby="dLabel">
+                <div id="import-runs-form">
+                  <p class="text-muted">Import activity data from Fitbit and Strava beginning on the following date</p>
+                  <%= form_tag(imports_path, class: 'form-inline') do %>
+                    <div class="form-group">
+                      <%= text_field_tag(:import_date, '', id: "import-date", class: "form-control", placeholder: "YYYY-MM-DD") %>
+                    </div>
+                    <%= submit_tag("Import Data", class: 'btn btn-primary') %>
+                  <% end %>
+                </div>
+              </ul>
+            </li>
+            <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Authentication <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="/users/auth/fitbit_oauth2">Fitbit</a></li>

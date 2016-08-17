@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
   resources :runs, only: [:index, :show]
   resources :steps, only: [:index]
+  resources :imports, only: [:create]
 
   root 'runs#index'
 
