@@ -39,8 +39,9 @@ RSpec.describe ImportsController, type: :controller do
       it 'must enqueue Strava::FindActivityWorker' do
         expect { subject }.to change(Strava::FindActivityWorker.jobs, :count).by(1)
       end
-      it 'must redirect to /runs' do
+      it 'must redirect to /runs with success message' do
         expect(subject).to redirect_to(runs_path)
+        expect(flash[:notice]).to be_present
       end
     end
   end

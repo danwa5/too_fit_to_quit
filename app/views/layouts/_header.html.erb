@@ -31,7 +31,7 @@
                   <p class="text-muted">Import activity data from Fitbit and Strava beginning on the following date</p>
                   <%= form_tag(imports_path, class: 'form-inline') do %>
                     <div class="form-group">
-                      <%= text_field_tag(:import_date, '', id: "import-date", class: "form-control", placeholder: "YYYY-MM-DD") %>
+                      <%= text_field_tag(:import_date, Date.today.strftime('%Y-%m-%d'), id: "import-date", class: "form-control", placeholder: "YYYY-MM-DD") %>
                     </div>
                     <%= submit_tag("Import Data", class: 'btn btn-primary') %>
                   <% end %>
