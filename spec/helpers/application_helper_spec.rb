@@ -18,6 +18,12 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  describe '#format_run_time' do
+    it 'converts and formats datetime from UTC to PST' do
+      expect(helper.format_run_time('2016-07-31 14:00:00 UTC')).to eq('Sun, 7/31/2016  7:00am')
+    end
+  end
+
   describe '#fitbit_periods' do
     it 'contains the correct labels' do
       expect(helper.fitbit_periods.map { |arr| arr[0] }).to eq(['1 day','1 week','1 month','3 month','6 month','1 year'])
