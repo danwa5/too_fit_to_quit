@@ -55,7 +55,7 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/streets-v9'
 });
 
-var nav = new mapboxgl.Navigation({position: 'top-right'});
+var nav = new mapboxgl.Navigation({position: 'top-left'});
 map.addControl(nav);
 
 map.on('load', function () {
@@ -132,7 +132,7 @@ map.scrollZoom.disable();
 
 
 // --- CHART ---
-var data = <%= raw @raw_gps_data.to_json %>;
+var data = <%= raw @chart_data.to_json %>;
 
 var margin = {top: 20, right: 40, bottom: 50, left: 30},
     width = 800 - margin.left - margin.right,

@@ -14,13 +14,13 @@ class RunsController < ApplicationController
 
   def show
     @run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).first
-    @raw_gps_data = @run.activity.gps_data['raw']
-    @coordinates = @raw_gps_data.map { |h| h['coordinate'] }
+    @chart_data  = Fitbit::GpsDataParser.new(@run.activity.gps_data, %w(datetime altitude heart_rate)).parse
+    @coordinates = Fitbit::GpsDataParser.new(@run.activity.gps_data, %w(coordinate)).parse
 
     bounds = @run.activity.gps_data['derived']['bounds']
     @bounds = [
-      [ bounds['west'].to_f - 0.007, bounds['south'].to_f - 0.007 ],
-      [ bounds['east'].to_f + 0.007, bounds['north'].to_f + 0.007 ]
+      [ bounds['west'].to_f - 0.008, bounds['south'].to_f - 0.008 ],
+      [ bounds['east'].to_f + 0.008, bounds['north'].to_f + 0.008 ]
     ]
   end
 
