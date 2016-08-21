@@ -18,32 +18,32 @@
 
 <% if @dataset.present? %>
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-lg-8 col-md-9 col-sm-12">
       <div class="table-responsive">
-      <table id="runs-table" class="table table-condensed table-hover">
-        <thead>
-          <tr>
-            <th class="runs-date">Date</th>
-            <th class="runs-distance">Distance (mi)</th>
-            <th class="runs-duration">Duration</th>
-            <th class="runs-pace">Pace (min/mi)</th>
-            <th class="runs-steps">Steps</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-        <% @dataset.each do |run| %>
-          <tr>
-            <td class="runs-date"><%= format_run_time(run.start_time) %></td>
-            <td class="runs-distance"><%= format_distance(run.distance) %></td>
-            <td class="runs-duration"><%= format_duration(run.duration) %></td>
-            <td class="runs-pace"><%= format_pace(run.duration, run.distance) %></td>
-            <td class="runs-steps"><%= run.activity.steps %></td>
-            <td align="center"><%= link_to 'Details', run_path(run.id) %></td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
+        <table id="runs-table" class="table table-condensed table-hover">
+          <thead>
+            <tr>
+              <th class="runs-date">Date</th>
+              <th class="runs-distance">Distance (mi)</th>
+              <th class="runs-duration">Duration</th>
+              <th class="runs-pace">Pace (min/mi)</th>
+              <th class="runs-steps">Steps</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          <% @dataset.each do |run| %>
+            <tr>
+              <td class="runs-date"><%= format_run_time(run.start_time) %></td>
+              <td class="runs-distance"><%= format_distance(run.distance) %></td>
+              <td class="runs-duration"><%= format_duration(run.duration) %></td>
+              <td class="runs-pace"><%= format_pace(run.duration, run.distance) %></td>
+              <td class="runs-steps"><%= run.activity.steps %></td>
+              <td align="center"><%= link_to 'Details', run_path(run.id) %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

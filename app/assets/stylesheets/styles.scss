@@ -57,6 +57,7 @@
 .map-container {
   width: 900px;
   padding: 0px;
+  border: 1px solid #f5cba7;
 }
 
 #map-run {
@@ -66,9 +67,10 @@
 }
 
 #splits {
-  width: 250px;
+  width: 248px;
   height: 400px;
   margin-left: 650px;
+  overflow: auto;
 }
 
 .axis {
