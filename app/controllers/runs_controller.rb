@@ -13,15 +13,22 @@ class RunsController < ApplicationController
   end
 
   def show
-    @run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).first
-    @chart_data  = Fitbit::GpsDataParser.new(@run.activity.gps_data, %w(datetime altitude heart_rate)).parse
-    @coordinates = Fitbit::GpsDataParser.new(@run.activity.gps_data, %w(coordinate)).parse
+    @fitbit_run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).includes(:activity).first
 
-    bounds = @run.activity.gps_data['derived']['bounds']
-    @bounds = [
-      [ bounds['west'].to_f - 0.008, bounds['south'].to_f - 0.008 ],
-      [ bounds['east'].to_f + 0.008, bounds['north'].to_f + 0.008 ]
-    ]
+    if @fitbit_run.present?
+      @strava_run = current_user.user_activities.where.not(id: runs_params[:id]).where(start_time_rounded_epoch: @fitbit_run.start_time_rounded_epoch).includes(:activity).first
+
+      @chart_data  = Fitbit::GpsDataParser.new(@fitbit_run.activity.gps_data, %w(datetime altitude heart_rate)).parse
+      @coordinates = Fitbit::GpsDataParser.new(@fitbit_run.activity.gps_data, %w(coordinate)).parse
+
+      bounds = @fitbit_run.activity.gps_data['derived']['bounds']
+      @bounds = [
+        [ bounds['west'].to_f - 0.008, bounds['south'].to_f - 0.008 ],
+        [ bounds['east'].to_f + 0.008, bounds['north'].to_f + 0.008 ]
+      ]
+    else
+      redirect_to runs_path
+    end
   end
 
   private

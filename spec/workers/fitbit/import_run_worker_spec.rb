@@ -53,6 +53,7 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
         expect(user_activity.distance).to eq(14677.219)
         expect(user_activity.duration).to eq(4113)
         expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
+        expect(user_activity.start_time_rounded_epoch).to eq(DateTime.parse(activity_hash['startTime']).to_i / 240)
         expect(user_activity.activity_data).to be_present
       end
 

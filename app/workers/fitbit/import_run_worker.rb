@@ -17,6 +17,7 @@ module Fitbit
       user_activity_attributes = {
         duration: (activity_hash['activeDuration'].to_i / 1000),
         start_time: DateTime.parse(activity_hash['startTime']),
+        start_time_rounded_epoch: DateTime.parse(activity_hash['startTime']).to_i / 240,
         activity_data: activity_hash
       }
       user_activity_attributes[:distance] = (activity_hash['distance'].to_f) * 1000 if activity_hash['distanceUnit'] == 'Kilometer'

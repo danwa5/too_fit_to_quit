@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160806050224) do
+ActiveRecord::Schema.define(version: 20160820205819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,21 +52,23 @@ ActiveRecord::Schema.define(version: 20160806050224) do
   end
 
   create_table "user_activities", force: :cascade do |t|
-    t.integer  "user_id",       null: false
+    t.integer  "user_id",                  null: false
     t.integer  "activity_id"
     t.string   "activity_type"
-    t.string   "uid",           null: false
+    t.string   "uid",                      null: false
     t.decimal  "distance"
     t.integer  "duration"
     t.datetime "start_time"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
     t.json     "activity_data"
+    t.integer  "start_time_rounded_epoch"
   end
 
   add_index "user_activities", ["activity_type", "activity_id"], name: "index_user_activities_on_activity_type_and_activity_id", using: :btree
   add_index "user_activities", ["user_id", "activity_type", "activity_id"], name: "index_user_and_activity", unique: true, using: :btree
   add_index "user_activities", ["user_id", "activity_type", "uid"], name: "index_user_activities_on_user_id_and_activity_type_and_uid", unique: true, using: :btree
+  add_index "user_activities", ["user_id", "start_time_rounded_epoch"], name: "index_user_activities_on_user_id_and_start_time_rounded_epoch", using: :btree
   add_index "user_activities", ["user_id"], name: "index_user_activities_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
