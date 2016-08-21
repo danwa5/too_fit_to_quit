@@ -66,6 +66,12 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
         expect(strava_run.elevation_low).to eq(8.4)
       end
 
+      it 'enqueues a Strava::ImportRunMetricsWorker' do
+        expect {
+          subject.perform(user.id, activity_hash)
+        }.to change(Strava::ImportRunMetricsWorker.jobs, :count).by(1)
+      end
+
       it 'returns true' do
         expect(subject.perform(user.id, activity_hash)).to be_truthy
       end

@@ -7,8 +7,8 @@ class RunsController < ApplicationController
     date = parse_date(search_date)
 
     @dataset = current_user.user_activities.where(activity_type: 'Activity::FitbitRun')
-                                               .where('start_time >= ?', date)
-                                               .order(:start_time)
+                                            .where('start_time >= ?', date)
+                                            .order(:start_time)
     @runs_options[:date] = date
   end
 
@@ -16,7 +16,9 @@ class RunsController < ApplicationController
     @fitbit_run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).includes(:activity).first
 
     if @fitbit_run.present?
-      @strava_run = current_user.user_activities.where.not(id: runs_params[:id]).where(start_time_rounded_epoch: @fitbit_run.start_time_rounded_epoch).includes(:activity).first
+      @strava_run = current_user.user_activities.where.not(id: runs_params[:id])
+                                                .where(start_time_rounded_epoch: @fitbit_run.start_time_rounded_epoch)
+                                                .includes(:activity).first
 
       @chart_data  = Fitbit::GpsDataParser.new(@fitbit_run.activity.gps_data, %w(datetime altitude heart_rate)).parse
       @coordinates = Fitbit::GpsDataParser.new(@fitbit_run.activity.gps_data, %w(coordinate)).parse

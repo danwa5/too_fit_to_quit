@@ -35,6 +35,8 @@ module Strava
       user_activity.activity.update_attributes(run_attributes)
       user_activity.update_attributes(user_activity_attributes)
 
+      Strava::ImportRunMetricsWorker.perform_async(user.id, activity_hash['id'])
+
       return true
     end
   end

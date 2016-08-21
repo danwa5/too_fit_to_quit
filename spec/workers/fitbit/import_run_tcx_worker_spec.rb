@@ -16,20 +16,20 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
   describe '#perform' do
     context 'when user is nil' do
       it 'returns false' do
-        expect(subject.perform((user.id + 1), 'blah')).to be_falsey
+        expect(subject.perform((user.id + 1), 'blah')).to eq(false)
       end
     end
 
     context 'when user_activity is nil' do
       it 'returns false' do
-        expect(subject.perform(user.id, 'blah')).to be_falsey
+        expect(subject.perform(user.id, 'blah')).to eq(false)
       end
     end
 
     context 'when no data is returned' do
       it 'returns false' do
         make_request(nil)
-        expect(subject.perform(user.id, '1234')).to be_falsey
+        expect(subject.perform(user.id, '1234')).to eq(false)
       end
     end
 
@@ -124,7 +124,7 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
       end
 
       it 'returns true' do
-        expect(subject.perform(user.id, '1234')).to be_truthy
+        expect(subject.perform(user.id, '1234')).to eq(true)
       end
     end
   end
