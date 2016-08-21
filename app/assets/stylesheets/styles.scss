@@ -2,19 +2,114 @@
 /*  Common
 ----------------------------------------------------------*/
 
-.tab-pane {
-  padding: 30px 20px;
+#steps-table,
+#runs-table {
+  margin-top: 10px;
 }
 
-#steps-table {
-  margin-top: 30px;
-}
+
+/*  Form
+----------------------------------------------------------*/
 
 .activity-form {
-  padding: 30px 0px;
+  padding-top: 10px;
+  padding-bottom: 30px;
 }
 
-#steps-container {
+#import-runs-form {
+  width: 350px;
+  margin: 20px;
+}
+
+
+/*  Runs
+----------------------------------------------------------*/
+
+#runs-table {
+  .runs-date {
+    width: 25%;
+    text-align: center;
+  }
+  .runs-distance {
+    width: 16%;
+    text-align: center;
+  }
+  .runs-duration {
+    width: 15%;
+    text-align: right;
+    padding-right: 30px;
+  }
+  .runs-pace {
+    width: 16%;
+    text-align: center;
+  }
+  .runs-steps {
+    width: 15%;
+    text-align: right;
+    padding-right: 35px;
+  }
+}
+
+#chart-runs {
+  margin: 30px 0px;
+}
+
+.map-container {
+  width: 900px;
+  padding: 0px;
+}
+
+#map-run {
+  width: 650px;
+  height: 400px;
+  float: left;
+}
+
+#splits {
+  width: 250px;
+  height: 400px;
+  margin-left: 650px;
+}
+
+.axis {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  stroke-width: none;
+  shape-rendering: crispEdges;
+}
+
+.axis--x path {
+  /*display: none;*/
+}
+
+.line1 {
+  fill: none;
+  stroke: #e67e22;
+  stroke-width: 1.5px;
+}
+
+.line2 {
+  fill: none;
+  stroke: #2980b9;
+  stroke-width: 1.5px;
+}
+
+.marker {
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+}
+
+
+/*  Steps
+----------------------------------------------------------*/
+
+.steps-container {
   width: 35%;
   padding-left: 15px;
   padding-right: 15px;
@@ -25,7 +120,7 @@
 .chart1-container {
   width: 65%;
   position: relative;
-  padding: 60px 15px 0 15px;
+  padding: 40px 15px 0 15px;
   float: left;
 }
 
@@ -50,9 +145,4 @@ div.bar {
   width: 20px;
   background-color: teal;
   margin-right: 2px;
-}
-
-#import-runs-form {
-  width: 350px;
-  margin: 20px;
 }

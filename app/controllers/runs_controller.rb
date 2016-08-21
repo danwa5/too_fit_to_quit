@@ -3,11 +3,11 @@ class RunsController < ApplicationController
   def index
     @runs_options = {}
 
-    search_date = runs_params[:after_date].present? ? runs_params[:after_date] : Date.today - 60
     date = parse_date(search_date)
 
     @dataset = current_user.user_activities.where(activity_type: 'Activity::FitbitRun')
                                             .where('start_time >= ?', date)
+                                            .includes(:activity)
                                             .order(:start_time)
     @runs_options[:date] = date
   end
@@ -37,6 +37,10 @@ class RunsController < ApplicationController
 
   def runs_params
     params.permit(:id, :after_date)
+  end
+
+  def search_date
+    runs_params[:after_date].present? ? runs_params[:after_date] : Date.today - 60
   end
 
   def parse_date(date)
