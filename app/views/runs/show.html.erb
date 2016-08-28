@@ -71,27 +71,34 @@ map.on('load', function () {
     "type": "geojson",
     "data": {
       "type": "FeatureCollection",
-      "features": [{
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": <%= raw @coordinates[0] %>
-        },
-        "properties": {
-          // "title": "Start",
-          "icon": "star"
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": <%= raw @coordinates[0] %>
+          },
+          "properties": { "icon": "star-15" }
         }
-      }, {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": <%= raw @coordinates[-1] %>
-        },
-        "properties": {
-          // "title": "Finish",
-          "icon": "embassy"
+      <% @markers.each do |marker| %>
+        ,{
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": <%= raw marker %>
+          },
+          "properties": { "icon": "circle-11" }
         }
-      }]
+      <% end %>
+        ,{
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": <%= raw @coordinates[-1] %>
+          },
+          "properties": { "icon": "embassy-15" }
+        }
+      ]
     }
   });
 
@@ -100,7 +107,7 @@ map.on('load', function () {
     "type": "symbol",
     "source": "points",
     "layout": {
-      "icon-image": "{icon}-15",
+      "icon-image": "{icon}",
       "text-field": "{title}",
       "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
       "text-offset": [0, 0.6],
@@ -109,7 +116,7 @@ map.on('load', function () {
   });
 });
 
-map.fitBounds(<%= @bounds %>, { padding: '30' });
+map.fitBounds(<%= @bounds %>, { padding: 30 });
 map.scrollZoom.disable();
 
 

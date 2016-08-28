@@ -28,6 +28,7 @@ module Fitbit
       raw = []
       derived = {}
       bounds = {}
+      markers = []
 
       tcx_data['TrainingCenterDatabase']['Activities']['Activity']['Lap'].each do |lap|
         lap['Track']['Trackpoint'].each_with_index do |track_point, index|
@@ -44,6 +45,8 @@ module Fitbit
             }
           end
 
+          markers << position if index == (lap['Track']['Trackpoint'].length-1)
+
           # Determine the route's maximum boundaries
           bounds['north'] = get_max_bounds(bounds['north'], position[1])
           bounds['east'] = get_max_bounds(bounds['east'], position[0])
@@ -53,6 +56,8 @@ module Fitbit
       end
 
       derived['bounds'] = bounds
+      markers.delete_at(-1)
+      derived['markers'] = markers
 
       return raw, derived
     end

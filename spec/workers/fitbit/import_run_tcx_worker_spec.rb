@@ -101,7 +101,7 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
         expect(user_activity.activity.tcx_data).to be_present
       end
 
-      it 'saves gps data - datetime, coordinates, distance, altitudes, heart rates, and bounds' do
+      it 'saves gps data - datetime, coordinates, distance, altitudes, heart rates, bounds, and markers' do
         expect(user_activity.activity.gps_data).to be_nil
         subject.perform(user.id, '1234')
         user_activity.activity.reload
@@ -117,7 +117,8 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
                 'east' => -74.0059,
                 'south' => 37.7749,
                 'west' => -122.4194
-              }
+              },
+              'markers' => []
             }
           }
         )

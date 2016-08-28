@@ -25,6 +25,7 @@ class RunsController < ApplicationController
 
       bounds = @fitbit_run.activity.gps_data['derived']['bounds']
       @bounds = [[bounds['west'],bounds['south']], [bounds['east'],bounds['north']]]
+      @markers = @fitbit_run.activity.gps_data['derived']['markers']
     else
       redirect_to runs_path
     end
