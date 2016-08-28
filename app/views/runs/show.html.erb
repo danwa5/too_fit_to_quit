@@ -109,7 +109,7 @@ map.on('load', function () {
   });
 });
 
-map.fitBounds(<%= @bounds %>);
+map.fitBounds(<%= @bounds %>, { padding: '30' });
 map.scrollZoom.disable();
 
 

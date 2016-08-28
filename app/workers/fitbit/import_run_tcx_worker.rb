@@ -31,7 +31,7 @@ module Fitbit
 
       tcx_data['TrainingCenterDatabase']['Activities']['Activity']['Lap'].each do |lap|
         lap['Track']['Trackpoint'].each_with_index do |track_point, index|
-          position = [track_point['Position']['LongitudeDegrees'], track_point['Position']['LatitudeDegrees']]
+          position = [track_point['Position']['LongitudeDegrees'].to_f, track_point['Position']['LatitudeDegrees'].to_f]
 
           # Take the first, last, and every 15th data point
           if index == 0 || index % 15 == 0 || index == (lap['Track']['Trackpoint'].length-1)
@@ -59,13 +59,13 @@ module Fitbit
 
     # maximum northern and eastern coordinates
     def get_max_bounds(max_coordinate, current_coordinate)
-      return  current_coordinate if max_coordinate.nil?
+      return current_coordinate if max_coordinate.nil?
       current_coordinate > max_coordinate ? current_coordinate : max_coordinate
     end
 
     # minimum southern and western coordinates
     def get_min_bounds(min_coordinate, current_coordinate)
-      return  current_coordinate if min_coordinate.nil?
+      return current_coordinate if min_coordinate.nil?
       current_coordinate < min_coordinate ? current_coordinate : min_coordinate
     end
   end
