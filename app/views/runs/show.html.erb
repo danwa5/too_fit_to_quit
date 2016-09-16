@@ -30,8 +30,9 @@
 <div id="chart-runs"></div>
 
 <script>
-
-// --- MAP ---
+//------------
+//    MAP
+//------------
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGFud2E1IiwiYSI6ImNpcnVkM244ajBqM2pmOW02eTA4YWUwenUifQ.FfkMklO6SMp3fAQDVcRwYQ';
 var map = new mapboxgl.Map({
   container: 'map-run',
@@ -86,7 +87,10 @@ map.on('load', function() {
   }
 });
 
-// --- CHART ---
+
+//------------
+//   CHART
+//------------
 var data = <%= raw @chart_data.to_json %>;
 
 var margin = {top: 20, right: 40, bottom: 50, left: 30},
@@ -141,7 +145,7 @@ var svg = d3.select("#chart-runs")
       .style("stroke", "#e67e22")
       .call(d3.axisLeft(y1))
     .append("text")
-      .attr("class", "axis-title")
+      .attr("class", "y-axis-title1")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
@@ -154,7 +158,7 @@ var svg = d3.select("#chart-runs")
       .style("stroke", "#2980b9")
       .call(d3.axisRight(y2))
     .append("text")
-      .attr("class", "axis-title")
+      .attr("class", "y-axis-title2")
       .attr("transform", "rotate(-90)")
       .attr("y", 25)
       .attr("dy", ".71em")
