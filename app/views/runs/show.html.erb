@@ -93,26 +93,38 @@ map.on('load', function() {
 //------------
 var data = <%= raw @chart_data.to_json %>;
 
+// set the dimensions and margins of the graph
 var margin = {top: 20, right: 40, bottom: 50, left: 30},
     width = 900 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
+// parse the date/time
 var parseTime = d3.utcParse("%Y-%m-%dT%H:%M:%S.%L%Z");
 
+// set the ranges
 var x = d3.scaleTime().range([0, width]);
 var y1 = d3.scaleLinear().range([height, 0]);
 var y2 = d3.scaleLinear().range([height, 0]);
 
 var x_ticks = data.length > 20 ? 20 : data.length;
 
+// define the heart rate line
 var line1 = d3.line()
     .x(function(d) { return x(d.datetime); })
     .y(function(d) { return y1(d.heart_rate); });
 
+// define the altitude line
 var line2 = d3.line()
     .x(function(d) { return x(d.datetime); })
     .y(function(d) { return y2(d.altitude); });
 
+// define the altitude area
+var area = d3.area()
+    .x(function(d) { return x(d.datetime); })
+    .y0(height)
+    .y1(function(d) { return y2(d.altitude); });
+
+// append the svg object to the page
 var svg = d3.select("#chart-runs")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -120,59 +132,72 @@ var svg = d3.select("#chart-runs")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  data.forEach(function(d) {
-    d.datetime = parseTime(d.datetime);
-    d.heart_rate = +d.heart_rate;
-    d.altitude = +d.altitude;
-  });
+// format the data
+data.forEach(function(d) {
+  d.datetime = parseTime(d.datetime);
+  d.heart_rate = +d.heart_rate;
+  d.altitude = +d.altitude;
+});
 
-  x.domain(d3.extent(data, function(d) { return d.datetime; }));
-  y1.domain(d3.extent(data, function(d) { return d.heart_rate; }));
-  y2.domain(d3.extent(data, function(d) { return d.altitude; }));
+// scale the range of the data
+x.domain(d3.extent(data, function(d) { return d.datetime; }));
+y1.domain(d3.extent(data, function(d) { return d.heart_rate; }));
+y2.domain(d3.extent(data, function(d) { return d.altitude; }));
 
-  svg.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x).ticks(x_ticks).tickFormat(d3.timeFormat("%H:%M:%S")))
-    .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-.8em")
-      .attr("dy", ".15em")
-      .attr("transform", "rotate(-65)");
+// add the altitude line
+svg.append("path")
+    .datum(data)
+    .attr("class", "line2")
+    .attr("d", line2);
 
-  svg.append("g")
-      .attr("class", "axis axis--y")
-      .style("stroke", "#e67e22")
-      .call(d3.axisLeft(y1))
-    .append("text")
-      .attr("class", "y-axis-title1")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Heart Rate (BPM)");
+// add the altitude area
+svg.append("path")
+    .datum(data)
+    .attr("class", "area")
+    .attr("d", area);
 
-  svg.append("g")
-      .attr("class", "axis axis--y")
-      .attr("transform", "translate(" + width + ",0)")
-      .style("stroke", "#2980b9")
-      .call(d3.axisRight(y2))
-    .append("text")
-      .attr("class", "y-axis-title2")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 25)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Altitude (m)");
+// add the heart rate line
+svg.append("path")
+    .datum(data)
+    .attr("class", "line1")
+    .attr("d", line1);
 
-  svg.append("path")
-      .datum(data)
-      .attr("class", "line1")
-      .attr("d", line1);
+// add the x-axis
+svg.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).ticks(x_ticks).tickFormat(d3.timeFormat("%H:%M:%S")))
+  .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-65)");
 
-  svg.append("path")
-      .datum(data)
-      .attr("class", "line2")
-      .attr("d", line2);
+// add the y-axis for heart rate
+svg.append("g")
+    .attr("class", "axis axis--y")
+    .style("stroke", "#e67e22")
+    .call(d3.axisLeft(y1))
+  .append("text")
+    .attr("class", "y-axis-title1")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Heart Rate (BPM)");
+
+// add the y-axis for altitude
+svg.append("g")
+    .attr("class", "axis axis--y")
+    .attr("transform", "translate(" + width + ",0)")
+    .style("stroke", "#2980b9")
+    .call(d3.axisRight(y2))
+  .append("text")
+    .attr("class", "y-axis-title2")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 25)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Altitude (m)");
 
 </script>
