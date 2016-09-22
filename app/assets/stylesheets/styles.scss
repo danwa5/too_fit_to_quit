@@ -83,6 +83,16 @@
   shape-rendering: crispEdges;
 }
 
+.y-axis-title1 {
+  fill: #e67e22;
+  stroke: none;
+}
+
+.y-axis-title2 {
+  fill: #2980b9;
+  stroke: none;
+}
+
 .axis--x path {
   /*display: none;*/
 }
@@ -97,6 +107,11 @@
   fill: none;
   stroke: #2980b9;
   stroke-width: 1.5px;
+}
+
+.area {
+  fill: #D4E6F1;
+  stroke-width: 0;
 }
 
 .marker {

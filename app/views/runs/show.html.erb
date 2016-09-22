@@ -3,7 +3,8 @@
 </div>
 
 <div class="map-container">
-  <div id="map-run"></div>
+  <%= react_component 'Map', { }, { prerender: true } %>
+  <!-- <div id="map-run"></div> -->
   <div id="splits">
     <table id="splits-table" class="table table-condensed table-hover">
       <thead>
@@ -29,8 +30,9 @@
 <div id="chart-runs"></div>
 
 <script>
-
-// --- MAP ---
+//------------
+//    MAP
+//------------
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGFud2E1IiwiYSI6ImNpcnVkM244ajBqM2pmOW02eTA4YWUwenUifQ.FfkMklO6SMp3fAQDVcRwYQ';
 var map = new mapboxgl.Map({
   container: 'map-run',
@@ -38,111 +40,91 @@ var map = new mapboxgl.Map({
 });
 
 var nav = new mapboxgl.Navigation({position: 'top-left'});
-map.addControl(nav);
 
-map.on('load', function () {
-  map.addSource("route", {
-    "type": "geojson",
-    "data": {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "LineString",
-        "coordinates": <%= raw @coordinates %>
+map.on('load', function() {
+  $.ajax({
+    url: '/runs/<%= params[:id] %>.json',
+    success: function(data) {
+      map.fitBounds(data['bounds'], { padding: 30 });
+      addRouteToMap(data['route']);
+      addPointsToMap(data['points']);
+      map.addControl(nav);
+      map.scrollZoom.disable();
+    }
+  });
+
+  function addRouteToMap(route) {
+    map.addSource('route', route);
+    map.addLayer({
+      "id": "route",
+      "type": "line",
+      "source": "route",
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#FF0000",
+        "line-width": 2
       }
-    }
-  });
+    });
+  }
 
-  map.addLayer({
-    "id": "route",
-    "type": "line",
-    "source": "route",
-    "layout": {
-      "line-join": "round",
-      "line-cap": "round"
-    },
-    "paint": {
-      "line-color": "#FF0000",
-      "line-width": 2
-    }
-  });
-
-  map.addSource("points", {
-    "type": "geojson",
-    "data": {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": <%= raw @coordinates[0] %>
-          },
-          "properties": { "icon": "star-15" }
-        }
-      <% @markers.each do |marker| %>
-        ,{
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": <%= raw marker %>
-          },
-          "properties": { "icon": "circle-11" }
-        }
-      <% end %>
-        ,{
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": <%= raw @coordinates[-1] %>
-          },
-          "properties": { "icon": "embassy-15" }
-        }
-      ]
-    }
-  });
-
-  map.addLayer({
-    "id": "points",
-    "type": "symbol",
-    "source": "points",
-    "layout": {
-      "icon-image": "{icon}",
-      "text-field": "{title}",
-      "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-      "text-offset": [0, 0.6],
-      "text-anchor": "top"
-    }
-  });
+  function addPointsToMap(points) {
+    map.addSource("points", points);
+    map.addLayer({
+      "id": "points",
+      "type": "symbol",
+      "source": "points",
+      "layout": {
+        "icon-image": "{icon}",
+        "text-field": "{title}",
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-offset": [0, 0.6],
+        "text-anchor": "top"
+      }
+    });
+  }
 });
 
-map.fitBounds(<%= @bounds %>, { padding: 30 });
-map.scrollZoom.disable();
 
-
-// --- CHART ---
+//------------
+//   CHART
+//------------
 var data = <%= raw @chart_data.to_json %>;
 
+// set the dimensions and margins of the graph
 var margin = {top: 20, right: 40, bottom: 50, left: 30},
     width = 900 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
+// parse the date/time
 var parseTime = d3.utcParse("%Y-%m-%dT%H:%M:%S.%L%Z");
 
+// set the ranges
 var x = d3.scaleTime().range([0, width]);
 var y1 = d3.scaleLinear().range([height, 0]);
 var y2 = d3.scaleLinear().range([height, 0]);
 
 var x_ticks = data.length > 20 ? 20 : data.length;
 
+// define the heart rate line
 var line1 = d3.line()
     .x(function(d) { return x(d.datetime); })
     .y(function(d) { return y1(d.heart_rate); });
 
+// define the altitude line
 var line2 = d3.line()
     .x(function(d) { return x(d.datetime); })
     .y(function(d) { return y2(d.altitude); });
 
+// define the altitude area
+var area = d3.area()
+    .x(function(d) { return x(d.datetime); })
+    .y0(height)
+    .y1(function(d) { return y2(d.altitude); });
+
+// append the svg object to the page
 var svg = d3.select("#chart-runs")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -150,59 +132,72 @@ var svg = d3.select("#chart-runs")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  data.forEach(function(d) {
-    d.datetime = parseTime(d.datetime);
-    d.heart_rate = +d.heart_rate;
-    d.altitude = +d.altitude;
-  });
+// format the data
+data.forEach(function(d) {
+  d.datetime = parseTime(d.datetime);
+  d.heart_rate = +d.heart_rate;
+  d.altitude = +d.altitude;
+});
 
-  x.domain(d3.extent(data, function(d) { return d.datetime; }));
-  y1.domain(d3.extent(data, function(d) { return d.heart_rate; }));
-  y2.domain(d3.extent(data, function(d) { return d.altitude; }));
+// scale the range of the data
+x.domain(d3.extent(data, function(d) { return d.datetime; }));
+y1.domain(d3.extent(data, function(d) { return d.heart_rate; }));
+y2.domain(d3.extent(data, function(d) { return d.altitude; }));
 
-  svg.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x).ticks(x_ticks).tickFormat(d3.timeFormat("%H:%M:%S")))
-    .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-.8em")
-      .attr("dy", ".15em")
-      .attr("transform", "rotate(-65)");
+// add the altitude line
+svg.append("path")
+    .datum(data)
+    .attr("class", "line2")
+    .attr("d", line2);
 
-  svg.append("g")
-      .attr("class", "axis axis--y")
-      .style("stroke", "#e67e22")
-      .call(d3.axisLeft(y1))
-    .append("text")
-      .attr("class", "axis-title")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Heart Rate (BPM)");
+// add the altitude area
+svg.append("path")
+    .datum(data)
+    .attr("class", "area")
+    .attr("d", area);
 
-  svg.append("g")
-      .attr("class", "axis axis--y")
-      .attr("transform", "translate(" + width + ",0)")
-      .style("stroke", "#2980b9")
-      .call(d3.axisRight(y2))
-    .append("text")
-      .attr("class", "axis-title")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 25)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Altitude (m)");
+// add the heart rate line
+svg.append("path")
+    .datum(data)
+    .attr("class", "line1")
+    .attr("d", line1);
 
-  svg.append("path")
-      .datum(data)
-      .attr("class", "line1")
-      .attr("d", line1);
+// add the x-axis
+svg.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).ticks(x_ticks).tickFormat(d3.timeFormat("%H:%M:%S")))
+  .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-65)");
 
-  svg.append("path")
-      .datum(data)
-      .attr("class", "line2")
-      .attr("d", line2);
+// add the y-axis for heart rate
+svg.append("g")
+    .attr("class", "axis axis--y")
+    .style("stroke", "#e67e22")
+    .call(d3.axisLeft(y1))
+  .append("text")
+    .attr("class", "y-axis-title1")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Heart Rate (BPM)");
+
+// add the y-axis for altitude
+svg.append("g")
+    .attr("class", "axis axis--y")
+    .attr("transform", "translate(" + width + ",0)")
+    .style("stroke", "#2980b9")
+    .call(d3.axisRight(y2))
+  .append("text")
+    .attr("class", "y-axis-title2")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 25)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Altitude (m)");
 
 </script>

@@ -25,5 +25,8 @@ module TooFitToQuit
 
     # Include bower-installed components into asset pipeline
     config.assets.paths << Rails.root.join('vendor', 'assets', 'components')
+
+    # Include React's addon utilities
+    config.react.addons = true
   end
 end

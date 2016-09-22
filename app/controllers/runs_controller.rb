@@ -26,6 +26,11 @@ class RunsController < ApplicationController
       bounds = @fitbit_run.activity.gps_data['derived']['bounds']
       @bounds = [[bounds['west'],bounds['south']], [bounds['east'],bounds['north']]]
       @markers = @fitbit_run.activity.gps_data['derived']['markers']
+
+      respond_to do |format|
+        format.html
+        format.json { render json: geojson }
+      end
     else
       redirect_to runs_path
     end
@@ -47,5 +52,63 @@ class RunsController < ApplicationController
     rescue ArgumentError
       nil
     end
+  end
+
+  def geojson
+    {
+      "route": {
+        "type": "geojson",
+        "data": {
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "type": "LineString",
+            "coordinates": @coordinates
+          }
+        }
+      },
+      "points": {
+        "type": "geojson",
+        "data": {
+          "type": "FeatureCollection",
+          "features": points
+        }
+      },
+      "bounds": @bounds
+    }
+  end
+
+  def points
+    features = [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": @coordinates[0]
+        },
+        "properties": { "icon": "star-15" }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": @coordinates[-1]
+        },
+        "properties": { "icon": "embassy-15" }
+      }
+    ]
+
+    @markers.each do |marker|
+      features << {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": marker
+        },
+        "properties": { "icon": "circle-11" }
+      }
+    end
+
+    features
   end
 end
