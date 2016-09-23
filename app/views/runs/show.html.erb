@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h3>Run on <%= format_run_time(@fitbit_run.start_time) %></h3>
+  <h3><%= format_distance(@fitbit_run.distance) %> mile run on <%= format_run_time(@fitbit_run.start_time) %></h3>
 </div>
 
 <div class="map-container">
@@ -15,9 +15,9 @@
         </tr>
       </thead>
       <tbody>
-      <% @strava_run.activity.splits['standard'].each do |data| %>
+      <% @strava_run.activity.splits['standard'].each_with_index do |data, index| %>
         <tr>
-          <td class="text-center"><%= data['split'] %></td>
+          <td class="text-center"><%= index == @strava_run.activity.splits['standard'].length-1 ? format_distance(@fitbit_run.distance).to_f.modulo(1).round(2) : data['split'] %></td>
           <td class="text-center"><%= format_pace(data['moving_time'], data['distance']) %></td>
           <td class="text-center"><%= data['elevation_difference'] %></td>
         </tr>
@@ -36,7 +36,9 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGFud2E1IiwiYSI6ImNpcnVkM244ajBqM2pmOW02eTA4YWUwenUifQ.FfkMklO6SMp3fAQDVcRwYQ';
 var map = new mapboxgl.Map({
   container: 'map-run',
-  style: 'mapbox://styles/mapbox/streets-v9'
+  style: 'mapbox://styles/mapbox/streets-v9',
+  center: <%= @markers.first %>,
+  zoom: 9
 });
 
 var nav = new mapboxgl.Navigation({position: 'top-left'});
