@@ -1,7 +1,7 @@
 <div class="page-header">
   <h3><%= @decorated_run.formatted_distance %> mile run on <%= @decorated_run.formatted_long_start_time %></h3>
 </div>
-<%= @decorated_run.final_split_distance %>
+
 <div class="map-container">
   <%= react_component 'Map', { }, { prerender: true } %>
   <!-- <div id="map-run"></div> -->
