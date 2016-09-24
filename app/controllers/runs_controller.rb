@@ -13,19 +13,20 @@ class RunsController < ApplicationController
   end
 
   def show
-    @fitbit_run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).includes(:activity).first
+    fitbit_run = current_user.user_activities.where(activity_type: 'Activity::FitbitRun', id: runs_params[:id]).includes(:activity).first
 
-    if @fitbit_run.present?
+    if fitbit_run
+      @decorated_run = RunPresenter.new(fitbit_run)
       @strava_run = current_user.user_activities.where.not(id: runs_params[:id])
-                                                .where(start_time_rounded_epoch: @fitbit_run.start_time_rounded_epoch)
+                                                .where(start_time_rounded_epoch: fitbit_run.start_time_rounded_epoch)
                                                 .includes(:activity).first
 
-      @chart_data  = Fitbit::GpsDataParser.new(@fitbit_run.activity.gps_data, %w(datetime altitude heart_rate)).parse
-      @coordinates = Fitbit::GpsDataParser.new(@fitbit_run.activity.gps_data, %w(coordinate)).parse
+      @chart_data  = Fitbit::GpsDataParser.new(fitbit_run.activity.gps_data, %w(datetime altitude heart_rate)).parse
+      @coordinates = Fitbit::GpsDataParser.new(fitbit_run.activity.gps_data, %w(coordinate)).parse
 
-      bounds = @fitbit_run.activity.gps_data['derived']['bounds']
+      bounds = fitbit_run.activity.gps_data['derived']['bounds']
       @bounds = [[bounds['west'],bounds['south']], [bounds['east'],bounds['north']]]
-      @markers = @fitbit_run.activity.gps_data['derived']['markers']
+      @markers = fitbit_run.activity.gps_data['derived']['markers']
 
       respond_to do |format|
         format.html

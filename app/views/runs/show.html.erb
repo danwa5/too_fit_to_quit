@@ -1,7 +1,7 @@
 <div class="page-header">
-  <h3><%= format_distance(@fitbit_run.distance) %> mile run on <%= format_run_time(@fitbit_run.start_time) %></h3>
+  <h3><%= @decorated_run.formatted_distance %> mile run on <%= @decorated_run.formatted_long_start_time %></h3>
 </div>
-
+<%= @decorated_run.final_split_distance %>
 <div class="map-container">
   <%= react_component 'Map', { }, { prerender: true } %>
   <!-- <div id="map-run"></div> -->
@@ -17,7 +17,7 @@
       <tbody>
       <% @strava_run.activity.splits['standard'].each_with_index do |data, index| %>
         <tr>
-          <td class="text-center"><%= index == @strava_run.activity.splits['standard'].length-1 ? format_distance(@fitbit_run.distance).to_f.modulo(1).round(2) : data['split'] %></td>
+          <td class="text-center"><%= index == @strava_run.activity.splits['standard'].length-1 ? @decorated_run.final_split_distance : data['split'] %></td>
           <td class="text-center"><%= format_pace(data['moving_time'], data['distance']) %></td>
           <td class="text-center"><%= data['elevation_difference'] %></td>
         </tr>
