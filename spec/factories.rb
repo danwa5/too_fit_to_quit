@@ -40,6 +40,7 @@ FactoryGirl.define do
             {
               'datetime' => '2016-07-31T12:00:00.000-07:00',
               'coordinate' => [Faker::Address.longitude,Faker::Address.latitude],
+              'distance' => 0.0,
               'altitude' => Faker::Number.decimal(2),
               'heart_rate' => Faker::Number.number(10)
             }
@@ -50,7 +51,10 @@ FactoryGirl.define do
               'east' => Faker::Address.longitude,
               'south' => Faker::Address.latitude,
               'west' => Faker::Address.longitude
-            }
+            },
+            'markers' => [
+              [Faker::Address.longitude,Faker::Address.latitude]
+            ]
           }
         }
       end

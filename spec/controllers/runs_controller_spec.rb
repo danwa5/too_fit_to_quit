@@ -28,9 +28,19 @@ RSpec.describe RunsController, :type => :controller do
       let(:user_activity) { create(:user_activity, :fitbit, user: user) }
       let!(:run) { create(:activity_fitbit_run, :with_gps_data, user: user, user_activity: user_activity) }
 
-      it 'has a 200 status code' do
-        get :show, id: user_activity.id
-        expect(response.status).to eq(200)
+      context 'and format is html' do
+        it 'returns a 200 status code' do
+          get :show, id: user_activity.id, format: :html
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context 'and format is json' do
+        it 'returns a json with the correct keys' do
+          get :show, id: user_activity.id, format: :json
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response.keys).to eq(%w(route points bounds))
+        end
       end
     end
     context 'when parameter is invalid' do

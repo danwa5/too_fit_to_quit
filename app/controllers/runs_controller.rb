@@ -57,56 +57,56 @@ class RunsController < ApplicationController
 
   def geojson
     {
-      "route": {
-        "type": "geojson",
-        "data": {
-          "type": "Feature",
-          "properties": {},
-          "geometry": {
-            "type": "LineString",
-            "coordinates": @coordinates
+      'route': {
+        'type': 'geojson',
+        'data': {
+          'type': 'Feature',
+          'properties': {},
+          'geometry': {
+            'type': 'LineString',
+            'coordinates': @coordinates
           }
         }
       },
-      "points": {
-        "type": "geojson",
-        "data": {
-          "type": "FeatureCollection",
-          "features": points
+      'points': {
+        'type': 'geojson',
+        'data': {
+          'type': 'FeatureCollection',
+          'features': points
         }
       },
-      "bounds": @bounds
+      'bounds': @bounds
     }
   end
 
   def points
     features = [
       {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": @coordinates[0]
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Point',
+          'coordinates': @coordinates[0]
         },
-        "properties": { "icon": "star-15" }
+        'properties': { 'icon': 'star-15' }
       },
       {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": @coordinates[-1]
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Point',
+          'coordinates': @coordinates[-1]
         },
-        "properties": { "icon": "embassy-15" }
+        'properties': { 'icon': 'embassy-15' }
       }
     ]
 
     @markers.each do |marker|
       features << {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": marker
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Point',
+          'coordinates': marker
         },
-        "properties": { "icon": "circle-11" }
+        'properties': { 'icon': 'circle-11' }
       }
     end
 
