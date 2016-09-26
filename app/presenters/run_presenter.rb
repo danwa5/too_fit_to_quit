@@ -22,4 +22,37 @@ class RunPresenter < SimpleDelegator
   def final_split_distance
     formatted_distance.modulo(1) == 0 ? formatted_distance.to_i : formatted_distance.modulo(1).round(2)
   end
+
+  def chart_data
+    if activity.gps_data.present?
+      Fitbit::GpsDataParser.new(activity.gps_data, %w(datetime altitude heart_rate)).parse
+    else
+      []
+    end
+  end
+
+  def coordinates
+    if activity.gps_data.present?
+      Fitbit::GpsDataParser.new(activity.gps_data, %w(coordinate)).parse
+    else
+      []
+    end
+  end
+
+  def bounds
+    if activity.gps_data.present?
+      bounds = activity.gps_data['derived']['bounds']
+      [[bounds['west'],bounds['south']], [bounds['east'],bounds['north']]]
+    else
+      []
+    end
+  end
+
+  def markers
+    if activity.gps_data.present?
+      activity.gps_data['derived']['markers']
+    else
+      []
+    end
+  end
 end

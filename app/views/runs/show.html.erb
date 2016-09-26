@@ -37,7 +37,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGFud2E1IiwiYSI6ImNpcnVkM244ajBqM2pmOW02eTA4Y
 var map = new mapboxgl.Map({
   container: 'map-run',
   style: 'mapbox://styles/mapbox/streets-v9',
-  center: <%= @markers.first %>,
+  center: <%= @decorated_run.markers.first %>,
   zoom: 9
 });
 
@@ -93,7 +93,7 @@ map.on('load', function() {
 //------------
 //   CHART
 //------------
-var data = <%= raw @chart_data.to_json %>;
+var data = <%= raw @decorated_run.chart_data.to_json %>;
 
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 40, bottom: 50, left: 30},

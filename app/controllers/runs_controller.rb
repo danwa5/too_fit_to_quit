@@ -20,14 +20,6 @@ class RunsController < ApplicationController
       @strava_run = current_user.user_activities.where.not(id: runs_params[:id])
                                                 .where(start_time_rounded_epoch: fitbit_run.start_time_rounded_epoch)
                                                 .includes(:activity).first
-
-      @chart_data  = Fitbit::GpsDataParser.new(fitbit_run.activity.gps_data, %w(datetime altitude heart_rate)).parse
-      @coordinates = Fitbit::GpsDataParser.new(fitbit_run.activity.gps_data, %w(coordinate)).parse
-
-      bounds = fitbit_run.activity.gps_data['derived']['bounds']
-      @bounds = [[bounds['west'],bounds['south']], [bounds['east'],bounds['north']]]
-      @markers = fitbit_run.activity.gps_data['derived']['markers']
-
       respond_to do |format|
         format.html
         format.json { render json: geojson }
@@ -64,7 +56,7 @@ class RunsController < ApplicationController
           'properties': {},
           'geometry': {
             'type': 'LineString',
-            'coordinates': @coordinates
+            'coordinates': @decorated_run.coordinates
           }
         }
       },
@@ -75,7 +67,7 @@ class RunsController < ApplicationController
           'features': points
         }
       },
-      'bounds': @bounds
+      'bounds': @decorated_run.bounds
     }
   end
 
@@ -85,7 +77,7 @@ class RunsController < ApplicationController
         'type': 'Feature',
         'geometry': {
           'type': 'Point',
-          'coordinates': @coordinates[0]
+          'coordinates': @decorated_run.coordinates[0]
         },
         'properties': { 'icon': 'star-15' }
       },
@@ -93,13 +85,13 @@ class RunsController < ApplicationController
         'type': 'Feature',
         'geometry': {
           'type': 'Point',
-          'coordinates': @coordinates[-1]
+          'coordinates': @decorated_run.coordinates[-1]
         },
         'properties': { 'icon': 'embassy-15' }
       }
     ]
 
-    @markers.each do |marker|
+    @decorated_run.markers.each do |marker|
       features << {
         'type': 'Feature',
         'geometry': {
