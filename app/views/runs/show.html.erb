@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h3><%= @decorated_run.formatted_distance %> mile run on <%= @decorated_run.formatted_long_start_time %></h3>
+  <h3><%= @decorated_run.formatted_distance %> mile run on <%= @decorated_run.formatted_long_start_time %> <%= @strava_run.activity.location %></h3>
 </div>
 
 <div class="map-container">
@@ -37,7 +37,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGFud2E1IiwiYSI6ImNpcnVkM244ajBqM2pmOW02eTA4Y
 var map = new mapboxgl.Map({
   container: 'map-run',
   style: 'mapbox://styles/mapbox/streets-v9',
-  center: <%= @decorated_run.markers.first %>,
+  center: <%= @strava_run.activity.start_coordinate || @decorated_run.markers.first %>,
   zoom: 9
 });
 

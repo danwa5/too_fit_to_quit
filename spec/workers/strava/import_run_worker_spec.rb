@@ -11,7 +11,12 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
       'start_date' => '2016-07-17T22:28:43',
       'total_elevation_gain' => 65.0,
       'elev_high' => 31.0,
-      'elev_low' => 8.4
+      'elev_low' => 8.4,
+      'start_latitude' => 10.01,
+      'start_longitude' => 20.02,
+      'location_city' => 'San Francisco',
+      'location_state' => 'CA',
+      'location_country' => 'United States'
     }
   end
 
@@ -60,10 +65,18 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
       it 'creates a new Activity::StravaRun record with the correct attributes' do
         subject.perform(user.id, activity_hash)
         strava_run = Activity::StravaRun.last
-        expect(strava_run.user_id).to eq(user.id)
-        expect(strava_run.total_elevation_gain).to eq(65.0)
-        expect(strava_run.elevation_high).to eq(31.0)
-        expect(strava_run.elevation_low).to eq(8.4)
+
+        aggregate_failures 'attributes' do
+          expect(strava_run.user_id).to eq(user.id)
+          expect(strava_run.total_elevation_gain).to eq(65.0)
+          expect(strava_run.elevation_high).to eq(31.0)
+          expect(strava_run.elevation_low).to eq(8.4)
+          expect(strava_run.start_latitude).to eq(10.01)
+          expect(strava_run.start_longitude).to eq(20.02)
+          expect(strava_run.city).to eq('San Francisco')
+          expect(strava_run.state_province).to eq('CA')
+          expect(strava_run.country).to eq('United States')
+        end
       end
 
       it 'enqueues a Strava::ImportRunMetricsWorker' do

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160821000218) do
+ActiveRecord::Schema.define(version: 20161011023332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,11 @@ ActiveRecord::Schema.define(version: 20160821000218) do
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
     t.json     "splits"
+    t.decimal  "start_latitude"
+    t.decimal  "start_longitude"
+    t.string   "city"
+    t.string   "state_province"
+    t.string   "country"
   end
 
   add_index "activity_strava_runs", ["user_id"], name: "index_activity_strava_runs_on_user_id", using: :btree
