@@ -19,6 +19,8 @@ FactoryGirl.define do
   end
 
   factory :user_activity do
+    association :user
+
     uid { Faker::Number.number(6) }
 
     trait :fitbit do
@@ -31,7 +33,8 @@ FactoryGirl.define do
   end
 
   factory :activity_fitbit_run, class: 'Activity::FitbitRun' do
-    association :user_activity
+    association :user
+    association :user_activity, :fitbit
 
     trait :with_gps_data do
       gps_data do
@@ -62,6 +65,7 @@ FactoryGirl.define do
   end
 
   factory :activity_strava_run, class: 'Activity::StravaRun' do
-    association :user_activity
+    association :user
+    association :user_activity, :strava
   end
 end
