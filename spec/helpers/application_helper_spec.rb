@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe ApplicationHelper, type: :helper do
   describe 'MILES_PER_METER' do
-    it { expect(described_class::MILES_PER_METER).to eq(0.00062137) }
+    it { expect(described_class::MILES_PER_METER).to eq(0.000621371) }
   end
 
   describe '#format_date' do
@@ -34,8 +34,18 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   describe '#format_distance' do
-    it 'converts meters to miles with 2 decimal places' do
-      expect(helper.format_distance(10000)).to eq(6.21)
+    context 'when the argument is nil' do
+      it { expect(helper.format_distance(nil)).to be_nil }
+    end
+    context 'when the argument is in meters' do
+      it 'converts meters to miles with 2 decimal places' do
+        expect(helper.format_distance(10000, 'meter')).to eq(6.21)
+      end
+    end
+    context 'when the argument is in miles' do
+      it 'converts miles to meters with 2 decimal places' do
+        expect(helper.format_distance(1, 'mile')).to eq(1609.34)
+      end
     end
   end
 

@@ -6,4 +6,12 @@ class Activity::FitbitRun < ActiveRecord::Base
 
   validates :user, presence: true
   validates :user_activity, presence: true
+
+  def self.search(options = {})
+    finder = joins(:user_activity).where(nil)
+    finder = finder.number_within_range(:distance, options[:distance_min], options[:distance_max])
+    finder = finder.number_within_range(:steps, options[:steps_min], options[:steps_max])
+    finder = finder.date_within_range(:start_time, options[:start_date], options[:end_date])
+    finder
+  end
 end

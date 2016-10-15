@@ -1,7 +1,7 @@
 module ApplicationHelper
 
-  MILES_PER_METER = 0.00062137
-  
+  MILES_PER_METER = 0.000621371
+
   def format_date(date_string)
     return 'N/A' unless date_string.present?
     year, month, day = date_string.split('-')
@@ -25,8 +25,13 @@ module ApplicationHelper
     ]
   end
 
-  def format_distance(meters)
-    (meters * MILES_PER_METER).round(2)
+  def format_distance(amount, unit='meter')
+    return nil if amount.blank?
+    if unit == 'meter'
+      (amount.to_f * MILES_PER_METER).round(2)
+    elsif unit == 'mile'
+      (amount.to_f / MILES_PER_METER).round(2)
+    end
   end
 
   def format_duration(seconds)

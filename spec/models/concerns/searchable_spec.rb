@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Searchable do
   let(:model) { Activity::FitbitRun }
-  let!(:run_1) { create(:activity_fitbit_run, steps: 1000) }
-  let!(:run_2) { create(:activity_fitbit_run, steps: 2000) }
-  let!(:run_3) { create(:activity_fitbit_run, steps: 3000) }
+  let!(:run_1) { create(:activity_fitbit_run, steps: 1000, created_at: '2016-09-01 01:00:00') }
+  let!(:run_2) { create(:activity_fitbit_run, steps: 2000, created_at: '2016-09-02 02:00:00') }
+  let!(:run_3) { create(:activity_fitbit_run, steps: 3000, created_at: '2016-09-03 03:00:00') }
 
   describe '.number_within_range' do
     context 'when both low and high values are provided' do
@@ -19,6 +19,23 @@ RSpec.describe Searchable do
     context 'when neither low or high value is provided' do
       it 'returns all' do
         expect(model.number_within_range(:steps, nil, nil)).to eq([run_1, run_2, run_3])
+      end
+    end
+  end
+
+  describe '.date_within_range' do
+    context 'when both start and end dates are provided' do
+      it { expect(model.date_within_range(:created_at, '2016-09-02', '2016-09-02')).to contain_exactly(run_2) }
+    end
+    context 'when only start date is provided' do
+      it { expect(model.date_within_range(:created_at, '2016-09-02', nil)).to contain_exactly(run_2, run_3) }
+    end
+    context 'when only end date is provided' do
+      it { expect(model.date_within_range(:created_at, nil, '2016-09-02')).to contain_exactly(run_1, run_2) }
+    end
+    context 'when neither start or end date is provided' do
+      it 'returns all' do
+        expect(model.date_within_range(:created_at, nil, nil)).to eq([run_1, run_2, run_3])
       end
     end
   end

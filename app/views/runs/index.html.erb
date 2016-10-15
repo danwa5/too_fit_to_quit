@@ -3,10 +3,33 @@
 </div>
 
 <div class="activity-form">
-  <%= form_tag(runs_path, method: :get, class: 'form-inline') do |f| %>
+  <%= form_tag(runs_path, method: :get, class: 'form-horizontal') do |f| %>
     <div class="form-group">
-      <%= label_tag :after_date, 'Runs on or after' %>&nbsp;
-      <%= text_field_tag :after_date, (@runs_options[:date] || Date.today - 60), { class: 'form-control' } %>
+      <%= label_tag :date, 'Date', { class: 'col-sm-1 control-label' } %>
+      <div class="col-sm-2">
+        <%= text_field_tag :start_date, (@runs_options[:start_date] || Date.today - 90), { class: 'form-control' } %>
+      </div>
+      <div class="col-sm-2">
+        <%= text_field_tag :end_date, @runs_options[:end_date], { class: 'form-control' } %>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= label_tag :steps, 'Steps', { class: 'col-sm-1 control-label' } %>
+      <div class="col-sm-2">
+        <%= text_field_tag :steps_min, @runs_options[:steps_min], { class: 'form-control', placeholder: 'MIN' } %>
+      </div>
+      <div class="col-sm-2">
+        <%= text_field_tag :steps_max, @runs_options[:steps_max], { class: 'form-control', placeholder: 'MAX' } %>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= label_tag :distance, 'Distance', { class: 'col-sm-1 control-label' } %>
+      <div class="col-sm-2">
+        <%= text_field_tag :distance_min, @runs_options[:distance_min], { class: 'form-control', placeholder: 'MIN' } %>
+      </div>
+      <div class="col-sm-2">
+        <%= text_field_tag :distance_max, @runs_options[:distance_max], { class: 'form-control', placeholder: 'MAX' } %>
+      </div>
     </div>
     <div class="form-group">
       <div class="form-group">
@@ -38,7 +61,7 @@
               <td class="runs-distance"><%= format_distance(run.distance) %></td>
               <td class="runs-duration"><%= format_duration(run.duration) %></td>
               <td class="runs-pace"><%= format_pace(run.duration, run.distance) %></td>
-              <td class="runs-steps"><%= run.activity.steps %></td>
+              <td class="runs-steps"><%= run.steps %></td>
               <td align="center"><%= link_to 'Details', run_path(run.id) %></td>
             </tr>
           <% end %>

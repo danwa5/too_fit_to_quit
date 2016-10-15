@@ -1,15 +1,27 @@
 class RunsController < ApplicationController
+  include ApplicationHelper
 
   def index
     @runs_options = {}
 
-    date = parse_date(search_date)
+    @dataset = Activity::FitbitRun.select('user_activities.id, user_activities.start_time, user_activities.distance, user_activities.duration, activity_fitbit_runs.steps')
+                                  .where(user: current_user)
+                                  .search({
+                                    start_date: start_date,
+                                    end_date: end_date,
+                                    steps_min: runs_params[:steps_min],
+                                    steps_max: runs_params[:steps_max],
+                                    distance_min: format_distance(runs_params[:distance_min], 'mile'),
+                                    distance_max: format_distance(runs_params[:distance_max], 'mile')
+                                  })
+                                  .order('user_activities.start_time')
 
-    @dataset = current_user.user_activities.where(activity_type: 'Activity::FitbitRun')
-                                            .where('start_time >= ?', date)
-                                            .includes(:activity)
-                                            .order(:start_time)
-    @runs_options[:date] = date
+    @runs_options[:start_date] = start_date
+    @runs_options[:end_date] = end_date
+    @runs_options[:steps_min] = runs_params[:steps_min]
+    @runs_options[:steps_max] = runs_params[:steps_max]
+    @runs_options[:distance_min] = runs_params[:distance_min]
+    @runs_options[:distance_max] = runs_params[:distance_max]
   end
 
   def show
@@ -32,11 +44,17 @@ class RunsController < ApplicationController
   private
 
   def runs_params
-    params.permit(:id, :after_date)
+    params.permit(:id, :start_date, :end_date, :steps_min, :steps_max, :distance_min, :distance_max)
   end
 
-  def search_date
-    runs_params[:after_date].present? ? runs_params[:after_date] : Date.today - 60
+  def start_date
+    date = runs_params[:start_date].present? ? runs_params[:start_date] : Date.today - 90
+    parse_date(date)
+  end
+
+  def end_date
+    date = runs_params[:end_date].present? ? runs_params[:end_date] : Date.today
+    parse_date(date)
   end
 
   def parse_date(date)
