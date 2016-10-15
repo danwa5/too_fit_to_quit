@@ -11,7 +11,6 @@ gem 'omniauth-fitbit-oauth2'
 gem 'omniauth-strava-oauth2', '~> 0.0.2'
 
 gem 'bootstrap-sass', '~> 3.3.6'
-gem 'bootswatch-rails', '~> 3.3', '>= 3.3.5'
 gem 'figaro'
 gem 'httparty'
 gem 'jquery-rails'
