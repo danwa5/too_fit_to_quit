@@ -20,7 +20,7 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe '#format_run_time' do
     it 'converts and formats datetime from UTC to PST' do
-      expect(helper.format_run_time('2016-07-31 14:00:00 UTC')).to eq('Sun, 7/31/2016  7:00am')
+      expect(helper.format_run_time('2016-07-31 14:00:00 UTC')).to eq('Sun, 7/31/2016  2:00pm')
     end
   end
 

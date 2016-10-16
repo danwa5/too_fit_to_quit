@@ -10,8 +10,8 @@ module ApplicationHelper
   end
 
   # formats 2016-07-31 14:00:00 UTC => Sun, 7/31/2016  7:00am
-  def format_run_time(date_string_utc, time_zone="Pacific Time (US & Canada)")
-    Time.parse(date_string_utc.to_s).in_time_zone(time_zone).strftime('%a, %-m/%-d/%Y %l:%M%P')
+  def format_run_time(date_string_utc)
+    Time.zone.parse(date_string_utc.to_s).strftime('%a, %-m/%-d/%Y %l:%M%P')
   end
 
   def fitbit_periods

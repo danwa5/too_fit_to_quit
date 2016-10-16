@@ -9,10 +9,11 @@ module Searchable
       return where(nil)
     end
 
-    scope :date_within_range, ->(column, start_date, end_date) do
-      return where("#{column} >= DATE(?) AND #{column} <= DATE(?) + INTERVAL '1 DAY'", start_date, end_date) if !start_date.blank? && !end_date.blank?
-      return where("#{column} >= DATE(?)", start_date) if !start_date.blank?
-      return where("#{column} <= DATE(?) + INTERVAL '1 DAY'", end_date) if !end_date.blank?
+    scope :date_within_range, ->(column, start_date, end_date, time_zone='UTC') do
+      column_time_zone = "#{column}::timestamp at time zone 'UTC' at time zone '#{time_zone}'"
+      return where("#{column_time_zone} >= DATE(?) AND #{column_time_zone} <= DATE(?) + INTERVAL '1 DAY'", start_date, end_date) if !start_date.blank? && !end_date.blank?
+      return where("#{column_time_zone} >= DATE(?)", start_date) if !start_date.blank?
+      return where("#{column_time_zone} <= DATE(?) + INTERVAL '1 DAY'", end_date) if !end_date.blank?
       return where(nil)
     end
   end

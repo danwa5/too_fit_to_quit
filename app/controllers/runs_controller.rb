@@ -12,7 +12,8 @@ class RunsController < ApplicationController
                                     steps_min: runs_params[:steps_min],
                                     steps_max: runs_params[:steps_max],
                                     distance_min: format_distance(runs_params[:distance_min], 'mile'),
-                                    distance_max: format_distance(runs_params[:distance_max], 'mile')
+                                    distance_max: format_distance(runs_params[:distance_max], 'mile'),
+                                    time_zone: current_user.fitbit_identity.time_zone
                                   })
                                   .order('user_activities.start_time')
 
