@@ -62,6 +62,15 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  describe '#convert_to_seconds' do
+    context 'when minutes is blank' do
+      it { expect(helper.convert_to_seconds('')).to be_nil }
+    end
+    context 'when minutes is given' do
+      it { expect(helper.convert_to_seconds('1')).to eq(60) }
+    end
+  end
+
   describe '#format_pace' do
     it 'calculates pace in minutes/mile' do
       expect(helper.format_pace(5645, 21396.599)).to eq('7:05')

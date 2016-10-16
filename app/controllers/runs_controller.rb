@@ -13,6 +13,8 @@ class RunsController < ApplicationController
                                     steps_max: runs_params[:steps_max],
                                     distance_min: format_distance(runs_params[:distance_min], 'mile'),
                                     distance_max: format_distance(runs_params[:distance_max], 'mile'),
+                                    duration_min: convert_to_seconds(runs_params[:duration_min]),
+                                    duration_max: convert_to_seconds(runs_params[:duration_max]),
                                     time_zone: current_user.fitbit_identity.time_zone
                                   })
                                   .order('user_activities.start_time')
@@ -23,6 +25,8 @@ class RunsController < ApplicationController
     @runs_options[:steps_max] = runs_params[:steps_max]
     @runs_options[:distance_min] = runs_params[:distance_min]
     @runs_options[:distance_max] = runs_params[:distance_max]
+    @runs_options[:duration_min] = runs_params[:duration_min]
+    @runs_options[:duration_max] = runs_params[:duration_max]
   end
 
   def show
@@ -45,7 +49,7 @@ class RunsController < ApplicationController
   private
 
   def runs_params
-    params.permit(:id, :start_date, :end_date, :steps_min, :steps_max, :distance_min, :distance_max)
+    params.permit(:id, :start_date, :end_date, :steps_min, :steps_max, :distance_min, :distance_max, :duration_min, :duration_max)
   end
 
   def start_date

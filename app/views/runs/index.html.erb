@@ -7,28 +7,37 @@
     <div class="form-group">
       <%= label_tag :date, 'Date', { class: 'col-sm-1 control-label' } %>
       <div class="col-sm-2">
-        <%= text_field_tag :start_date, (@runs_options[:start_date] || Date.today - 90), { class: 'form-control' } %>
+        <%= text_field_tag :start_date, (@runs_options[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'start' } %>
       </div>
       <div class="col-sm-2">
-        <%= text_field_tag :end_date, @runs_options[:end_date], { class: 'form-control' } %>
+        <%= text_field_tag :end_date, @runs_options[:end_date], { class: 'form-control', placeholder: 'end' } %>
       </div>
     </div>
     <div class="form-group">
       <%= label_tag :steps, 'Steps', { class: 'col-sm-1 control-label' } %>
       <div class="col-sm-2">
-        <%= text_field_tag :steps_min, @runs_options[:steps_min], { class: 'form-control', placeholder: 'MIN' } %>
+        <%= text_field_tag :steps_min, @runs_options[:steps_min], { class: 'form-control', placeholder: 'min' } %>
       </div>
       <div class="col-sm-2">
-        <%= text_field_tag :steps_max, @runs_options[:steps_max], { class: 'form-control', placeholder: 'MAX' } %>
+        <%= text_field_tag :steps_max, @runs_options[:steps_max], { class: 'form-control', placeholder: 'max' } %>
       </div>
     </div>
     <div class="form-group">
       <%= label_tag :distance, 'Distance', { class: 'col-sm-1 control-label' } %>
       <div class="col-sm-2">
-        <%= text_field_tag :distance_min, @runs_options[:distance_min], { class: 'form-control', placeholder: 'MIN' } %>
+        <%= text_field_tag :distance_min, @runs_options[:distance_min], { class: 'form-control', placeholder: 'min' } %>
       </div>
       <div class="col-sm-2">
-        <%= text_field_tag :distance_max, @runs_options[:distance_max], { class: 'form-control', placeholder: 'MAX' } %>
+        <%= text_field_tag :distance_max, @runs_options[:distance_max], { class: 'form-control', placeholder: 'max' } %>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= label_tag :duration, 'Duration', { class: 'col-sm-1 control-label' } %>
+      <div class="col-sm-2">
+        <%= text_field_tag :duration_min, @runs_options[:duration_min], { class: 'form-control', placeholder: 'min' } %>
+      </div>
+      <div class="col-sm-2">
+        <%= text_field_tag :duration_max, @runs_options[:duration_max], { class: 'form-control', placeholder: 'max' } %>
       </div>
     </div>
     <div class="form-group">
