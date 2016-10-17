@@ -24,20 +24,41 @@
 
 /*  Runs
 ----------------------------------------------------------*/
+.run-search-form {
+  margin: 20px 0px;
+
+  .col-sm-6 {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .search-label {
+    font-weight: bold;
+    padding: 15px 0px 3px 1px;
+  }
+
+  .search-button {
+    margin-top: 15px;
+  }
+}
 
 #runs-table {
+  th {
+    text-align: center;
+  }
   .runs-date {
     width: 25%;
-    text-align: center;
+    padding-left: 30px;
   }
   .runs-distance {
     width: 16%;
-    text-align: center;
+    text-align: right;
+    padding-right: 50px;
   }
   .runs-duration {
     width: 15%;
     text-align: right;
-    padding-right: 30px;
+    padding-right: 40px;
   }
   .runs-pace {
     width: 16%;
@@ -46,7 +67,7 @@
   .runs-steps {
     width: 15%;
     text-align: right;
-    padding-right: 35px;
+    padding-right: 40px;
   }
 }
 

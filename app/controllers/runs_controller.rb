@@ -6,17 +6,7 @@ class RunsController < ApplicationController
 
     @dataset = Activity::FitbitRun.select('user_activities.id, user_activities.start_time, user_activities.distance, user_activities.duration, activity_fitbit_runs.steps')
                                   .where(user: current_user)
-                                  .search({
-                                    start_date: start_date,
-                                    end_date: end_date,
-                                    steps_min: runs_params[:steps_min],
-                                    steps_max: runs_params[:steps_max],
-                                    distance_min: format_distance(runs_params[:distance_min], 'mile'),
-                                    distance_max: format_distance(runs_params[:distance_max], 'mile'),
-                                    duration_min: convert_to_seconds(runs_params[:duration_min]),
-                                    duration_max: convert_to_seconds(runs_params[:duration_max]),
-                                    time_zone: current_user.fitbit_identity.time_zone
-                                  })
+                                  .search(search_params)
                                   .order('user_activities.start_time')
 
     @runs_options[:start_date] = start_date
@@ -50,6 +40,20 @@ class RunsController < ApplicationController
 
   def runs_params
     params.permit(:id, :start_date, :end_date, :steps_min, :steps_max, :distance_min, :distance_max, :duration_min, :duration_max)
+  end
+
+  def search_params
+    {
+      start_date: start_date,
+      end_date: end_date,
+      steps_min: runs_params[:steps_min],
+      steps_max: runs_params[:steps_max],
+      distance_min: format_distance(runs_params[:distance_min], 'mile'),
+      distance_max: format_distance(runs_params[:distance_max], 'mile'),
+      duration_min: convert_to_seconds(runs_params[:duration_min]),
+      duration_max: convert_to_seconds(runs_params[:duration_max]),
+      time_zone: current_user.fitbit_identity.time_zone
+    }
   end
 
   def start_date

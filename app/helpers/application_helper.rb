@@ -27,11 +27,12 @@ module ApplicationHelper
 
   def format_distance(amount, unit='meter')
     return nil if amount.blank?
-    if unit == 'meter'
-      (amount.to_f * MILES_PER_METER).round(2)
+    x = if unit == 'meter'
+      amount.to_f * MILES_PER_METER
     elsif unit == 'mile'
-      (amount.to_f / MILES_PER_METER).round(2)
+      amount.to_f / MILES_PER_METER
     end
+    sprintf('%.2f', x.round(2))
   end
 
   def format_duration(seconds)

@@ -39,12 +39,12 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
     context 'when the argument is in meters' do
       it 'converts meters to miles with 2 decimal places' do
-        expect(helper.format_distance(10000, 'meter')).to eq(6.21)
+        expect(helper.format_distance(1609.34, 'meter')).to eq('1.00')
       end
     end
     context 'when the argument is in miles' do
       it 'converts miles to meters with 2 decimal places' do
-        expect(helper.format_distance(1, 'mile')).to eq(1609.34)
+        expect(helper.format_distance(1, 'mile')).to eq('1609.34')
       end
     end
   end
