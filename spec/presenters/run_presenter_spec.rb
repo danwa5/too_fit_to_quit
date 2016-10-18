@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe RunPresenter do
   let(:user) { create(:user) }
-  let(:user_activity) { create(:user_activity, :fitbit, user: user, distance: 12345.6, start_time: '2016-07-31 14:00:00 UTC') }
+  let(:user_activity) { create(:user_activity, :fitbit, user: user, distance: 12345.6, start_time: '2016-07-31 17:00:00 UTC') }
   let!(:fitbit_run) { create(:activity_fitbit_run, :with_gps_data, user: user, user_activity: user_activity) }
 
   subject { described_class.new(user_activity) }
@@ -21,13 +21,13 @@ RSpec.describe RunPresenter do
 
   describe '#formatted_short_start_time' do
     it 'converts and formats datetime from UTC to PST' do
-      expect(subject.formatted_short_start_time).to eq('Sun, 7/31/2016 7:00am')
+      expect(subject.formatted_short_start_time).to eq('Sun, 7/31/2016 10:00am')
     end
   end
 
   describe '#formatted_long_start_time' do
     it 'converts and formats datetime from UTC to PST' do
-      expect(subject.formatted_long_start_time).to eq('Sunday, 7/31/2016 at 7:00am')
+      expect(subject.formatted_long_start_time).to eq('Sunday, 7/31/2016 at 10:00am')
     end
   end
 
