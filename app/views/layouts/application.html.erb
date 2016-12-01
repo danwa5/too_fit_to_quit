@@ -7,6 +7,14 @@
   <script src='https://api.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.css' rel='stylesheet' />
   <%= csrf_meta_tags %>
+
+  <% if signed_in? %>
+  <style>
+    body {
+      padding-top: 50px;
+    }
+  </style>
+  <% end %>
 </head>
 <body>
   <%= render 'layouts/header' %>

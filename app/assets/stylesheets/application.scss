@@ -1,9 +1,6 @@
 /*Then bootstrap itself*/
 @import "bootstrap";
 
-/*Bootstrap body padding for fixed navbar*/
-body { padding-top: 50px; }
-
 /*Whatever application styles you have go last*/
 @import "styles";
 @import "index";
