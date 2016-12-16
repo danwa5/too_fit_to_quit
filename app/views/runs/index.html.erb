@@ -1,86 +1,91 @@
 <div class="page-header">
-  <h2>Runs</h2>
+  <h2 class="is-2">Runs</h2>
 </div>
 
-<div class="col-xs-12 col-sm-6 col-md-3 sidebar-offcanvas">
-  <div class="activity-form">
-    <%= form_tag(runs_path, method: :get, class: 'run-search-form') do |f| %>
-      <div class="col-sm-12 search-label">
-        Date
-      </div>
-      <div class="form-group">
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :start_date, (@runs_options[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'From' } %>
+<div class="columns">
+  <div class="column is-one-quarter">
+    <div class="pod">
+      <div class="activity-form">
+      <%= form_tag(runs_path, method: :get, class: 'run-search-form') do |f| %>
+        <div class="col-sm-12 search-label">
+          Date
         </div>
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :end_date, @runs_options[:end_date], { class: 'form-control', placeholder: 'To' } %>
+        <div class="form-group">
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :start_date, (@runs_options[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'From' } %>
+          </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :end_date, @runs_options[:end_date], { class: 'form-control', placeholder: 'To' } %>
+          </div>
         </div>
-      </div>
-      <div class="col-sm-12 search-label">
-        Distance (miles)
-      </div>
-      <div class="form-group">
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :distance_min, @runs_options[:distance_min], { class: 'form-control', placeholder: 'min' } %>
+        <div class="col-sm-12 search-label">
+          Distance (miles)
         </div>
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :distance_max, @runs_options[:distance_max], { class: 'form-control', placeholder: 'max' } %>
+        <div class="form-group">
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :distance_min, @runs_options[:distance_min], { class: 'form-control', placeholder: 'min' } %>
+          </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :distance_max, @runs_options[:distance_max], { class: 'form-control', placeholder: 'max' } %>
+          </div>
         </div>
-      </div>
-      <div class="col-sm-12 search-label">
-        Duration (minutes)
-      </div>
-      <div class="form-group">
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :duration_min, @runs_options[:duration_min], { class: 'form-control', placeholder: 'min' } %>
+        <div class="col-sm-12 search-label">
+          Duration (minutes)
         </div>
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :duration_max, @runs_options[:duration_max], { class: 'form-control', placeholder: 'max' } %>
+        <div class="form-group">
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :duration_min, @runs_options[:duration_min], { class: 'form-control', placeholder: 'min' } %>
+          </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :duration_max, @runs_options[:duration_max], { class: 'form-control', placeholder: 'max' } %>
+          </div>
         </div>
-      </div>
-      <div class="col-sm-12 search-label">
-        Steps
-      </div>
-      <div class="form-group">
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :steps_min, @runs_options[:steps_min], { class: 'form-control', placeholder: 'min' } %>
+        <div class="col-sm-12 search-label">
+          Steps
         </div>
-        <div class="col-xs-6 col-sm-6">
-          <%= text_field_tag :steps_max, @runs_options[:steps_max], { class: 'form-control', placeholder: 'max' } %>
+        <div class="form-group">
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :steps_min, @runs_options[:steps_min], { class: 'form-control', placeholder: 'min' } %>
+          </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :steps_max, @runs_options[:steps_max], { class: 'form-control', placeholder: 'max' } %>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <%= submit_tag 'Search', class: 'btn btn-primary search-button' %>
-      </div>
-    <% end %>
-  </div>
-</div>
-
-<div class="col-xs-12 col-md-9">
-  <div class="table-responsive">
-    <table id="runs-table" class="table table-condensed table-hover">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Distance<br>(miles)</th>
-          <th>Duration<br>(H:MM:SS)</th>
-          <th>Pace<br>(min/mile)</th>
-          <th>Steps</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-      <% @dataset.each do |run| %>
-        <tr>
-          <td class="runs-date"><%= format_run_time(run.start_time) %></td>
-          <td class="runs-distance"><%= format_distance(run.distance) %></td>
-          <td class="runs-duration"><%= format_duration(run.duration) %></td>
-          <td class="runs-pace"><%= format_pace(run.duration, run.distance) %></td>
-          <td class="runs-steps"><%= run.steps %></td>
-          <td align="center"><%= link_to 'Details', run_path(run.id) %></td>
-        </tr>
+        <div class="form-group">
+          <%= submit_tag 'Search', class: 'btn btn-primary search-button' %>
+        </div>
       <% end %>
-      </tbody>
-    </table>
+    </div>
+    </div>
+  </div>
+  <div class="column is-three-quarters">
+    <div class="pod">
+      <div class="table-responsive">
+      <table id="runs-table" class="table table-condensed table-hover">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Distance<br>(miles)</th>
+            <th>Duration<br>(H:MM:SS)</th>
+            <th>Pace<br>(min/mile)</th>
+            <th>Steps</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        <% @dataset.each do |run| %>
+          <tr>
+            <td class="runs-date"><%= format_run_time(run.start_time) %></td>
+            <td class="runs-distance"><%= format_distance(run.distance) %></td>
+            <td class="runs-duration"><%= format_duration(run.duration) %></td>
+            <td class="runs-pace"><%= format_pace(run.duration, run.distance) %></td>
+            <td class="runs-steps"><%= run.steps %></td>
+            <td align="center"><%= link_to 'Details', run_path(run.id) %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+    </div>
   </div>
 </div>

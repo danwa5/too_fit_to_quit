@@ -2,6 +2,26 @@
 /*  Common
 ----------------------------------------------------------*/
 
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background-color: #334548;
+}
+
+.pod {
+  background-color: #fff;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+
+.page-header {
+  color: #ddd;
+}
+
 #steps-table,
 #runs-table {
   margin-top: 10px;
@@ -80,19 +100,19 @@
 }
 
 .map-container {
-  width: 900px;
+  width: 100%;
   padding: 0px;
   border: 1px solid #f5cba7;
 }
 
 #map-run {
-  width: 650px;
+  width: 75%;
   height: 400px;
   float: left;
 }
 
 #splits {
-  width: 248px;
+  width: 25%;
   height: 400px;
   margin-left: 650px;
   overflow: auto;

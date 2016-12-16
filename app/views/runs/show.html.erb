@@ -2,32 +2,49 @@
   <h3><%= @decorated_run.formatted_distance %> mile run on <%= @decorated_run.formatted_long_start_time %> <%= @strava_run.activity.location %></h3>
 </div>
 
-<div class="map-container">
-  <%= react_component 'Map', { }, { prerender: true } %>
-  <!-- <div id="map-run"></div> -->
-  <div id="splits">
-    <table id="splits-table" class="table table-condensed table-hover">
-      <thead>
-        <tr>
-          <th class="text-center">Mile</th>
-          <th class="text-center">Pace</th>
-          <th class="text-center">Elev</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% @strava_run.activity.splits['standard'].each_with_index do |data, index| %>
-        <tr>
-          <td class="text-center"><%= index == @strava_run.activity.splits['standard'].length-1 ? @decorated_run.final_split_distance : data['split'] %></td>
-          <td class="text-center"><%= format_pace(data['moving_time'], data['distance']) %></td>
-          <td class="text-center"><%= data['elevation_difference'] %></td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
+<div class="columns">
+  <div class="column">
+    <div class="pod">
+      <div class="map-container">
+      <%= react_component 'Map', { }, { prerender: true } %>
+      <!-- <div id="map-run"></div> -->
+      <div id="splits">
+        <table id="splits-table" class="table table-condensed table-hover">
+          <thead>
+            <tr>
+              <th class="text-center">Mile</th>
+              <th class="text-center">Pace</th>
+              <th class="text-center">Elev</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% @strava_run.activity.splits['standard'].each_with_index do |data, index| %>
+            <tr>
+              <td class="text-center"><%= index == @strava_run.activity.splits['standard'].length-1 ? @decorated_run.final_split_distance : data['split'] %></td>
+              <td class="text-center"><%= format_pace(data['moving_time'], data['distance']) %></td>
+              <td class="text-center"><%= data['elevation_difference'] %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
   </div>
 </div>
 
-<div id="chart-runs"></div>
+<div class="columns">
+  <div class="column is-three-fourths">
+    <div class="pod">
+      <div id="chart-runs"></div>
+    </div>
+  </div>
+  <div class="column is-one-fourth">
+    <div class="pod">
+      Put 2nd chart here
+    </div>
+  </div>
+</div>
 
 <script>
 //------------
@@ -97,7 +114,7 @@ var data = <%= raw @decorated_run.chart_data.to_json %>;
 
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 40, bottom: 50, left: 30},
-    width = 900 - margin.left - margin.right,
+    width = 800 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
 // parse the date/time
