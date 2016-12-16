@@ -9,6 +9,8 @@ class RunsController < ApplicationController
                                   .search(search_params)
                                   .order('user_activities.start_time')
 
+    @monthly_breakdown = current_user.user_activities.monthly_breakdown(2016)
+
     @runs_options[:start_date] = start_date
     @runs_options[:end_date] = end_date
     @runs_options[:steps_min] = runs_params[:steps_min]

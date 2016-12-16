@@ -48,6 +48,17 @@ body {
 
 /*  Runs
 ----------------------------------------------------------*/
+
+#chart-monthly-breakdown {
+  .bar {
+    fill: #D68910;
+  }
+
+  .axis-title {
+    fill: #000;
+  }
+}
+
 .run-search-form {
   margin: 20px 0px;
 
