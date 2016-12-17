@@ -178,6 +178,15 @@ body {
   padding: 0;
 }
 
+.grid line {
+  stroke: lightgrey;
+  opacity: 0.7;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
 
 /*  Steps
 ----------------------------------------------------------*/
