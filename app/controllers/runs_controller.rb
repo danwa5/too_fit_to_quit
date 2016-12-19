@@ -2,23 +2,12 @@ class RunsController < ApplicationController
   include ApplicationHelper
 
   def index
-    @runs_options = {}
-
     @dataset = Activity::FitbitRun.select('user_activities.id, user_activities.start_time, user_activities.distance, user_activities.duration, activity_fitbit_runs.steps')
                                   .where(user: current_user)
                                   .search(search_params)
                                   .order('user_activities.start_time')
 
     @monthly_breakdown = current_user.user_activities.monthly_breakdown(2016)
-
-    @runs_options[:start_date] = start_date
-    @runs_options[:end_date] = end_date
-    @runs_options[:steps_min] = runs_params[:steps_min]
-    @runs_options[:steps_max] = runs_params[:steps_max]
-    @runs_options[:distance_min] = runs_params[:distance_min]
-    @runs_options[:distance_max] = runs_params[:distance_max]
-    @runs_options[:duration_min] = runs_params[:duration_min]
-    @runs_options[:duration_max] = runs_params[:duration_max]
   end
 
   def show

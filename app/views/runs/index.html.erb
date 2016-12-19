@@ -12,10 +12,10 @@
           </div>
           <div class="form-group">
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :start_date, (@runs_options[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'From' } %>
+              <%= text_field_tag :start_date, (params[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'From' } %>
             </div>
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :end_date, @runs_options[:end_date], { class: 'form-control', placeholder: 'To' } %>
+              <%= text_field_tag :end_date, params[:end_date], { class: 'form-control', placeholder: 'To' } %>
             </div>
           </div>
           <div class="col-sm-12 search-label">
@@ -23,10 +23,10 @@
           </div>
           <div class="form-group">
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :distance_min, @runs_options[:distance_min], { class: 'form-control', placeholder: 'min' } %>
+              <%= text_field_tag :distance_min, params[:distance_min], { class: 'form-control', placeholder: 'min' } %>
             </div>
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :distance_max, @runs_options[:distance_max], { class: 'form-control', placeholder: 'max' } %>
+              <%= text_field_tag :distance_max, params[:distance_max], { class: 'form-control', placeholder: 'max' } %>
             </div>
           </div>
           <div class="col-sm-12 search-label">
@@ -34,10 +34,10 @@
           </div>
           <div class="form-group">
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :duration_min, @runs_options[:duration_min], { class: 'form-control', placeholder: 'min' } %>
+              <%= text_field_tag :duration_min, params[:duration_min], { class: 'form-control', placeholder: 'min' } %>
             </div>
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :duration_max, @runs_options[:duration_max], { class: 'form-control', placeholder: 'max' } %>
+              <%= text_field_tag :duration_max, params[:duration_max], { class: 'form-control', placeholder: 'max' } %>
             </div>
           </div>
           <div class="col-sm-12 search-label">
@@ -45,10 +45,10 @@
           </div>
           <div class="form-group">
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :steps_min, @runs_options[:steps_min], { class: 'form-control', placeholder: 'min' } %>
+              <%= text_field_tag :steps_min, params[:steps_min], { class: 'form-control', placeholder: 'min' } %>
             </div>
             <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :steps_max, @runs_options[:steps_max], { class: 'form-control', placeholder: 'max' } %>
+              <%= text_field_tag :steps_max, params[:steps_max], { class: 'form-control', placeholder: 'max' } %>
             </div>
           </div>
           <div class="form-group">
