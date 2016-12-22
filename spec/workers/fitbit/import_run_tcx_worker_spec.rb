@@ -46,37 +46,31 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
                         {
                           'Time' => '2016-07-23T11:08:00.000-07:00',
                           'Position' => {
-                            'LatitudeDegrees' => 37.7749,
-                            'LongitudeDegrees' => -122.4194
+                            'LatitudeDegrees' => 11.1111,
+                            'LongitudeDegrees' => -22.2222
                           },
                           'DistanceMeters' => 0.0,
                           'AltitudeMeters' => 22.34,
                           'HeartRateBpm' => {
                             'Value' => 85
                           }
-                        },
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    'Track' => {
+                      'Trackpoint' => [
                         {
                           'Time' => '2016-07-23T11:08:10.000-07:00',
                           'Position' => {
-                            'LatitudeDegrees' => 43.6532,
-                            'LongitudeDegrees' => -79.3832
+                            'LatitudeDegrees' => 33.3333,
+                            'LongitudeDegrees' => -44.4444
                           },
-                          'DistanceMeters' => 1.0,
-                          'AltitudeMeters' => 25.60,
+                          'DistanceMeters' => 0.0,
+                          'AltitudeMeters' => 26.62,
                           'HeartRateBpm' => {
-                            'Value' => 90
-                          }
-                        },
-                        {
-                          'Time' => '2016-07-23T11:08:20.000-07:00',
-                          'Position' => {
-                            'LatitudeDegrees' => 40.7128,
-                            'LongitudeDegrees' => -74.0059
-                          },
-                          'DistanceMeters' => 2.0,
-                          'AltitudeMeters' => 26.12,
-                          'HeartRateBpm' => {
-                            'Value' => 95
+                            'Value' => 88
                           }
                         }
                       ]
@@ -88,10 +82,12 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
           }
         }
       end
+      let(:geocode) { double(city: 'San Francisco', state: 'California', country: 'United States') }
 
       before do
         make_request(response)
         allow(FitbitService).to receive_message_chain(:get_activity_tcx, :parsed_response).and_return(response)
+        allow(Geocoder).to receive_message_chain(:search, :first).and_return(geocode)
       end
 
       it 'saves tcx data' do
@@ -108,20 +104,30 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
         expect(user_activity.activity.gps_data).to eq(
           {
             'raw' => [
-              { 'datetime' => '2016-07-23T11:08:00.000-07:00', 'coordinate' => [-122.4194,37.7749], 'distance' => 0.0, 'altitude' => 22.34, 'heart_rate' => 85 },
-              { 'datetime' => '2016-07-23T11:08:20.000-07:00', 'coordinate' => [-74.0059,40.7128], 'distance' => 2.0, 'altitude' => 26.12, 'heart_rate' => 95 }
+              { 'datetime' => '2016-07-23T11:08:00.000-07:00', 'coordinate' => [-22.2222, 11.1111], 'distance' => 0.0, 'altitude' => 22.34, 'heart_rate' => 85 },
+              { 'datetime' => '2016-07-23T11:08:10.000-07:00', 'coordinate' => [-44.4444, 33.3333], 'distance' => 0.0, 'altitude' => 26.62, 'heart_rate' => 88 }
             ],
             'derived' => {
               'bounds' => {
-                'north' => 43.6532,
-                'east' => -74.0059,
-                'south' => 37.7749,
-                'west' => -122.4194
+                'north' => 33.3333,
+                'east' => -22.2222,
+                'south' => 11.1111,
+                'west' => -44.4444
               },
-              'markers' => []
+              'markers' => [[-22.2222, 11.1111]]
             }
           }
         )
+      end
+
+      it 'geocodes and saves the city, state, and country' do
+        subject.perform(user.id, '1234')
+        user_activity.activity.reload
+        aggregate_failures 'attributes' do
+          expect(user_activity.activity.city).to eq('San Francisco')
+          expect(user_activity.activity.state_province).to eq('California')
+          expect(user_activity.activity.country).to eq('United States')
+        end
       end
 
       it 'returns true' do

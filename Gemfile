@@ -12,6 +12,7 @@ gem 'omniauth-strava-oauth2', '~> 0.0.2'
 
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'figaro'
+gem 'geocoder'
 gem 'httparty'
 gem 'jquery-rails'
 gem 'react-rails', '~> 1.8'

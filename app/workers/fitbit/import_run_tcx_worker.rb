@@ -15,9 +15,16 @@ module Fitbit
       gps_data = Hash.new
       gps_data['raw'], gps_data['derived'] = get_gps_data(tcx_data)
 
-      user_activity.activity.gps_data = gps_data
-      user_activity.activity.tcx_data = tcx_data
-      user_activity.activity.save!
+      coordinates = gps_data['derived']['markers'].first
+      geocode = Geocoder.search(coordinates.reverse.join(',')).first
+
+      user_activity.activity.update_attributes!({
+        gps_data: gps_data,
+        tcx_data: tcx_data,
+        city: geocode.city,
+        state_province: geocode.state,
+        country: geocode.country
+      })
 
       return true
     end
