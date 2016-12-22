@@ -8,7 +8,10 @@ html {
 
 body {
   min-height: 100%;
-  background-color: #334548;
+  // background-color: #334548;
+  background: #334548 asset-data-url("landing_page.jpg");
+  background-size: cover;
+  position: relative;
 }
 
 .pod {
@@ -19,7 +22,7 @@ body {
 }
 
 .page-header {
-  color: #ddd;
+  color: #334548;
 }
 
 #steps-table,
