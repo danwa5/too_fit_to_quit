@@ -20,6 +20,7 @@ gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-namespace', '~> 1.5', '>= 1.5.2'
 gem 'sass-rails', '~> 5.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
+gem 'selectize-rails'
 gem 'sidekiq', '~> 4.1', '>= 4.1.4'
 gem 'turbolinks', '~> 2.5'
 gem 'uglifier', '>= 1.3.0'

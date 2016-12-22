@@ -7,6 +7,7 @@ class RunsController < ApplicationController
                                   .search(search_params)
                                   .order('user_activities.start_time')
 
+    @locations = Activity::FitbitRun.where(user: current_user).select('city, country').distinct
     @monthly_breakdown = current_user.user_activities.monthly_breakdown(2016)
   end
 
@@ -30,7 +31,7 @@ class RunsController < ApplicationController
   private
 
   def runs_params
-    params.permit(:id, :start_date, :end_date, :steps_min, :steps_max, :distance_min, :distance_max, :duration_min, :duration_max)
+    params.permit(:id, :start_date, :end_date, :steps_min, :steps_max, :distance_min, :distance_max, :duration_min, :duration_max, :location)
   end
 
   def search_params
@@ -43,7 +44,8 @@ class RunsController < ApplicationController
       distance_max: format_distance(runs_params[:distance_max], 'mile'),
       duration_min: convert_to_seconds(runs_params[:duration_min]),
       duration_max: convert_to_seconds(runs_params[:duration_max]),
-      time_zone: current_user.fitbit_identity.time_zone
+      time_zone: current_user.fitbit_identity.time_zone,
+      city: runs_params[:location].to_s.split(',').first
     }
   end
 

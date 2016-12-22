@@ -2,9 +2,18 @@ require 'rails_helper'
 
 RSpec.describe Searchable do
   let(:model) { Activity::FitbitRun }
-  let!(:run_1) { create(:activity_fitbit_run, steps: 1000, created_at: '2016-09-01 01:00:00') }
-  let!(:run_2) { create(:activity_fitbit_run, steps: 2000, created_at: '2016-09-02 02:00:00') }
-  let!(:run_3) { create(:activity_fitbit_run, steps: 3000, created_at: '2016-09-03 03:00:00') }
+  let!(:run_1) { create(:activity_fitbit_run, steps: 1000, city: 'SF', created_at: '2016-09-01 01:00:00') }
+  let!(:run_2) { create(:activity_fitbit_run, steps: 2000, city: 'NY', created_at: '2016-09-02 02:00:00') }
+  let!(:run_3) { create(:activity_fitbit_run, steps: 3000, city: 'SF', created_at: '2016-09-03 03:00:00') }
+
+  describe 'matching_contain' do
+    context 'when attribute contains value' do
+      it { expect(model.matching_contain(:city, 'SF')).to contain_exactly(run_1, run_3) }
+    end
+    context 'when attribute does not contain value' do
+      it { expect(model.matching_contain(:city, 'LA')).to eq([]) }
+    end
+  end
 
   describe '.number_within_range' do
     context 'when both low and high values are provided' do
