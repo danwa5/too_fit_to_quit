@@ -2,7 +2,7 @@ class RunsController < ApplicationController
   include ApplicationHelper
 
   def index
-    @dataset = Activity::FitbitRun.select('user_activities.id, user_activities.start_time, user_activities.distance, user_activities.duration, activity_fitbit_runs.steps')
+    @dataset = Activity::FitbitRun.select('user_activities.id, user_activities.start_time, user_activities.distance, user_activities.duration, activity_fitbit_runs.steps, activity_fitbit_runs.city, activity_fitbit_runs.country')
                                   .where(user: current_user)
                                   .search(search_params)
                                   .order('user_activities.start_time')

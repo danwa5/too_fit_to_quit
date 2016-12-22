@@ -81,6 +81,7 @@
               <th>Duration<br>(H:MM:SS)</th>
               <th>Pace<br>(min/mile)</th>
               <th>Steps</th>
+              <th>Location</th>
               <th></th>
             </tr>
           </thead>
@@ -92,6 +93,7 @@
               <td class="runs-duration"><%= format_duration(run.duration) %></td>
               <td class="runs-pace"><%= format_pace(run.duration, run.distance) %></td>
               <td class="runs-steps"><%= run.steps %></td>
+              <td class="runs-location"><%= run.location %></td>
               <td align="center"><%= link_to 'Details', run_path(run.id) %></td>
             </tr>
           <% end %>

@@ -5,6 +5,15 @@ class RunPresenter < SimpleDelegator
     __getobj__
   end
 
+  def location
+    return '' unless activity.city.present?
+    loc = String.new
+    loc << 'in ' + activity.city if activity.city.present?
+    loc << ', ' + activity.state_province if activity.state_province.present?
+    loc << ', ' + activity.country if activity.country.present?
+    loc
+  end
+
   def formatted_distance
     (run.distance * MILES_PER_METER).round(2)
   end

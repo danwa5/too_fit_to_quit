@@ -15,4 +15,12 @@ class Activity::FitbitRun < ActiveRecord::Base
     finder = finder.date_within_range(:start_time, options[:start_date], options[:end_date], options[:time_zone])
     finder
   end
+
+  def location
+    return '' unless self.city.present?
+    loc = String.new
+    loc << self.city
+    loc << ', ' + self.country if self.country.present?
+    loc
+  end
 end

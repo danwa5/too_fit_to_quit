@@ -85,27 +85,30 @@ body {
     text-align: center;
   }
   .runs-date {
-    width: 25%;
+    width: 20%;
     padding-left: 30px;
   }
   .runs-distance {
-    width: 16%;
+    width: 12%;
     text-align: right;
     padding-right: 50px;
   }
   .runs-duration {
-    width: 15%;
+    width: 12%;
     text-align: right;
     padding-right: 40px;
   }
   .runs-pace {
-    width: 16%;
+    width: 12%;
     text-align: center;
   }
   .runs-steps {
-    width: 15%;
+    width: 10%;
     text-align: right;
     padding-right: 40px;
+  }
+  .runs-location {
+    width: 22%
   }
 }
 
