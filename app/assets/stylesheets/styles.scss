@@ -38,11 +38,6 @@ body {
 /*  Form
 ----------------------------------------------------------*/
 
-.activity-form {
-  padding-top: 10px;
-  padding-bottom: 30px;
-}
-
 #import-runs-form {
   width: 350px;
   margin: 20px;
@@ -63,20 +58,16 @@ body {
 }
 
 .run-search-form {
-  margin: 20px 0px;
+  margin: 5px 0px;
 
   .col-sm-6 {
     padding-left: 0px;
     padding-right: 0px;
   }
 
-  .search-label {
-    font-weight: bold;
-    padding: 15px 0px 3px 1px;
-  }
-
-  .search-button {
-    margin-top: 15px;
+  .control-label {
+    text-align: left;
+    padding: 15px 0px 0px 1px;
   }
 }
 

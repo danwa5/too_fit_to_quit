@@ -7,68 +7,54 @@
 <div class="columns">
   <div class="column is-one-quarter">
     <div class="pod">
-      <div class="activity-form">
-        <%= form_tag(runs_path, method: :get, class: 'run-search-form') do |f| %>
-          <div class="col-sm-12 search-label">
-            Date
+      <%= form_tag(runs_path, method: :get, class: 'run-search-form') do |f| %>
+        <div class="form-group">
+          <%= label_tag :date, nil, class: " col-xs-12 control-label" %>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :start_date, (params[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'From' } %>
           </div>
-          <div class="form-group">
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :start_date, (params[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'From' } %>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :end_date, params[:end_date], { class: 'form-control', placeholder: 'To' } %>
-            </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :end_date, params[:end_date], { class: 'form-control', placeholder: 'To' } %>
           </div>
-          <div class="col-sm-12 search-label">
-            Distance (miles)
+        </div>
+        <div class="form-group">
+          <%= label_tag :distance, "Distance (miles)", class: "col-xs-12 control-label" %>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :distance_min, params[:distance_min], { class: 'form-control', placeholder: 'min' } %>
           </div>
-          <div class="form-group">
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :distance_min, params[:distance_min], { class: 'form-control', placeholder: 'min' } %>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :distance_max, params[:distance_max], { class: 'form-control', placeholder: 'max' } %>
-            </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :distance_max, params[:distance_max], { class: 'form-control', placeholder: 'max' } %>
           </div>
-          <div class="col-sm-12 search-label">
-            Duration (minutes)
+        </div>
+        <div class="form-group">
+          <%= label_tag :duration, "Duration (minutes)", class: "col-xs-12 control-label" %>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :duration_min, params[:duration_min], { class: 'form-control', placeholder: 'min' } %>
           </div>
-          <div class="form-group">
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :duration_min, params[:duration_min], { class: 'form-control', placeholder: 'min' } %>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :duration_max, params[:duration_max], { class: 'form-control', placeholder: 'max' } %>
-            </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :duration_max, params[:duration_max], { class: 'form-control', placeholder: 'max' } %>
           </div>
-          <div class="col-sm-12 search-label">
-            Steps
+        </div>
+        <div class="form-group">
+          <%= label_tag :steps, nil, class: "col-xs-12 control-label" %>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :steps_min, params[:steps_min], { class: 'form-control', placeholder: 'min' } %>
           </div>
-          <div class="form-group">
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :steps_min, params[:steps_min], { class: 'form-control', placeholder: 'min' } %>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-              <%= text_field_tag :steps_max, params[:steps_max], { class: 'form-control', placeholder: 'max' } %>
-            </div>
+          <div class="col-xs-6 col-sm-6">
+            <%= text_field_tag :steps_max, params[:steps_max], { class: 'form-control', placeholder: 'max' } %>
           </div>
-          <div class="col-sm-12 search-label">
-            Location
-          </div>
-          <div class="form-group">
-              <%= select_tag :location, options_from_collection_for_select(@locations, 'location', 'location', selected = params[:location]), { include_blank: true } %>
-          </div>
-          <script>
-            $(function() {
-              $('#location').selectize({ allowEmptyOption: true, sortField: 'text' });
-            });
-          </script>
-          <div class="form-group">
-            <%= submit_tag 'Search', class: 'btn btn-primary search-button' %>
-          </div>
-        <% end %>
-      </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag :location, nil, class: "control-label" %>
+          <%= select_tag :location, options_from_collection_for_select(@locations, 'location', 'location', params[:location]), { include_blank: true } %>
+        </div>
+        <script>
+          $(function() {
+            $('#location').selectize({ allowEmptyOption: true, sortField: 'text' });
+          });
+        </script>
+        <%= submit_tag 'Search', class: 'btn btn-primary search-button' %>
+      <% end %>
     </div>
   </div>
   <div class="column is-three-quarters">
@@ -123,7 +109,7 @@ var dataset = <%= raw @monthly_breakdown.to_json %>;
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 40, bottom: 40, left: 50},
     width = 800 - margin.left - margin.right,
-    height = 375 - margin.top - margin.bottom;
+    height = 405 - margin.top - margin.bottom;
 
 // set the ranges
 var x0 = d3.scaleBand().rangeRound([0, width]).padding(0.3);
