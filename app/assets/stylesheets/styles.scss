@@ -225,3 +225,17 @@ div.bar {
   background-color: teal;
   margin-right: 2px;
 }
+
+
+/*  Media Variations
+----------------------------------------------------------*/
+
+@media screen and (max-width: 1200px) {
+  .columns .is-one-quarter {
+    width: 100%;
+  }
+
+  .columns .is-three-quarters {
+    display: none;
+  }
+}
