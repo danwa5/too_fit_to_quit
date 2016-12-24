@@ -4,19 +4,21 @@
   </div>
 </div>
 
-<div class="columns">
-  <div class="column">
+<div class="columns is-gapless is-multiline">
+  <div class="column is-three-quarters">
     <div class="pod">
-      <div class="map-container">
       <%= react_component 'Map', { }, { prerender: true } %>
-      <!-- <div id="map-run"></div> -->
+    </div>
+  </div>
+  <div class="column is-one-quarter">
+    <div class="pod">
       <div id="splits">
         <table id="splits-table" class="table table-condensed table-hover">
           <thead>
             <tr>
-              <th class="text-center">Mile</th>
-              <th class="text-center">Pace</th>
-              <th class="text-center">Elev</th>
+              <th>Mile</th>
+              <th>Pace</th>
+              <th>Elev</th>
             </tr>
           </thead>
           <tbody>
@@ -31,17 +33,16 @@
         </table>
       </div>
     </div>
-    </div>
   </div>
 </div>
 
-<div class="columns">
-  <div class="column is-three-fourths">
+<div class="columns is-multiline">
+  <div class="column is-three-quarters">
     <div class="pod">
       <div id="chart-runs"></div>
     </div>
   </div>
-  <div class="column is-one-fourth">
+  <div class="column is-one-quarter">
     <div class="pod">
       Put 2nd chart here
     </div>
