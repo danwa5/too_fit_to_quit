@@ -111,12 +111,6 @@ var margin = {top: 10, right: 40, bottom: 40, left: 50},
     width = 800 - margin.left - margin.right,
     height = 405 - margin.top - margin.bottom;
 
-// set the ranges
-var x0 = d3.scaleBand().rangeRound([0, width]).padding(0.3);
-var x1 = d3.scaleBand().rangeRound([0, width]);
-var y = d3.scaleLinear().range([height, 0]);
-var color = d3.scaleOrdinal().range(["#8a89a6", "#d0743c"]);
-
 // append the svg object to the body of the page
 // append a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
@@ -126,104 +120,151 @@ var svg = d3.select("#chart-monthly-breakdown").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var years = d3.keys(dataset[0]).filter(function(key) { return key.startsWith('total_'); });
-
+var xScale0, xScale1, yScale, xAxis, legend, color, max_total;
 var max_totals_by_month = [];
-dataset.forEach(function(d) {
-  max_totals_by_month.push(Math.max(d[years[0]], d[years[1]]));
-})
 
-var max_total = d3.max(max_totals_by_month);
-
-function make_y_gridlines() {
-  return d3.axisLeft(y).ticks(max_total)
+function renderGridlines() {
+  return d3.axisLeft(yScale).ticks(max_total);
 }
 
-// format the data
-dataset.forEach(function(d) {
-  d.month = months[d.month];
-  d.totals = years.map(function(name) { return {name: name, total: +d[name]}; });
-});
+function initChart() {
+  // set the ranges
+  xScale0 = d3.scaleBand().rangeRound([0, width]).padding(0.3);
+  xScale1 = d3.scaleBand().rangeRound([0, width]);
+  yScale = d3.scaleLinear().range([height, 0]);
+  color = d3.scaleOrdinal().range(["#8a89a6", "#d0743c"]);
 
-// scale the range of the data in the domains
-x0.domain(dataset.map(function(d) { return d.month; }));
-x1.domain(years).range([0, x0.bandwidth()]);
-y.domain([0, d3.max(dataset, function(d) { return d3.max(d.totals, function(d2) { return d2.total; }); })]);
+  var years = d3.keys(dataset[0]).filter(function(key) { return key.startsWith('total_'); });
 
+  // format the data
+  dataset.forEach(function(d) {
+    d.month = months[d.month];
+    d.totals = years.map(function(name) { return {name: name, total: +d[name]}; });
+    max_totals_by_month.push(Math.max(d[years[0]], d[years[1]]));
+  });
 
-//add the y axis grid lines
-svg.append("g")
-  .attr("class", "grid")
-  .call(make_y_gridlines()
-    .tickSize(-width)
-    .tickFormat("")
-  );
+  max_total = d3.max(max_totals_by_month);
 
-var month = svg.selectAll(".month")
-      .data(dataset)
-    .enter().append("g")
-      .attr("class", "month")
-      .attr("transform", function(d) { return "translate(" + x0(d.month) + ",0)"; });
+  // scale the range of the data in the domains
+  xScale0.domain(dataset.map(function(d) { return d.month; }));
+  xScale1.domain(years).range([0, xScale0.bandwidth()]);
+  yScale.domain([0, d3.max(dataset, function(d) { return d3.max(d.totals, function(d2) { return d2.total; }); })]);
 
-month.selectAll("rect")
+  // add the y-axis grid lines
+  svg.append("g")
+    .attr("class", "grid")
+    .call(renderGridlines().tickSize(-width).tickFormat(""));
+
+  var month = svg.selectAll(".month")
+        .data(dataset)
+      .enter().append("g")
+        .attr("class", "month")
+        .attr("transform", function(d) { return "translate(" + xScale0(d.month) + ",0)"; });
+
+  month.selectAll("rect")
+        .data(function(d) { return d.totals; })
+      .enter().append("rect")
+        .attr("width", xScale1.bandwidth())
+        .attr("x", function(d) { return xScale1(d.name); })
+        .attr("y", function(d) { return yScale(d.total); })
+        .attr("height", function(d) { return height - yScale(d.total); })
+        .style("fill", function(d) { return color(d.name); });
+
+  // add the x Axis
+  xAxis = svg.append("g")
+              .attr("transform", "translate(0," + height + ")")
+              .call(d3.axisBottom(xScale0));
+
+  // add the y Axis
+  svg.append("g")
+      .call(d3.axisLeft(yScale).ticks(max_total))
+    .append("text")
+      .attr("class", "axis-title")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -40)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", ".71em")
+      .style("text-anchor", "middle")
+      .text("Monthly Total");
+
+  // add the legend
+  legend = svg.selectAll(".legend")
+        .data(years.slice())
+      .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) {
+          return "translate(0," + i * 20 + ")";
+        });
+
+  legend.append("rect")
+    .attr("x", width - 18)
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", color);
+
+  legend.append("text")
+    .attr("x", width - 24)
+    .attr("y", 10)
+    .attr("dy", ".25em")
+    .style("text-anchor", "end")
+    .text(function(d) {
+      return d.substr(d.length-4);
+    });
+}
+
+function initEvents() {
+  // set up event handler for resizes
+  W.addListener(update);
+}
+
+function update() {
+  updateScales();
+  updateAxes();
+  updateBars();
+  updateLegend();
+}
+
+function updateScales() {
+  var updatedWidth = getUpdatedWidth();
+  xScale0.rangeRound([0, updatedWidth]).padding(0.3);
+  xScale1.rangeRound([0, updatedWidth]);
+
+  svg.selectAll(".grid")
+      .transition().call(renderGridlines().tickSize(-updatedWidth).tickFormat(""));
+}
+
+function updateAxes() {
+  xAxis.transition().call(d3.axisBottom(xScale0));
+}
+
+function updateBars() {
+  var bars = svg.selectAll('.month').data(dataset);
+
+  bars.transition()
+      .attr("transform", function(d) { return "translate(" + xScale0(d.month) + ",0)"; });
+
+  bars.selectAll("rect")
       .data(function(d) { return d.totals; })
     .enter().append("rect")
-      .attr("width", x1.bandwidth())
-      .attr("x", function(d) { return x1(d.name); })
-      .attr("y", function(d) { return y(d.total); })
-      .attr("height", function(d) { return height - y(d.total); })
-      .style("fill", function(d) { return color(d.name); });
+    .exit().remove()
+    .transition()
+      .attr("width", xScale1.bandwidth())
+      .attr("x", function(d) { return xScale1(d.name); });
+}
 
-// add the x Axis
-svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x0))
-  .append("text")
-    .attr("class", "axis-title")
-    .attr("dx", ".71em")
-    .style("text-anchor", "middle")
-    .attr("transform", "translate("+ (width/2) +",40)");
+function updateLegend() {
+  var updatedWidth = getUpdatedWidth();
+  svg.selectAll('.legend rect').transition().attr("x", updatedWidth - 18);
+  svg.selectAll('.legend text').transition().attr("x", updatedWidth - 24);
+}
 
-// add the y Axis
-svg.append("g")
-    .call(d3.axisLeft(y).ticks(max_total))
-  .append("text")
-    .attr("class", "axis-title")
-    .attr("transform", "rotate(-90)")
-    .attr("y", -40)
-    .attr("x", 0 - (height / 2))
-    .attr("dy", ".71em")
-    .style("text-anchor", "middle")
-    .text("Monthly Total")
-  .append("text")
-        .attr("x", (width / 2))
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text("Value vs Date Graph");;
+function getUpdatedWidth() {
+  var chartAreaWidth = (d3.select("#chart-monthly-breakdown").style("width").replace("px", "")) - (margin.left + margin.right);
+  return d3.min([chartAreaWidth, width]);
+}
 
-// add the legend
-var legend = svg.selectAll(".legend")
-      .data(years.slice())
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) {
-        return "translate(0," + i * 20 + ")";
-      });
+initChart();
+update();
+initEvents();
 
-legend.append("rect")
-  .attr("x", width - 18)
-  .attr("width", 18)
-  .attr("height", 18)
-  .style("fill", color);
-
-legend.append("text")
-  .attr("x", width - 24)
-  .attr("y", 10)
-  .attr("dy", ".25em")
-  .style("text-anchor", "end")
-  .text(function(d) {
-    return d.substr(d.length-4);
-  });
 </script>
