@@ -265,6 +265,7 @@ function updateLegend() {
 }
 
 function getUpdatedWidth() {
+  margin.right = 10; // decrease right margin for smaller chart sizes
   var chartAreaWidth = (d3.select("#chart-monthly-breakdown").style("width").replace("px", "")) - (margin.left + margin.right);
   return d3.min([chartAreaWidth, width]);
 }
