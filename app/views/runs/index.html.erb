@@ -161,7 +161,7 @@ function initChart() {
 
   // scale the range of the data in the domains
   xScale.domain(dataset.map(function(d) { return d.month; }));
-  yScale.domain(d3.extent(dataset, function(d) { return Math.max(d.total_2015, d.total_2016); }));
+  yScale.domain([0, d3.max(dataset, function(d) { return d3.max(d.totals, function(d2) { return d2.total; }); })]);
 
   // add the 2015 line
   svg.append("path")
