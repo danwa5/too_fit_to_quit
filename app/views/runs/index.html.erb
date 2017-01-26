@@ -114,70 +114,82 @@ var margin = {top: 10, right: 40, bottom: 40, left: 50},
 // append the svg object to the body of the page
 // append a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-var svg = d3.select("#chart-monthly-breakdown").append("svg")
+var svg = d3.select("#chart-monthly-breakdown")
+  .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var xScale0, xScale1, yScale, xAxis, legend, color, max_total;
-var max_totals_by_month = [];
+var xScale, yScale, xAxis, line_2015, line_2016, legend, color, maxTotal;
+var maxTotalsByMonth = [];
 
 function renderGridlines() {
-  return d3.axisLeft(yScale).ticks(max_total);
+  return d3.axisLeft(yScale).ticks(maxTotal);
 }
 
 function initChart() {
   // set the ranges
-  xScale0 = d3.scaleBand().rangeRound([0, width]).padding(0.3);
-  xScale1 = d3.scaleBand().rangeRound([0, width]);
+  xScale = d3.scaleBand().range([0, width]).padding(1.0);
   yScale = d3.scaleLinear().range([height, 0]);
   color = d3.scaleOrdinal().range(["#8a89a6", "#d0743c"]);
 
+  // get all unique years in dataset
   var years = d3.keys(dataset[0]).filter(function(key) { return key.startsWith('total_'); });
 
   // format the data
   dataset.forEach(function(d) {
     d.month = months[d.month];
+    d.total_2015 = +d.total_2015;
+    d.total_2016 = +d.total_2016;
+
     d.totals = years.map(function(name) { return {name: name, total: +d[name]}; });
-    max_totals_by_month.push(Math.max(d[years[0]], d[years[1]]));
+    maxTotalsByMonth.push(Math.max(d[years[0]], d[years[1]]));
   });
 
-  max_total = d3.max(max_totals_by_month);
+  maxTotal = d3.max(maxTotalsByMonth);
+
+  // define the line for 2015
+  line_2015 = d3.line()
+      .x(function(d) { return xScale(d.month); })
+      .y(function(d) { return yScale(d.total_2015); });
+
+  // define the line for 2016
+  line_2016 = d3.line()
+      .x(function(d) { return xScale(d.month); })
+      .y(function(d) { return yScale(d.total_2016); });
 
   // scale the range of the data in the domains
-  xScale0.domain(dataset.map(function(d) { return d.month; }));
-  xScale1.domain(years).range([0, xScale0.bandwidth()]);
-  yScale.domain([0, d3.max(dataset, function(d) { return d3.max(d.totals, function(d2) { return d2.total; }); })]);
+  xScale.domain(dataset.map(function(d) { return d.month; }));
+  yScale.domain(d3.extent(dataset, function(d) { return Math.max(d.total_2015, d.total_2016); }));
 
-  // add the y-axis grid lines
-  svg.append("g")
-    .attr("class", "grid")
-    .call(renderGridlines().tickSize(-width).tickFormat(""));
+  // add the 2015 line
+  svg.append("path")
+      .datum(dataset)
+      .attr("class", "line_2015")
+      .attr("d", line_2015)
+      .attr("fill", "none")
+      .attr("stroke", function(d) { return color(d[0]); })
+      .attr("stroke-width", function(d) { return 1.5; });
 
-  var month = svg.selectAll(".month")
-        .data(dataset)
-      .enter().append("g")
-        .attr("class", "month")
-        .attr("transform", function(d) { return "translate(" + xScale0(d.month) + ",0)"; });
+  // add the 2016 line
+  svg.append("path")
+      .datum(dataset)
+      .attr("class", "line_2016")
+      .attr("d", line_2016)
+      .attr("fill", "none")
+      .attr("stroke", function(d) { return color(d); })
+      .attr("stroke-width", function(d) { return 1.5; });
 
-  month.selectAll("rect")
-        .data(function(d) { return d.totals; })
-      .enter().append("rect")
-        .attr("width", xScale1.bandwidth())
-        .attr("x", function(d) { return xScale1(d.name); })
-        .attr("y", function(d) { return yScale(d.total); })
-        .attr("height", function(d) { return height - yScale(d.total); })
-        .style("fill", function(d) { return color(d.name); });
-
-  // add the x Axis
+  // add the x-axis
   xAxis = svg.append("g")
-              .attr("transform", "translate(0," + height + ")")
-              .call(d3.axisBottom(xScale0));
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xScale));
 
-  // add the y Axis
+  // add the y-Axis
   svg.append("g")
-      .call(d3.axisLeft(yScale).ticks(max_total))
+      .call(d3.axisLeft(yScale).ticks(maxTotal))
     .append("text")
       .attr("class", "axis-title")
       .attr("transform", "rotate(-90)")
@@ -186,6 +198,11 @@ function initChart() {
       .attr("dy", ".71em")
       .style("text-anchor", "middle")
       .text("Monthly Total");
+
+  // add the y-axis grid lines
+  svg.append("g")
+    .attr("class", "grid")
+    .call(renderGridlines().tickSize(-width).tickFormat(""));
 
   // add the legend
   legend = svg.selectAll(".legend")
@@ -220,36 +237,25 @@ function initEvents() {
 function update() {
   updateScales();
   updateAxes();
-  updateBars();
+  updateLines();
   updateLegend();
 }
 
 function updateScales() {
   var updatedWidth = getUpdatedWidth();
-  xScale0.rangeRound([0, updatedWidth]).padding(0.3);
-  xScale1.rangeRound([0, updatedWidth]);
+  xScale.rangeRound([0, updatedWidth]).padding(1.0);
 
   svg.selectAll(".grid")
-      .transition().call(renderGridlines().tickSize(-updatedWidth).tickFormat(""));
+    .transition().call(renderGridlines().tickSize(-updatedWidth).tickFormat(""));
 }
 
 function updateAxes() {
-  xAxis.transition().call(d3.axisBottom(xScale0));
+  xAxis.transition().call(d3.axisBottom(xScale));
 }
 
-function updateBars() {
-  var bars = svg.selectAll('.month').data(dataset);
-
-  bars.transition()
-      .attr("transform", function(d) { return "translate(" + xScale0(d.month) + ",0)"; });
-
-  bars.selectAll("rect")
-      .data(function(d) { return d.totals; })
-    .enter().append("rect")
-    .exit().remove()
-    .transition()
-      .attr("width", xScale1.bandwidth())
-      .attr("x", function(d) { return xScale1(d.name); });
+function updateLines() {
+  svg.select('.line_2015').datum(dataset).attr("d", line_2015);
+  svg.select('.line_2016').datum(dataset).attr("d", line_2016);
 }
 
 function updateLegend() {
