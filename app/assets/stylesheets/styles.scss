@@ -54,10 +54,6 @@ body {
   .bar {
     fill: #D68910;
   }
-
-  .axis-title {
-    fill: #000;
-  }
 }
 
 .run-search-form {
@@ -124,6 +120,10 @@ body {
 .axis line {
   stroke-width: none;
   shape-rendering: crispEdges;
+}
+
+.axis-title {
+  fill: #000;
 }
 
 .y-axis-title1 {
