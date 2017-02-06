@@ -64,6 +64,14 @@
       </div>
     </div>
   </div>
+
+  <div class="column is-three-quarters">
+    <div class="pod">
+      <div id="chart-monthly-breakdown-2" class="has-text-centered">
+        <h5>Monthly Breakdown</h5>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="columns">
@@ -102,15 +110,39 @@
 </div>
 
 <script>
-var months = {1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'July', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec'};
+var months = { 1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec' };
 
-var dataset = <%= raw @monthly_breakdown.to_json %>;
+var colors = ["#8a89a6", "#d0743c"];
 
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 40, bottom: 40, left: 50},
     width = 800 - margin.left - margin.right,
     height = 405 - margin.top - margin.bottom;
 
+function renderGridlines(type, scale, numGrids) {
+  if (type == 'horizontal') {
+    return d3.axisLeft(scale).ticks(numGrids);
+  } else {
+    return d3.axisBottom(scale).ticks(numGrids);
+  }
+}
+
+// Set up data sets 
+var dataset = <%= raw @monthly_breakdown.to_json %>;
+
+// get all unique years in dataset
+var years = d3.keys(dataset[0]).filter(function(key) { return key.startsWith('total_'); });
+
+var dataset_2 = [];
+
+years.forEach(function(key) {
+  var year = key.replace(/total_/, '');
+  dataset.forEach(function(d) {
+    dataset_2.push({ date: new Date(year,(d.month-1),1), total: d[key] });
+  });
+});
+
+// =============================== CHART 1 ==================================
 // append the svg object to the body of the page
 // append a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
@@ -121,21 +153,26 @@ var svg = d3.select("#chart-monthly-breakdown")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var xScale, yScale, xAxis, line_2015, line_2016, legend, color, maxTotal;
+var xScale, yScale, xAxis, line_2015, line_2016, legend, maxTotal;
 var maxTotalsByMonth = [];
 
-function renderGridlines() {
-  return d3.axisLeft(yScale).ticks(maxTotal);
-}
+// =============================== CHART 2 ==================================
+var svg_2 = d3.select("#chart-monthly-breakdown-2")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var xScale_2, yScale_2, xAxis_2, line_2, bkgdA, bkgdB;
+var bkgdColors = ["#e2e2e9", "#f5e2d6"];
+
 
 function initChart() {
   // set the ranges
   xScale = d3.scaleBand().range([0, width]).padding(1.0);
   yScale = d3.scaleLinear().range([height, 0]);
-  color = d3.scaleOrdinal().range(["#8a89a6", "#d0743c"]);
-
-  // get all unique years in dataset
-  var years = d3.keys(dataset[0]).filter(function(key) { return key.startsWith('total_'); });
+  color = d3.scaleOrdinal().range(colors);
 
   // format the data
   dataset.forEach(function(d) {
@@ -169,8 +206,8 @@ function initChart() {
       .attr("class", "line_2015")
       .attr("d", line_2015)
       .attr("fill", "none")
-      .attr("stroke", function(d) { return color(d[0]); })
-      .attr("stroke-width", function(d) { return 1.5; });
+      .attr("stroke", colors[0])
+      .attr("stroke-width", 1.5);
 
   // add the 2016 line
   svg.append("path")
@@ -178,8 +215,8 @@ function initChart() {
       .attr("class", "line_2016")
       .attr("d", line_2016)
       .attr("fill", "none")
-      .attr("stroke", function(d) { return color(d); })
-      .attr("stroke-width", function(d) { return 1.5; });
+      .attr("stroke", colors[1])
+      .attr("stroke-width", 1.5);
 
   // add the x-axis
   xAxis = svg.append("g")
@@ -199,10 +236,16 @@ function initChart() {
       .style("text-anchor", "middle")
       .text("Monthly Total");
 
+  // add the x-axis grid lines
+  svg.append("g")
+    .attr("class", "grid xGrid")
+    .attr("transform", "translate(0," + height + ")")
+    .call(renderGridlines('vertical', xScale, dataset.length).tickSize(-height).tickFormat(""))
+
   // add the y-axis grid lines
   svg.append("g")
-    .attr("class", "grid")
-    .call(renderGridlines().tickSize(-width).tickFormat(""));
+    .attr("class", "grid yGrid")
+    .call(renderGridlines('horizontal', yScale, maxTotal).tickSize(-width).tickFormat(""));
 
   // add the legend
   legend = svg.selectAll(".legend")
@@ -229,39 +272,129 @@ function initChart() {
     });
 }
 
+function initChart_2() {
+  // set the ranges
+  xScale_2 = d3.scaleTime().range([0, width]);
+  yScale_2 = d3.scaleLinear().rangeRound([height, 0]);
+
+  maxTotal = d3.max(dataset_2, function(d) { return d.total; });
+
+  // define the line for 2015
+  line_2 = d3.line()
+      .x(function(d) { return xScale_2(d.date); })
+      .y(function(d) { return yScale_2(d.total); });
+
+  bkgdA = svg_2.append("rect")
+    .attr("x",0)
+    .attr("y",0)
+    .attr("width",width/2)
+    .attr("height",height)
+    .style("fill", bkgdColors[0]);
+
+  bkgdB = svg_2.append("rect")
+    .attr("x",(width/2))
+    .attr("y",0)
+    .attr("width",(width/2))
+    .attr("height",height)
+    .style("fill", bkgdColors[1]);
+
+  // scale the range of the data in the domains
+  xScale_2.domain(d3.extent(dataset_2, function(d) { return d.date; }));
+  yScale_2.domain([0, maxTotal]);
+
+  // add the line
+  svg_2.append("path")
+      .datum(dataset_2)
+      .attr("class", "line_2")
+      .attr("d", line_2)
+      .attr("fill", "none")
+      .attr("stroke", colors[0])
+      .attr("stroke-width", 1.5);
+
+  // add the x-axis
+  xAxis_2 = svg_2.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xScale_2).tickFormat(d3.timeFormat("%b %Y")));
+
+  // add the y-Axis
+  svg_2.append("g")
+      .call(d3.axisLeft(yScale_2).ticks(maxTotal))
+    .append("text")
+      .attr("class", "axis-title")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -40)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", ".71em")
+      .style("text-anchor", "middle")
+      .text("Monthly Total");
+
+  // add the x-axis grid lines
+  svg_2.append("g")
+      .attr("class", "grid xGrid")
+      .attr("transform", "translate(0," + height + ")")
+      .call(renderGridlines('vertical', xScale_2, dataset_2.length).tickSize(-height).tickFormat(""))
+
+  // add the y-axis grid lines
+  svg_2.append("g")
+    .attr("class", "grid yGrid")
+    .call(renderGridlines('horizontal', yScale_2, maxTotal).tickSize(-width).tickFormat(""));
+}
+
 function initEvents() {
   // set up event handler for resizes
   W.addListener(update);
 }
 
 function update() {
-  updateScales();
+  var updatedWidth = getUpdatedWidth();
+
+  updateScales(updatedWidth);
   updateAxes();
   updateLines();
-  updateLegend();
+  updateLegend(updatedWidth);
+  updateBackground(updatedWidth);
 }
 
-function updateScales() {
-  var updatedWidth = getUpdatedWidth();
+function updateScales(updatedWidth) {
+  // chart 1
   xScale.rangeRound([0, updatedWidth]).padding(1.0);
 
-  svg.selectAll(".grid")
-    .transition().call(renderGridlines().tickSize(-updatedWidth).tickFormat(""));
+  svg.selectAll(".yGrid")
+    .transition().call(renderGridlines('horizontal', yScale, maxTotal).tickSize(-updatedWidth).tickFormat(""));
+
+  svg.selectAll(".xGrid")
+    .transition().call(renderGridlines('vertical', xScale, dataset.length).tickSize(-height).tickFormat(""));
+
+  // chart 2
+  xScale_2.range([0, updatedWidth]);
+
+  svg_2.selectAll(".yGrid")
+    .transition().call(renderGridlines('horizontal', yScale_2, maxTotal).tickSize(-updatedWidth).tickFormat(""));
+
+  svg_2.selectAll(".xGrid")
+    .transition().call(renderGridlines('vertical', xScale_2, dataset_2.length).tickSize(-height).tickFormat(""));
 }
 
 function updateAxes() {
   xAxis.transition().call(d3.axisBottom(xScale));
+  xAxis_2.transition().call(d3.axisBottom(xScale_2).tickFormat(d3.timeFormat("%b %Y")));
 }
 
 function updateLines() {
   svg.select('.line_2015').datum(dataset).attr("d", line_2015);
   svg.select('.line_2016').datum(dataset).attr("d", line_2016);
+  svg_2.select('.line_2').datum(dataset_2).attr("d", line_2);
 }
 
-function updateLegend() {
-  var updatedWidth = getUpdatedWidth();
+function updateLegend(updatedWidth) {
   svg.selectAll('.legend rect').transition().attr("x", updatedWidth - 18);
   svg.selectAll('.legend text').transition().attr("x", updatedWidth - 24);
+}
+
+function updateBackground(updatedWidth) {
+  bkgdA.transition().attr("x",0).attr("y",0).attr("width",updatedWidth/2).attr("height",height).style("fill", bkgdColors[0]);
+  bkgdB.transition().attr("x",(updatedWidth/2)).attr("y",0).attr("width",(updatedWidth/2)).attr("height",height).style("fill", bkgdColors[1]);
 }
 
 function getUpdatedWidth() {
@@ -271,6 +404,7 @@ function getUpdatedWidth() {
 }
 
 initChart();
+initChart_2();
 update();
 initEvents();
 
