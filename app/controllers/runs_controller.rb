@@ -8,7 +8,7 @@ class RunsController < ApplicationController
                                   .order('user_activities.start_time')
 
     @locations = Activity::FitbitRun.where(user: current_user).select('city, country').distinct
-    @monthly_breakdown = current_user.user_activities.monthly_breakdown(2016)
+    @monthly_breakdown = current_user.user_activities.monthly_breakdown(Date.today.year)
   end
 
   def show

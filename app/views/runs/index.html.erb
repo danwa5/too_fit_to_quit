@@ -114,23 +114,48 @@ var dataset = <%= raw @monthly_breakdown.to_json %>;
 var years = d3.keys(dataset[0]).filter(function(key) { return key.startsWith('total_'); });
 
 var dataset_2 = [];
+var gridSpace = {};
+var today = new Date();
+var validDataPoint = false;
 
-years.forEach(function(key) {
+years.forEach(function(key, index) {
   var year = key.replace(/total_/, '');
-  dataset.forEach(function(d) {
-    dataset_2.push({ date: new Date(year,(d.month-1),1), total: d[key] });
+  gridSpace[year] = 0;
+  dataset.forEach(function(d, i) {
+    // Set flag when encounter first valid data point
+    if (index == 0 && d[key] != null) {
+      validDataPoint = true;
+    }
+
+    // Skip iteration if data point is invalid
+    if (validDataPoint == false) {
+      return;
+    }
+
+    var date = new Date(year,(d.month-1),1);
+    // Do not include any future dates
+    if (date <= today) {
+      dataset_2.push({ date: date, total: d[key] });
+      gridSpace[year] += 1;
+    }
   });
+});
+
+// Decrement 1 for current year because the last data point
+// does not have a background grid of its own.
+gridSpace[today.getFullYear()] -= 1;
+
+// Total number of grid spaces across the chart
+var totalGridSpace = 0;
+Object.values(gridSpace).forEach(function(value) {
+  totalGridSpace += value;
 });
 
 var months = { 1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec' };
 
-var colors = ["#8a89a6", "#d0743c"];
+var colors = ["#8a89a6", "#d0743c", "#98D03C"];
 
-var margin = {}, width, height, maxTotal;
-margin.top = 20;
-margin.right = 40;
-margin.left = 50;
-margin.bottom = 40;
+var margin = { top: 20, right: 40, left: 50, bottom: 40 }, width, height, maxTotal;
 
 function renderGridlines(type, scale, numGrids) {
   if (type == 'horizontal') {
@@ -275,8 +300,8 @@ var Chart = (function(window,d3) {
 
 var Chart_2 = (function(window,d3) {
 
-  var data_2, svg_2, chartWrapper_2, xScale_2, yScale_2, xAxis_2, yAxis_2, yAxisLabel_2, xGrid_2, yGrid_2, bkgdA, bkgdB, path_2, line_2;
-  var bkgdColors = ["#e2e2e9", "#f5e2d6"];
+  var data_2, svg_2, chartWrapper_2, xScale_2, yScale_2, xAxis_2, yAxis_2, yAxisLabel_2, xGrid_2, yGrid_2, bkgdA, bkgdB, bkgdC, path_2, line_2;
+  var bkgdColors = ["#e2e2e9", "#f5e2d6", "#e9f5d6"];
 
   init(dataset_2); //load data, then initialize chart
 
@@ -292,6 +317,7 @@ var Chart_2 = (function(window,d3) {
     chartWrapper_2 = svg_2.append('g');
     bkgdA = chartWrapper_2.append("rect");
     bkgdB = chartWrapper_2.append("rect");
+    bkgdC = chartWrapper_2.append("rect");
     path_2 = chartWrapper_2.append('path').datum(data_2).classed('line_2', true);
     xAxis_2 = chartWrapper_2.append('g').classed('x-axis', true);
     yAxis_2 = chartWrapper_2.append('g').classed('y-axis', true);
@@ -348,15 +374,21 @@ var Chart_2 = (function(window,d3) {
     // update backgrounds
     bkgdA.attr("x",0)
       .attr("y",0)
-      .attr("width",width/2)
+      .attr("width", (width * (gridSpace[today.getFullYear()-2]/totalGridSpace)))
       .attr("height",height)
       .style("fill", bkgdColors[0]);
 
-    bkgdB.attr("x",(width/2))
+    bkgdB.attr("x",(width * (gridSpace[today.getFullYear()-2]/totalGridSpace)))
       .attr("y",0)
-      .attr("width",(width/2))
+      .attr("width", (width * (gridSpace[today.getFullYear()-1]/totalGridSpace)))
       .attr("height",height)
       .style("fill", bkgdColors[1]);
+
+    bkgdC.attr("x",(width * ((gridSpace[today.getFullYear()-2]/totalGridSpace) + (gridSpace[today.getFullYear()-1]/totalGridSpace))))
+      .attr("y",0)
+      .attr("width", (width * (gridSpace[today.getFullYear()]/totalGridSpace)))
+      .attr("height",height)
+      .style("fill", bkgdColors[2]);
 
     // update lines
     path_2.attr('d', line_2)
