@@ -168,7 +168,7 @@ function renderGridlines(type, scale, numGrids) {
 
 var Chart = (function(window,d3) {
 
-  var data, svg, chartWrapper, xScale, yScale, xAxis, yAxis, yAxisLabel, xGrid, yGrid, legend, line_2015, line_2016, maxTotalsByMonth = [];
+  var data, svg, chartWrapper, xScale, yScale, xAxis, yAxis, yAxisLabel, xGrid, yGrid, legend, line_2015, line_2016, line_2017, maxTotalsByMonth = [];
 
   init(dataset); //load data, then initialize chart
 
@@ -180,6 +180,7 @@ var Chart = (function(window,d3) {
       d.month = months[d.month];
       d.total_2015 = +d.total_2015;
       d.total_2016 = +d.total_2016;
+      d.total_2017 = +d.total_2017;
 
       d.totals = years.map(function(name) { return {name: name, total: +d[name]}; });
       maxTotalsByMonth.push(Math.max(d[years[0]], d[years[1]]));
@@ -197,6 +198,7 @@ var Chart = (function(window,d3) {
     chartWrapper = svg.append('g');
     path_2015 = chartWrapper.append('path').datum(data).classed('line_2015', true);
     path_2016 = chartWrapper.append('path').datum(data).classed('line_2016', true);
+    path_2017 = chartWrapper.append('path').datum(data).classed('line_2017', true);
     xAxis = chartWrapper.append('g').classed('x-axis', true);
     yAxis = chartWrapper.append('g').classed('y-axis', true);
     yAxisLabel = chartWrapper.select('.y-axis').append('text');
@@ -223,6 +225,10 @@ var Chart = (function(window,d3) {
     line_2016 = d3.line()
       .x(function(d) { return xScale(d.month) })
       .y(function(d) { return yScale(d.total_2016) });
+
+    line_2017 = d3.line()
+      .x(function(d) { return xScale(d.month) })
+      .y(function(d) { return yScale(d.total_2017) });
 
     // render the chart
     render();
@@ -274,6 +280,11 @@ var Chart = (function(window,d3) {
     path_2016.attr('d', line_2016)
         .attr("fill", "none")
         .attr("stroke", colors[1])
+        .attr("stroke-width", 1.5);
+
+    path_2017.attr('d', line_2017)
+        .attr("fill", "none")
+        .attr("stroke", colors[2])
         .attr("stroke-width", 1.5);
 
     // update legend
