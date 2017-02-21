@@ -135,7 +135,7 @@ years.forEach(function(key, index) {
     var date = new Date(year,(d.month-1),1);
     // Do not include any future dates
     if (date <= today) {
-      dataset_2.push({ date: date, total: d[key] });
+      dataset_2.push({ date: date, total: d[key], avg_duration: d['avg_duration_' + year] });
       gridSpace[year] += 1;
     }
   });
@@ -155,7 +155,7 @@ var months = { 1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:
 
 var colors = ["#8a89a6", "#d0743c", "#98D03C"];
 
-var margin = { top: 20, right: 40, left: 50, bottom: 40 }, width, height, maxTotal;
+var margin = { top: 20, right: 50, left: 50, bottom: 40 }, width, height, maxTotal;
 
 function renderGridlines(type, scale, numGrids) {
   if (type == 'horizontal') {
@@ -190,7 +190,7 @@ var Chart = (function(window,d3) {
 
     // initialize scales
     xScale = d3.scaleBand().domain(data.map(function(d) { return d.month; }));
-    yScale = d3.scaleLinear().domain([0, d3.max(data, function(d) { return d3.max(d.totals, function(d2) { return d2.total; }); })]);
+    yScale = d3.scaleLinear().domain([0, maxTotal]);
     color = d3.scaleOrdinal().range(colors);
 
     // initialize svg and other elements
@@ -258,7 +258,7 @@ var Chart = (function(window,d3) {
     // update y-axis label
     yAxisLabel.attr("class", "axis-title")
       .attr("transform", "rotate(-90)")
-      .attr("y", -40)
+      .attr("y", -margin.left+5)
       .attr("x", 0 - (height / 2))
       .attr("dy", ".71em")
       .style("text-anchor", "middle")
@@ -289,8 +289,8 @@ var Chart = (function(window,d3) {
 
     // update legend
     legendRect.attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
+      .attr("width", 16)
+      .attr("height", 16)
       .style("fill", color);
 
     legendText.attr("x", width - 24)
@@ -311,7 +311,8 @@ var Chart = (function(window,d3) {
 
 var Chart_2 = (function(window,d3) {
 
-  var data_2, svg_2, chartWrapper_2, xScale_2, yScale_2, xAxis_2, yAxis_2, yAxisLabel_2, xGrid_2, yGrid_2, bkgdA, bkgdB, bkgdC, path_2, line_2;
+  var data_2, svg_2, chartWrapper_2, xScale_2, yScale_2a, yScale_2b, xAxis_2, yAxis_2a, yAxis_2b, yAxisLabel_2a, yAxisLabel_2b;
+  var xGrid_2, yGrid_2, bkgdA, bkgdB, bkgdC, path_2a, path_2b, line_2a, line_2b;
   var bkgdColors = ["#e2e2e9", "#f5e2d6", "#e9f5d6"];
 
   init(dataset_2); //load data, then initialize chart
@@ -319,27 +320,40 @@ var Chart_2 = (function(window,d3) {
   function init(dataset) {
     data_2 = dataset;
 
+    // format the data
+    data_2.forEach(function(d) {
+      d.avg_duration = +d.avg_duration;
+    });
+
     // initialize scales
     maxTotal = d3.max(data_2, function(d) { return d.total; });
     xScale_2 = d3.scaleTime().domain(d3.extent(data_2, function(d) { return d.date; }));
-    yScale_2 = d3.scaleLinear().domain([0, maxTotal]);
+    yScale_2a = d3.scaleLinear().domain([0, maxTotal + 1]);
+    yScale_2b = d3.scaleLinear().domain(d3.extent(data_2, function(d) { return d.avg_duration; }));
 
     svg_2 = d3.select("#chart-monthly-breakdown-2").append("svg");
     chartWrapper_2 = svg_2.append('g');
     bkgdA = chartWrapper_2.append("rect");
     bkgdB = chartWrapper_2.append("rect");
     bkgdC = chartWrapper_2.append("rect");
-    path_2 = chartWrapper_2.append('path').datum(data_2).classed('line_2', true);
+    path_2a = chartWrapper_2.append('path').datum(data_2).classed('line_2a', true);
+    path_2b = chartWrapper_2.append('path').datum(data_2).style("stroke-dasharray", ("3, 3")).classed('line_2b', true);
     xAxis_2 = chartWrapper_2.append('g').classed('x-axis', true);
-    yAxis_2 = chartWrapper_2.append('g').classed('y-axis', true);
-    yAxisLabel_2 = chartWrapper_2.select('.y-axis').append('text');
+    yAxis_2a = chartWrapper_2.append('g').classed('axis y-axis-primary', true);
+    yAxis_2b = chartWrapper_2.append('g').classed('axis y-axis-secondary', true);
+    yAxisLabel_2a = chartWrapper_2.select('.y-axis-primary').append('text');
+    yAxisLabel_2b = chartWrapper_2.select('.y-axis-secondary').append('text');
     xGrid_2 = chartWrapper_2.append('g').classed('grid x-grid', true);
     yGrid_2 = chartWrapper_2.append('g').classed('grid y-grid', true);
 
     // the path generator for the line chart
-    line_2 = d3.line()
+    line_2a = d3.line()
       .x(function(d) { return xScale_2(d.date) })
-      .y(function(d) { return yScale_2(d.total) });
+      .y(function(d) { return yScale_2a(d.total) });
+
+    line_2b = d3.line()
+      .x(function(d) { return xScale_2(d.date) })
+      .y(function(d) { return yScale_2b(d.avg_duration) });
 
     // render the chart
     render();
@@ -353,34 +367,46 @@ var Chart_2 = (function(window,d3) {
 
     // update x and y scales to new dimensions
     xScale_2.range([0, width]);
-    yScale_2.rangeRound([height, 0]);
+    yScale_2a.rangeRound([height, 0]);
+    yScale_2b.rangeRound([height, 0]);
 
     // update svg elements to new dimensions
     svg_2.attr('width', width + margin.right + margin.left)
         .attr('height', height + margin.top + margin.bottom);
     chartWrapper_2.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    // update the both axes
+    // update all axes
     xAxis_2.attr("transform", "translate(0," + height + ")")
           .call(d3.axisBottom(xScale_2).tickFormat(d3.timeFormat("%b %Y")));
 
-    yAxis_2.call(d3.axisLeft(yScale_2).ticks(maxTotal));
+    yAxis_2a.call(d3.axisLeft(yScale_2a).ticks(maxTotal));
 
-    // update y-axis label
-    yAxisLabel_2.attr("class", "axis-title")
+    yAxis_2b.attr("transform", "translate(" + width + ",0)")
+          .call(d3.axisRight(yScale_2b));
+
+    // update y-axis labels
+    yAxisLabel_2a.attr("class", "axis-title-primary")
       .attr("transform", "rotate(-90)")
-      .attr("y", -40)
+      .attr("y", -margin.left+5)
       .attr("x", 0 - (height / 2))
       .attr("dy", ".71em")
       .style("text-anchor", "middle")
       .text("Monthly Total");
+
+    yAxisLabel_2b.attr("class", "axis-title-secondary")
+      .attr("transform", "rotate(-90)")
+      .attr("y", (margin.right-10))
+      .attr("x", 0 - (height / 2))
+      .attr("dy", ".71em")
+      .style("text-anchor", "middle")
+      .text("Average Duration (minutes)");
 
     // update x-axis grid lines
     xGrid_2.attr("transform", "translate(0," + height + ")")
       .transition().call(renderGridlines('vertical', xScale_2, data_2.length).tickSize(-height).tickFormat(""));
 
     // update y-axis grid lines
-    yGrid_2.transition().call(renderGridlines('horizontal', yScale_2, maxTotal).tickSize(-width).tickFormat(""));
+    yGrid_2.transition().call(renderGridlines('horizontal', yScale_2a, maxTotal).tickSize(-width).tickFormat(""));
 
     // update backgrounds
     bkgdA.attr("x",0)
@@ -402,9 +428,14 @@ var Chart_2 = (function(window,d3) {
       .style("fill", bkgdColors[2]);
 
     // update lines
-    path_2.attr('d', line_2)
+    path_2a.attr('d', line_2a)
         .attr("fill", "none")
-        .attr("stroke", colors[0])
+        .attr("stroke", "#444")
+        .attr("stroke-width", 1.0);
+
+    path_2b.attr('d', line_2b)
+        .attr("fill", "none")
+        .attr("stroke", "#999")
         .attr("stroke-width", 1.5);
   }
 
@@ -416,8 +447,18 @@ var Chart_2 = (function(window,d3) {
 
 
 function updateDimensions(chartParentWidth) {
-  margin.left  = chartParentWidth < 600 ? 40 : 50;
-  margin.right = chartParentWidth < 600 ? 10 : 40;
+
+  if (chartParentWidth < 600) {
+    margin.left = 30;
+    margin.right = 35;
+  } else if (chartParentWidth < 690) {
+    margin.left = 40;
+    margin.right = 40;
+  } else {
+    margin.left = 50;
+    margin.right = 50;
+  }
+
   aspectRatio  = chartParentWidth < 500 ? 0.55 : 0.47;
   width = chartParentWidth - margin.left - margin.right;
   height = aspectRatio * width;
