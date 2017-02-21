@@ -115,111 +115,149 @@ map.on('load', function() {
 //------------
 var data = <%= raw @decorated_run.chart_data.to_json %>;
 
-// set the dimensions and margins of the graph
-var margin = {top: 20, right: 40, bottom: 50, left: 30},
-    width = 800 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
 
-// parse the date/time
-var parseTime = d3.utcParse("%Y-%m-%dT%H:%M:%S.%L%Z");
+var Chart = (function(window,d3) {
 
-// set the ranges
-var x = d3.scaleTime().range([0, width]);
-var y1 = d3.scaleLinear().range([height, 0]);
-var y2 = d3.scaleLinear().range([height, 0]);
+  var margin = { top: 20, right: 40, bottom: 40, left: 30 }, width, height;
 
-var x_ticks = data.length > 20 ? 20 : data.length;
+  var svg, chartWrapper, xScale, yScale1, yScale2, xAxis, yAxis1, yAxis2, line1, line2, area, path1, path2a, path2b, maxTicks;
 
-// define the heart rate line
-var line1 = d3.line()
-    .x(function(d) { return x(d.datetime); })
-    .y(function(d) { return y1(d.heart_rate); });
+  // parse the date/time
+  var parseTime = d3.utcParse("%Y-%m-%dT%H:%M:%S.%L%Z");
 
-// define the altitude line
-var line2 = d3.line()
-    .x(function(d) { return x(d.datetime); })
-    .y(function(d) { return y2(d.altitude); });
+  init();
 
-// define the altitude area
-var area = d3.area()
-    .x(function(d) { return x(d.datetime); })
-    .y0(height)
-    .y1(function(d) { return y2(d.altitude); });
+  function init() {
 
-// append the svg object to the page
-var svg = d3.select("#chart-runs")
-  .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // format the data
+    data.forEach(function(d) {
+      d.datetime = parseTime(d.datetime);
+      d.heart_rate = +d.heart_rate;
+      d.altitude = +d.altitude;
+    });
 
-// format the data
-data.forEach(function(d) {
-  d.datetime = parseTime(d.datetime);
-  d.heart_rate = +d.heart_rate;
-  d.altitude = +d.altitude;
-});
+    // initialize scales
+    xScale = d3.scaleTime().domain(d3.extent(data, function(d) { return d.datetime; }));
+    yScale1 = d3.scaleLinear().domain(d3.extent(data, function(d) { return d.heart_rate; }));
+    yScale2 = d3.scaleLinear().domain(d3.extent(data, function(d) { return d.altitude; }));
 
-// scale the range of the data
-x.domain(d3.extent(data, function(d) { return d.datetime; }));
-y1.domain(d3.extent(data, function(d) { return d.heart_rate; }));
-y2.domain(d3.extent(data, function(d) { return d.altitude; }));
+    svg = d3.select("#chart-runs").append("svg");
+    chartWrapper = svg.append('g');
+    xAxis = chartWrapper.append('g').classed('axis axis--x', true);
+    yAxis1 = chartWrapper.append('g').classed('axis axis--y y-axis-primary', true);
+    yAxis2 = chartWrapper.append('g').classed('axis axis--y y-axis-secondary', true);
+    yAxisLabel1 = chartWrapper.select('.y-axis-primary').append('text');
+    yAxisLabel2 = chartWrapper.select('.y-axis-secondary').append('text');
+    path2a = chartWrapper.append('path').datum(data).classed('line2', true);
+    path2b = chartWrapper.append('path').datum(data).classed('area', true);
+    path1 = chartWrapper.append('path').datum(data).classed('line1', true);
+    // maxTicks = data.length > 20 ? 20 : data.length;
 
-// add the altitude line
-svg.append("path")
-    .datum(data)
-    .attr("class", "line2")
-    .attr("d", line2);
+    // define the heart rate line
+    line1 = d3.line()
+      .x(function(d) { return xScale(d.datetime); })
+      .y(function(d) { return yScale1(d.heart_rate); });
 
-// add the altitude area
-svg.append("path")
-    .datum(data)
-    .attr("class", "area")
-    .attr("d", area);
+    // define the altitude line
+    line2 = d3.line()
+      .x(function(d) { return xScale(d.datetime); })
+      .y(function(d) { return yScale2(d.altitude); });
 
-// add the heart rate line
-svg.append("path")
-    .datum(data)
-    .attr("class", "line1")
-    .attr("d", line1);
+    // render the chart
+    render();
+  }
 
-// add the x-axis
-svg.append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).ticks(x_ticks).tickFormat(d3.timeFormat("%H:%M:%S")))
-  .selectAll("text")
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", "rotate(-65)");
+  function render() {
 
-// add the y-axis for heart rate
-svg.append("g")
-    .attr("class", "axis axis--y")
-    .style("stroke", "#e67e22")
-    .call(d3.axisLeft(y1))
-  .append("text")
-    .attr("class", "y-axis-title1")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 6)
-    .attr("dy", ".71em")
-    .style("text-anchor", "end")
-    .text("Heart Rate (BPM)");
+    // get dimensions based on width of parent div
+    var dw = document.getElementById("chart-runs").offsetWidth;
+    updateDimensions(dw);
 
-// add the y-axis for altitude
-svg.append("g")
-    .attr("class", "axis axis--y")
-    .attr("transform", "translate(" + width + ",0)")
-    .style("stroke", "#2980b9")
-    .call(d3.axisRight(y2))
-  .append("text")
-    .attr("class", "y-axis-title2")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 25)
-    .attr("dy", ".71em")
-    .style("text-anchor", "end")
-    .text("Altitude (m)");
+    // update x and y scales to new dimensions
+    xScale.range([0, width]);
+    yScale1.range([height, 0]);
+    yScale2.range([height, 0]);
+
+    // update svg elements to new dimensions
+    svg.attr('width', width + margin.right + margin.left)
+      .attr('height', height + margin.top + margin.bottom);
+    chartWrapper.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // update x-axis
+    xAxis.attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(xScale).ticks(maxTicks, d3.timeFormat("%H:%M")))
+        .selectAll("text")
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", ".15em")
+          .attr("transform", "rotate(-65)");
+
+    // update primary y-axis
+    yAxis1.style("stroke", "#e67e22")
+          .call(d3.axisLeft(yScale1));
+
+    // update secondary y-axis
+    yAxis2.attr("transform", "translate(" + width + ",0)")
+          .style("stroke", "#2980b9")
+          .call(d3.axisRight(yScale2));
+
+    // update primary y-axis label
+    yAxisLabel1.attr("class", "y-axis-title1")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Heart Rate (BPM)");
+
+    // update secondary y-axis label
+    yAxisLabel2.attr("class", "y-axis-title2")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 25)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Altitude (m)");
+
+    // update heart rate line
+    path1.attr('d', line1);
+
+    // update altitude line
+    path2a.attr('d', line2);
+
+    // update altitude area
+    area = d3.area()
+      .x(function(d) { return xScale(d.datetime); })
+      .y0(height)
+      .y1(function(d) { return yScale2(d.altitude); });
+
+    path2b.attr("d", area);
+  }
+
+  function updateDimensions(chartParentWidth) {
+    if (chartParentWidth < 600) {
+      margin.left = 30;
+      margin.right = 35;
+      maxTicks = 10;
+    } else if (chartParentWidth < 690) {
+      margin.left = 40;
+      margin.right = 40;
+      maxTicks = 15;
+    } else {
+      margin.left = 50;
+      margin.right = 50;
+      maxTicks = 20;
+    }
+
+    aspectRatio = chartParentWidth < 500 ? 0.55 : 0.50;
+    width = chartParentWidth - margin.left - margin.right;
+    height = aspectRatio * width;
+  }
+
+  return {
+    render : render
+  }
+
+})(window,d3);
+
+window.addEventListener('resize', Chart.render);
 
 </script>
