@@ -15,7 +15,9 @@
 //= require bootstrap-sprockets
 //= require underscore
 //= require turbolinks
+//= require selectize
 //= require d3
+//= require W
 //= require react
 //= require react_ujs
 //= require components

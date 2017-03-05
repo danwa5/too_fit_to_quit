@@ -10,8 +10,8 @@ module ApplicationHelper
   end
 
   # formats 2016-07-31 14:00:00 UTC => Sun, 7/31/2016  7:00am
-  def format_run_time(date_string_utc, time_zone="Pacific Time (US & Canada)")
-    Time.parse(date_string_utc.to_s).in_time_zone(time_zone).strftime('%a, %-m/%-d/%Y %l:%M%P')
+  def format_run_time(date_string_utc)
+    Time.zone.parse(date_string_utc.to_s).strftime('%a, %-m/%-d/%Y %l:%M%P')
   end
 
   def fitbit_periods
@@ -27,11 +27,12 @@ module ApplicationHelper
 
   def format_distance(amount, unit='meter')
     return nil if amount.blank?
-    if unit == 'meter'
-      (amount.to_f * MILES_PER_METER).round(2)
+    x = if unit == 'meter'
+      amount.to_f * MILES_PER_METER
     elsif unit == 'mile'
-      (amount.to_f / MILES_PER_METER).round(2)
+      amount.to_f / MILES_PER_METER
     end
+    sprintf('%.2f', x.round(2))
   end
 
   def format_duration(seconds)
@@ -40,6 +41,10 @@ module ApplicationHelper
     f_minutes = minutes % 60
     hours = minutes < 60 ? '' : "#{(minutes / 60).to_s}:"
     "#{hours}#{f_minutes.to_s.rjust(2,'0')}:#{f_seconds.to_s.rjust(2,'0')}"
+  end
+
+  def convert_to_seconds(minutes)
+    minutes.blank? ? nil : (minutes.to_f * 60)
   end
 
   def format_pace(seconds, meters)

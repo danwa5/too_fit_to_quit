@@ -20,7 +20,7 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe '#format_run_time' do
     it 'converts and formats datetime from UTC to PST' do
-      expect(helper.format_run_time('2016-07-31 14:00:00 UTC')).to eq('Sun, 7/31/2016  7:00am')
+      expect(helper.format_run_time('2016-07-31 14:00:00 UTC')).to eq('Sun, 7/31/2016  2:00pm')
     end
   end
 
@@ -39,12 +39,12 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
     context 'when the argument is in meters' do
       it 'converts meters to miles with 2 decimal places' do
-        expect(helper.format_distance(10000, 'meter')).to eq(6.21)
+        expect(helper.format_distance(1609.34, 'meter')).to eq('1.00')
       end
     end
     context 'when the argument is in miles' do
       it 'converts miles to meters with 2 decimal places' do
-        expect(helper.format_distance(1, 'mile')).to eq(1609.34)
+        expect(helper.format_distance(1, 'mile')).to eq('1609.34')
       end
     end
   end
@@ -59,6 +59,15 @@ RSpec.describe ApplicationHelper, type: :helper do
       it 'coverts seconds to 1:30:40' do
         expect(helper.format_duration(5440)).to eq('1:30:40')
       end
+    end
+  end
+
+  describe '#convert_to_seconds' do
+    context 'when minutes is blank' do
+      it { expect(helper.convert_to_seconds('')).to be_nil }
+    end
+    context 'when minutes is given' do
+      it { expect(helper.convert_to_seconds('1')).to eq(60) }
     end
   end
 
