@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
 
   def self.from_omniauth(auth, current_user)
     identity = Identity.where(provider: auth.provider, uid: auth.uid).first_or_create do |identity|
-      if identity.user == nil
+      if identity.user.nil?
         if current_user.present?
           identity.user = current_user
         else
