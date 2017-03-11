@@ -3,18 +3,25 @@ require 'rails_helper'
 RSpec.describe Strava::FindActivityWorker, type: :model do
   let(:user) { create(:user) }
   let!(:identity) { create(:identity, :strava, user: user) }
+  let(:response) { nil }
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
   def make_request(response)
-    stub_request(:get, /https:\/\/www.strava.com\/api\/v3\/athlete\/activities\?after=\d+/).
+    stub_request(:get, %r{https://www.strava.com/api/v3/athlete/activities\?after=\d+}).
       to_return(status: 200, body: response.to_json)
   end
 
   describe '#perform' do
-    context 'when user is nil' do
-      it 'returns false' do
-        expect(subject.perform('')).to be_falsey
+    before do
+      make_request(response)
+    end
+
+    context 'when user is invalid' do
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect {
+          subject.perform('')
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
@@ -27,16 +34,14 @@ RSpec.describe Strava::FindActivityWorker, type: :model do
         }
       end
       it 'returns false' do
-        make_request(response)
-        expect(subject.perform(user.id)).to be_falsey
+        expect(subject.perform(user.id)).to eq(false)
       end
     end
 
     context 'when service request returns a successful response but no activities' do
       let(:response) { [] }
       it 'returns true' do
-        make_request(response)
-        expect(subject.perform(user.id)).to be_truthy
+        expect(subject.perform(user.id)).to eq(true)
       end
     end
 
@@ -50,15 +55,35 @@ RSpec.describe Strava::FindActivityWorker, type: :model do
       end
 
       it 'enqueues Strava::ImportRunWorker for every run activity' do
-        make_request(response)
         expect {
           subject.perform(user.id)
         }.to change(Strava::ImportRunWorker.jobs, :count).by(2)
       end
 
       it 'returns true' do
-        make_request(response)
-        expect(subject.perform(user.id)).to be_truthy
+        expect(subject.perform(user.id)).to eq(true)
+      end
+    end
+  end
+
+  describe '#get_options' do
+    context 'when date is nil' do
+      it 'returns a hash containing todays date' do
+        expect(subject.send(:get_options, nil)).to eq({ date: Date.today.strftime('%Y-%m-%d') })
+      end
+    end
+
+    context 'when date is valid' do
+      it 'returns a hash containing the date' do
+        expect(subject.send(:get_options, '2017-02-02')).to eq({ date: '2017-02-02' })
+      end
+    end
+
+    context 'when date is invalid' do
+      it 'raises ArgumentError' do
+        expect {
+          subject.send(:get_options, 'abc')
+        }.to raise_error(ArgumentError)
       end
     end
   end

@@ -3,14 +3,9 @@ module Strava
     include Sidekiq::Worker
 
     def perform(user_id, date=nil)
-      user = User.find_by(id: user_id)
-      return false if user.nil?
+      user = User.find(user_id)
 
-      options = if date.present?
-        { date: date }
-      else
-        { date: Date.today.strftime('%Y-%m-%d') }
-      end
+      options = get_options(date)
 
       results = StravaService.get_activities_list(user.strava_identity, options).parsed_response
 
@@ -23,6 +18,17 @@ module Strava
       end
 
       return true
+    end
+
+    private
+
+    def get_options(date)
+      value = if date.present?
+        Date.parse(date).strftime('%Y-%m-%d')
+      else
+        Date.today.strftime('%Y-%m-%d')
+      end
+      { date: value }
     end
   end
 end

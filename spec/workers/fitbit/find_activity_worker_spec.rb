@@ -3,13 +3,12 @@ require 'rails_helper'
 RSpec.describe Fitbit::FindActivityWorker, type: :model do
   let(:user) { create(:user) }
   let!(:identity) { create(:identity, :fitbit, user: user) }
-  # let(:date) { Date.today.strftime('%Y-%m-%d') }
   let(:response) { nil }
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
   def make_request(response)
-    stub_request(:get, /https:\/\/api.fitbit.com\/1\/user\/\d+\/activities\/list.json/).
+    stub_request(:get, %r{https://api.fitbit.com/1/user/\d+/activities/list.json}).
       to_return(status: 200, body: response.to_json)
   end
 
@@ -76,7 +75,7 @@ RSpec.describe Fitbit::FindActivityWorker, type: :model do
         expect(subject.send(:get_options, '2017-02-02')).to eq({ date: '2017-02-02' })
       end
     end
-    
+
     context 'when date is invalid' do
       it 'raises ArgumentError' do
         expect {
