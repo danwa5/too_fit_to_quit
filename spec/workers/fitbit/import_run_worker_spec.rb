@@ -11,121 +11,45 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
       'distanceUnit' => 'Kilometer',
       'logId' => 1234567890,
       'startTime' => '2016-07-17T15:28:43.000-07:00',
-      'steps' => 12000,
+      'steps' => 12000
     }
   end
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
   describe '#perform' do
-    context 'when user is nil' do
-      it 'returns false' do
-        expect(subject.perform(nil, nil)).to be_falsey
+    context 'when user is not found' do
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect {
+          subject.perform(nil, nil)
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     context 'when activity hash does not contain all required keys' do
       let(:activity_hash) { { 'activityName' => 'Run' } }
-      it 'returns false' do
-        expect(subject.perform(user.id, activity_hash)).to be_falsey
+      it 'raises RuntimeError' do
+        expect {
+          subject.perform(user.id, activity_hash)
+        }.to raise_error(RuntimeError)
       end
     end
 
-    context 'when activity hash is imported for the first time' do
-      it 'creates a new UserActivity record' do
+    context 'when Fitbit::CreateRunService returns failure' do
+      it 'raises an exception' do
+        # allow(Fitbit::CreateRunService).to receive(:call).and_return(Dry::Monads::Try::Failure)
         expect {
-          subject.perform(user.id, activity_hash)
-        }.to change(UserActivity, :count).by(1)
+          subject.perform(user.id, nil)
+        }.to raise_error(StandardError)
       end
+    end
 
-      it 'creates a new Activity::FitbitRun record' do
-        expect {
-          subject.perform(user.id, activity_hash)
-        }.to change(Activity::FitbitRun, :count).by(1)
-      end
-
-      it 'creates a new UserActivity record with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        user_activity = UserActivity.last
-        expect(user_activity.activity_type).to eq('Activity::FitbitRun')
-        expect(user_activity.uid).to eq('1234567890')
-        expect(user_activity.user_id).to eq(user.id)
-        expect(user_activity.distance).to eq(14677.219)
-        expect(user_activity.duration).to eq(4113)
-        expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
-        expect(user_activity.start_time_rounded_epoch).to eq(DateTime.parse(activity_hash['startTime']).to_i / 240)
-        expect(user_activity.activity_data).to be_present
-      end
-
-      it 'creates a new Activity::FitbitRun record with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        fitbit_run = Activity::FitbitRun.last
-        expect(fitbit_run.user_id).to eq(user.id)
-        expect(fitbit_run.activity_type_id).to eq(90009)
-        expect(fitbit_run.steps).to eq(12000)
-      end
-
+    context 'when Fitbit::CreateRunService returns success' do
       it 'enqueues a Fitbit::ImportRunTcxWorker' do
+        # allow(Fitbit::CreateRunService).to receive(:call).and_return(Dry::Monads::Try::Success)
         expect {
           subject.perform(user.id, activity_hash)
         }.to change(Fitbit::ImportRunTcxWorker.jobs, :count).by(1)
-      end
-
-      it 'returns true' do
-        expect(subject.perform(user.id, activity_hash)).to be_truthy
-      end
-    end
-
-    context 'when activity hash is imported after the first time' do
-      let(:user_activity) do
-        create(:user_activity, :fitbit,
-          user: user,
-          uid: '1234567890',
-          distance: 0,
-          duration: 0,
-          start_time: '2016-07-10 00:00:00',
-          activity_data: nil
-        )
-      end
-
-      let!(:fitbit_run) do
-        create(:activity_fitbit_run,
-          user_activity: user_activity,
-          user: user,
-          activity_type_id: 0,
-          steps: 0
-        )
-      end
-
-      it 'does not create a new UserActivity record' do
-        expect {
-          subject.perform(user.id, activity_hash)
-        }.not_to change(UserActivity, :count)
-      end
-
-      it 'does not create a new Activity::FitbitRun record' do
-        expect {
-          subject.perform(user.id, activity_hash)
-        }.not_to change(Activity::FitbitRun, :count)
-      end
-
-      it 'updates UserActivity with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        user_activity.reload
-        expect(user_activity.activity_type).to eq('Activity::FitbitRun')
-        expect(user_activity.uid).to eq('1234567890')
-        expect(user_activity.distance).to eq(14677.219)
-        expect(user_activity.duration).to eq(4113)
-        expect(user_activity.start_time).to eq('2016-07-17 22:28:43')
-        expect(user_activity.activity_data).to be_present
-      end
-
-      it 'updates Activity::FitbitRun with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        fitbit_run.reload
-        expect(fitbit_run.user_id).to eq(user.id)
-        expect(fitbit_run.activity_type_id).to eq(90009)
-        expect(fitbit_run.steps).to eq(12000)
       end
     end
   end
