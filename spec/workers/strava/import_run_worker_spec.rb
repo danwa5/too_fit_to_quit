@@ -23,125 +23,44 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
   describe '#perform' do
-    context 'when user is nil' do
-      it 'returns false' do
-        expect(subject.perform(nil, nil)).to be_falsey
+    context 'when user is not found' do
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect {
+          subject.perform(nil, nil)
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     context 'when activity hash does not contain all required keys' do
       let(:activity_hash) { { 'type' => 'Run' } }
-      it 'returns false' do
-        expect(subject.perform(user.id, activity_hash)).to be_falsey
+      it 'raises RuntimeError' do
+        expect {
+          subject.perform(user.id, activity_hash)
+        }.to raise_error(RuntimeError)
       end
     end
 
-    context 'when activity hash is imported for the first time' do
-      it 'creates a new UserActivity record' do
+    context 'when Strava::CreateRunService returns failure' do
+      before do
+        failure = double('Failure', failure?: true)
+        allow(Strava::CreateRunService).to receive(:call).and_return(failure)
+      end
+      it 'raises Exception' do
         expect {
           subject.perform(user.id, activity_hash)
-        }.to change(UserActivity, :count).by(1)
+        }.to raise_error(Exception)
       end
+    end
 
-      it 'creates a new Activity::StravaRun record' do
-        expect {
-          subject.perform(user.id, activity_hash)
-        }.to change(Activity::StravaRun, :count).by(1)
+    context 'when Strava::CreateRunService returns success' do
+      before do
+        success = double('Failure', failure?: false)
+        allow(Strava::CreateRunService).to receive(:call).and_return(success)
       end
-
-      it 'creates a new UserActivity record with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        user_activity = UserActivity.last
-        expect(user_activity.activity_type).to eq('Activity::StravaRun')
-        expect(user_activity.uid).to eq('101')
-        expect(user_activity.user_id).to eq(user.id)
-        expect(user_activity.distance).to eq(14620.6)
-        expect(user_activity.duration).to eq(4111)
-        expect(user_activity.start_time).to eq('2016-07-17T22:28:43')
-        expect(user_activity.start_time_rounded_epoch).to eq(DateTime.parse(activity_hash['start_date']).to_i / 240)
-        expect(user_activity.activity_data).to be_present
-      end
-
-      it 'creates a new Activity::StravaRun record with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        strava_run = Activity::StravaRun.last
-
-        aggregate_failures 'attributes' do
-          expect(strava_run.user_id).to eq(user.id)
-          expect(strava_run.total_elevation_gain).to eq(65.0)
-          expect(strava_run.elevation_high).to eq(31.0)
-          expect(strava_run.elevation_low).to eq(8.4)
-          expect(strava_run.start_latitude).to eq(10.01)
-          expect(strava_run.start_longitude).to eq(20.02)
-          expect(strava_run.city).to eq('San Francisco')
-          expect(strava_run.state_province).to eq('CA')
-          expect(strava_run.country).to eq('United States')
-        end
-      end
-
       it 'enqueues a Strava::ImportRunMetricsWorker' do
         expect {
           subject.perform(user.id, activity_hash)
         }.to change(Strava::ImportRunMetricsWorker.jobs, :count).by(1)
-      end
-
-      it 'returns true' do
-        expect(subject.perform(user.id, activity_hash)).to be_truthy
-      end
-    end
-
-    context 'when activity hash is imported after the first time' do
-      let(:user_activity) do
-        create(:user_activity, :strava,
-          user: user,
-          uid: '101',
-          distance: 0,
-          duration: 0,
-          start_time: '2016-07-10 00:00:00',
-          activity_data: nil
-        )
-      end
-
-      let!(:strava_run) do
-        create(:activity_strava_run,
-          user_activity: user_activity,
-          user: user,
-          total_elevation_gain: 0,
-          elevation_high: 0,
-          elevation_low: 0
-        )
-      end
-
-      it 'does not create a new UserActivity record' do
-        expect {
-          subject.perform(user.id, activity_hash)
-        }.not_to change(UserActivity, :count)
-      end
-
-      it 'does not create a new Activity::StravaRun record' do
-        expect {
-          subject.perform(user.id, activity_hash)
-        }.not_to change(Activity::StravaRun, :count)
-      end
-
-      it 'updates UserActivity with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        user_activity.reload
-        expect(user_activity.activity_type).to eq('Activity::StravaRun')
-        expect(user_activity.uid).to eq('101')
-        expect(user_activity.distance).to eq(14620.6)
-        expect(user_activity.duration).to eq(4111)
-        expect(user_activity.start_time).to eq('2016-07-17T22:28:43')
-        expect(user_activity.activity_data).to be_present
-      end
-
-      it 'updates Activity::StravaRun with the correct attributes' do
-        subject.perform(user.id, activity_hash)
-        strava_run.reload
-        expect(strava_run.user_id).to eq(user.id)
-        expect(strava_run.total_elevation_gain).to eq(65.0)
-        expect(strava_run.elevation_high).to eq(31.0)
-        expect(strava_run.elevation_low).to eq(8.4)
       end
     end
   end
