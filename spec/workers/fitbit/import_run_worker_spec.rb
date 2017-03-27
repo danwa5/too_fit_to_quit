@@ -36,17 +36,23 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
     end
 
     context 'when Fitbit::CreateRunService returns failure' do
+      before do
+        failure = double('Failure', failure?: true)
+        allow(Fitbit::CreateRunService).to receive(:call).and_return(failure)
+      end
       it 'raises an exception' do
-        # allow(Fitbit::CreateRunService).to receive(:call).and_return(Dry::Monads::Try::Failure)
         expect {
-          subject.perform(user.id, nil)
-        }.to raise_error(StandardError)
+          subject.perform(user.id, activity_hash)
+        }.to raise_error(Exception)
       end
     end
 
     context 'when Fitbit::CreateRunService returns success' do
+      before do
+        success = double('Success', failure?: false)
+        allow(Fitbit::CreateRunService).to receive(:call).and_return(success)
+      end
       it 'enqueues a Fitbit::ImportRunTcxWorker' do
-        # allow(Fitbit::CreateRunService).to receive(:call).and_return(Dry::Monads::Try::Success)
         expect {
           subject.perform(user.id, activity_hash)
         }.to change(Fitbit::ImportRunTcxWorker.jobs, :count).by(1)
