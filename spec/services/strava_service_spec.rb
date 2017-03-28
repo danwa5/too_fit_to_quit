@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe StravaService, type: :model do
-  let(:identity) { FactoryGirl.create(:identity, :strava) }
+  let(:identity) { create(:identity, :strava) }
 
   describe '.base_uri' do
     it { expect(described_class.base_uri).to eq(Figaro.env.strava_api_url) }
@@ -36,7 +36,7 @@ RSpec.describe StravaService, type: :model do
           'distance' => '1000'
         }
       ]
-      stub_req = stub_request(:get, /#{Figaro.env.strava_api_url}\/v3\/athlete\/activities\?after=\d+/).to_return(status: 200, body: expected.to_json)
+      stub_req = stub_request(:get, %r{#{Figaro.env.strava_api_url}/v3/athlete/activities\?after=\d+}).to_return(status: 200, body: expected.to_json)
 
       response = described_class.get_activities_list(identity)
       expect(stub_req).to have_been_made
@@ -51,7 +51,7 @@ RSpec.describe StravaService, type: :model do
         'type' => 'Run',
         'distance' => '1000'
       }
-      stub_req = stub_request(:get, /#{Figaro.env.strava_api_url}\/v3\/activities\/101/).to_return(status: 200, body: expected.to_json)
+      stub_req = stub_request(:get, %r{#{Figaro.env.strava_api_url}/v3/activities/101}).to_return(status: 200, body: expected.to_json)
 
       response = described_class.get_activity(identity, {uid: 101})
       expect(stub_req).to have_been_made

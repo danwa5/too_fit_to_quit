@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe FitbitService, type: :model do
-  let(:identity) { FactoryGirl.create(:identity, :fitbit) }
+  let(:identity) { create(:identity, :fitbit) }
 
   describe '.base_uri' do
     it { expect(described_class.base_uri).to eq(Figaro.env.fitbit_api_url) }
