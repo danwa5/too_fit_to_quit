@@ -12,6 +12,10 @@ RSpec.describe Fitbit::FindActivityWorker, type: :model do
       to_return(status: 200, body: response.to_json)
   end
 
+  def run_worker
+    subject.perform(user.id)
+  end
+
   describe '#perform' do
     before do
       make_request(response)
@@ -28,14 +32,14 @@ RSpec.describe Fitbit::FindActivityWorker, type: :model do
     context 'when service request returns an unsuccessful response' do
       let(:response) { { 'success' => false } }
       it 'returns false' do
-        expect(subject.perform(user.id)).to eq(false)
+        expect(run_worker).to eq(false)
       end
     end
 
     context 'when service request returns a successful response' do
       let(:response) { { 'success' => true, 'activities' => [] } }
       it 'returns true' do
-        expect(subject.perform(user.id)).to eq(true)
+        expect(run_worker).to eq(true)
       end
     end
 
@@ -53,12 +57,12 @@ RSpec.describe Fitbit::FindActivityWorker, type: :model do
 
       it 'enqueues ImportFitbitRunWorker for every run activity' do
         expect {
-          subject.perform(user.id)
+          run_worker
         }.to change(Fitbit::ImportRunWorker.jobs, :count).by(2)
       end
 
       it 'returns true' do
-        expect(subject.perform(user.id)).to eq(true)
+        expect(run_worker).to eq(true)
       end
     end
   end

@@ -4,7 +4,7 @@ RSpec.describe StepsController, :type => :controller do
   login_user
 
   def make_request(date, period, res)
-    stub_request(:get, /https:\/\/api.fitbit.com\/1\/user\/\d+\/activities\/steps\/date\/#{date}\/#{period}\.json/).
+    stub_request(:get, %r{https://api.fitbit.com/1/user/\d+/activities/steps/date/#{date}/#{period}.json}).
       to_return(status: 200, body: res.to_json)
   end
 

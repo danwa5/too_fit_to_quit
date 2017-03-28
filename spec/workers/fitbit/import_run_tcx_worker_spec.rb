@@ -18,8 +18,12 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
   end
 
   def make_request(response)
-    stub_request(:get, /https:\/\/api.fitbit.com\/1\/user\/\d+\/activities\/#{user_activity.uid}.tcx/).
+    stub_request(:get, %r{https://api.fitbit.com/1/user/\d+/activities/#{user_activity.uid}.tcx}).
       to_return(status: 200, body: response.to_json)
+  end
+
+  def run_worker
+    subject.perform(user.id, '1234')
   end
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
@@ -36,7 +40,7 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
     context 'when user_activity is not found' do
       it 'raises ActiveRecord::RecordNotFound' do
         expect {
-          subject.perform(user.id, 'blah')
+          subject.perform(user.id, 'fake_uid')
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
@@ -44,7 +48,7 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
     context 'when no data is returned' do
       it 'returns false' do
         make_request(nil)
-        expect(subject.perform(user.id, '1234')).to eq(false)
+        expect(run_worker).to eq(false)
       end
     end
 
@@ -60,7 +64,7 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
           allow(Fitbit::CreateRunTcxService).to receive(:call).and_return(failure)
         end
         it 'raises Exception' do
-          expect { subject.perform(user.id, '1234') }.to raise_error(Exception)
+          expect { run_worker }.to raise_error(Exception)
         end
       end
 
@@ -70,7 +74,7 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
           allow(Fitbit::CreateRunTcxService).to receive(:call).and_return(success)
         end
         it 'returns true' do
-          expect(subject.perform(user.id, '1234')).to eq(true)
+          expect(run_worker).to eq(true)
         end
       end
     end

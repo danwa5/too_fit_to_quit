@@ -15,6 +15,10 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
     }
   end
 
+  def run_worker
+    subject.perform(user.id, activity_hash)
+  end
+
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
   describe '#perform' do
@@ -30,7 +34,7 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
       let(:activity_hash) { { 'activityName' => 'Run' } }
       it 'raises RuntimeError' do
         expect {
-          subject.perform(user.id, activity_hash)
+          run_worker
         }.to raise_error(RuntimeError)
       end
     end
@@ -42,7 +46,7 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
       end
       it 'raises an exception' do
         expect {
-          subject.perform(user.id, activity_hash)
+          run_worker
         }.to raise_error(Exception)
       end
     end
@@ -54,7 +58,7 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
       end
       it 'enqueues a Fitbit::ImportRunTcxWorker' do
         expect {
-          subject.perform(user.id, activity_hash)
+          run_worker
         }.to change(Fitbit::ImportRunTcxWorker.jobs, :count).by(1)
       end
     end

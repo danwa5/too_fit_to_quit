@@ -20,6 +20,10 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
     }
   end
 
+  def run_worker
+    subject.perform(user.id, activity_hash)
+  end
+
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
   describe '#perform' do
@@ -35,7 +39,7 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
       let(:activity_hash) { { 'type' => 'Run' } }
       it 'raises RuntimeError' do
         expect {
-          subject.perform(user.id, activity_hash)
+          run_worker
         }.to raise_error(RuntimeError)
       end
     end
@@ -47,7 +51,7 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
       end
       it 'raises Exception' do
         expect {
-          subject.perform(user.id, activity_hash)
+          run_worker
         }.to raise_error(Exception)
       end
     end
@@ -59,7 +63,7 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
       end
       it 'enqueues a Strava::ImportRunMetricsWorker' do
         expect {
-          subject.perform(user.id, activity_hash)
+          run_worker
         }.to change(Strava::ImportRunMetricsWorker.jobs, :count).by(1)
       end
     end

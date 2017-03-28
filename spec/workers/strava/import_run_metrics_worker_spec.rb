@@ -7,29 +7,37 @@ RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
   let!(:activity_strava_run) { create(:activity_strava_run, user: user, user_activity: user_activity) }
 
   def make_request(response)
-    stub_request(:get, /https:\/\/www.strava.com\/api\/v3\/activities\/#{user_activity.uid}/).
+    stub_request(:get, %r{https://www.strava.com/api/v3/activities/#{user_activity.uid}}).
       to_return(status: 200, body: response.to_json)
+  end
+
+  def run_worker
+    subject.perform(user.id, '1234')
   end
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }
 
   describe '#perform' do
-    context 'when user is nil' do
-      it 'returns false' do
-        expect(subject.perform((user.id + 1), 'blah')).to eq(false)
+    context 'when user is not found' do
+      it 'returns ActiveRecord::RecordNotFound' do
+        expect {
+          subject.perform((user.id + 1), 'blah')
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
-    context 'when user_activity is nil' do
-      it 'returns false' do
-        expect(subject.perform(user.id, 'blah')).to eq(false)
+    context 'when user_activity is not found' do
+      it 'returns ActiveRecord::RecordNotFound' do
+        expect {
+          subject.perform(user.id, 'fake_uid')
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     context 'when no data is returned' do
       it 'returns false' do
         make_request(nil)
-        expect(subject.perform(user.id, '1234')).to eq(false)
+        expect(run_worker).to eq(false)
       end
     end
 
@@ -68,7 +76,7 @@ RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
 
       it 'saves splits data' do
         expect(user_activity.activity.splits).to be_nil
-        subject.perform(user.id, '1234')
+        run_worker
         user_activity.activity.reload
         expect(user_activity.activity.splits).to eq(
           {
@@ -95,7 +103,7 @@ RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
       end
 
       it 'returns true' do
-        expect(subject.perform(user.id, '1234')).to eq(true)
+        expect(run_worker).to eq(true)
       end
     end
   end
