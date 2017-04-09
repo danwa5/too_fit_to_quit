@@ -77,34 +77,7 @@
 <div class="columns">
   <div class="column">
     <div class="pod">
-      <div class="table-responsive">
-        <table id="runs-table" class="table table-condensed table-hover">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Distance<br>(miles)</th>
-              <th>Duration<br>(H:MM:SS)</th>
-              <th>Pace<br>(min/mile)</th>
-              <th>Steps</th>
-              <th>Location</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-          <% @dataset.each do |run| %>
-            <tr>
-              <td class="runs-date"><%= format_run_time(run.start_time) %></td>
-              <td class="runs-distance"><%= format_distance(run.distance) %></td>
-              <td class="runs-duration"><%= format_duration(run.duration) %></td>
-              <td class="runs-pace"><%= format_pace(run.duration, run.distance) %></td>
-              <td class="runs-steps"><%= run.steps %></td>
-              <td class="runs-location"><%= run.location %></td>
-              <td align="center"><%= link_to 'Details', run_path(run.id) %></td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
+      <%= react_component 'RunsTable', {}, { prerender: true } %>
     </div>
   </div>
 </div>

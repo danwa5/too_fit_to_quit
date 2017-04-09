@@ -8,6 +8,7 @@ FactoryGirl.define do
   factory :identity do
     uid { Faker::Number.number(6) }
     access_token { Faker::Crypto.sha1 }
+    time_zone { 'America/Los_Angeles' }
 
     trait :fitbit do
       provider { 'fitbit_oauth2' }
@@ -22,6 +23,9 @@ FactoryGirl.define do
     association :user
 
     uid { Faker::Number.number(6) }
+    distance { Faker::Number.number(4) }
+    duration { Faker::Number.number(4) }
+    start_time { Faker::Time.between(DateTime.now - 1, DateTime.now) }
 
     trait :fitbit do
       activity_type { 'Activity::FitbitRun' }

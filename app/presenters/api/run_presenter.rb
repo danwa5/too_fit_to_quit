@@ -1,17 +1,17 @@
 class Api::RunPresenter < Presenters::Base
+  include ApplicationHelper
+
   presents :run
 
   def as_json(*)
     {
-      'distance' => run.user_activity.distance.to_f,
-      'duration' => run.user_activity.duration,
-      'start_time' => run.user_activity.start_time,
-      'location' => {
-        'city' => run.city,
-        'state_province' => run.state_province,
-        'country' => run.country
-      }
+      'id' => run.user_activity.id,
+      'distance' => format_distance(run.user_activity.distance.to_f),
+      'duration' => format_duration(run.user_activity.duration),
+      'location' => run.location,
+      'pace' => format_pace(run.user_activity.duration, run.user_activity.distance),
+      'start_time' => format_run_time(run.user_activity.start_time),
+      'steps' => run.steps
     }
   end
-  
 end

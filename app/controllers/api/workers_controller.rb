@@ -1,5 +1,6 @@
 module Api
   class WorkersController < Api::ApiController
+    skip_before_action :authenticate_user!
 
     def create
       worker = "::#{worker_params}".constantize
