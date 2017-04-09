@@ -9,7 +9,7 @@ var Runs = React.createClass({
           <td className="runs-pace">{run.pace}</td>
           <td className="runs-steps">{run.steps}</td>
           <td className="runs-location">{run.location}</td>
-          <td align="center"><a href={"/runs/" + run.id}>Details</a></td>
+          <td className="text-center"><a href={"/runs/" + run.id}>Details</a></td>
         </tr>
       )
     });

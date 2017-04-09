@@ -5,7 +5,10 @@ module Api
     before_action :run, only: :show
 
     def index
-      runs = Activity::FitbitRun.where(user: current_user).search(search_params).order('user_activities.start_time')
+      runs = Activity::FitbitRun.includes(:user_activity)
+                                .where(user: current_user)
+                                .search(search_params)
+                                .order('user_activities.start_time')
 
       dataset = runs.map { |run| Api::RunPresenter.new(run) }
 
