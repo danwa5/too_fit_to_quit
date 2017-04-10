@@ -239,7 +239,6 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
-    selectize-rails (0.12.1)
     shoulda-matchers (3.0.1)
       activesupport (>= 4.0.0)
     sidekiq (4.1.4)
@@ -319,7 +318,6 @@ DEPENDENCIES
   rspec-rails (~> 3.4, >= 3.4.2)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
-  selectize-rails
   shoulda-matchers
   sidekiq (~> 4.1, >= 4.1.4)
   simplecov
@@ -333,4 +331,4 @@ RUBY VERSION
    ruby 2.2.3p173
 
 BUNDLED WITH
-   1.13.4
+   1.14.6

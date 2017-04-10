@@ -1,92 +1,17 @@
 <%= javascript_include_tag('d3/charts.js') %>
 
+<script>
+var dataset = <%= raw @monthly_breakdown.to_json %>;
+</script>
+
 <div class="page-header">
   <div class="pod">
     <h2 class="is-2">Runs</h2>
   </div>
 </div>
 
-<div class="columns is-multiline">
-  <div class="column is-one-quarter">
-    <div class="pod">
-      <%= form_tag(runs_path, method: :get, class: 'run-search-form') do |f| %>
-        <div class="form-group">
-          <%= label_tag :date, nil, class: " col-xs-12 control-label" %>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :start_date, (params[:start_date] || Date.today - 90), { class: 'form-control', placeholder: 'From' } %>
-          </div>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :end_date, params[:end_date], { class: 'form-control', placeholder: 'To' } %>
-          </div>
-        </div>
-        <div class="form-group">
-          <%= label_tag :distance, "Distance (miles)", class: "col-xs-12 control-label" %>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :distance_min, params[:distance_min], { class: 'form-control', placeholder: 'min' } %>
-          </div>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :distance_max, params[:distance_max], { class: 'form-control', placeholder: 'max' } %>
-          </div>
-        </div>
-        <div class="form-group">
-          <%= label_tag :duration, "Duration (minutes)", class: "col-xs-12 control-label" %>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :duration_min, params[:duration_min], { class: 'form-control', placeholder: 'min' } %>
-          </div>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :duration_max, params[:duration_max], { class: 'form-control', placeholder: 'max' } %>
-          </div>
-        </div>
-        <div class="form-group">
-          <%= label_tag :steps, nil, class: "col-xs-12 control-label" %>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :steps_min, params[:steps_min], { class: 'form-control', placeholder: 'min' } %>
-          </div>
-          <div class="col-xs-6 col-sm-6">
-            <%= text_field_tag :steps_max, params[:steps_max], { class: 'form-control', placeholder: 'max' } %>
-          </div>
-        </div>
-        <div class="form-group">
-          <%= label_tag :location, nil, class: "control-label" %>
-          <%= select_tag :location, options_from_collection_for_select(@locations, 'location', 'location', params[:location]), { include_blank: true } %>
-        </div>
-        <script>
-          $(function() {
-            $('#location').selectize({ allowEmptyOption: true, sortField: 'text' });
-          });
-        </script>
-        <%= submit_tag 'Search', class: 'btn btn-primary search-button' %>
-      <% end %>
-    </div>
-  </div>
-  <div class="column is-three-quarters">
-    <div class="pod">
-      <div class="has-text-centered">
-        <h5>Monthly Breakdown
-          <!-- Rounded switch -->
-          <label class="switch" style="margin-bottom:-4px">
-            <input type="checkbox">
-            <div class="slider round toggle-charts"></div>
-          </label>
-        </h5>
-      </div>
-      <div id="chart-monthly-breakdown"></div>
-      <div id="chart-monthly-breakdown-2" style="display: none"></div>
-    </div>
-  </div>
-</div>
-
-<div class="columns">
-  <div class="column">
-    <div class="pod">
-      <%= react_component 'RunsTable', {}, { prerender: true } %>
-    </div>
-  </div>
-</div>
+<%= react_component 'RunsIndex', { }, { prerender: true } %>
 
 <script>
-// Set up data sets
-var dataset = <%= raw @monthly_breakdown.to_json %>;
-
 renderCharts(dataset);
 </script>
