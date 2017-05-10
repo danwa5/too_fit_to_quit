@@ -19,6 +19,14 @@ var RunsIndex = React.createClass({
   },
 
   render() {
+    var locations = JSON.parse(this.props.locations.toString());
+    var locationOptions = locations.map(function(loc) {
+      var s = loc[0] + ", " + loc[1];
+      return (
+        <option key={s} value={s}>{s}</option>
+      )
+    });
+
     return (
       <div className="foo">
         <div className="columns is-multiline">
@@ -65,9 +73,7 @@ var RunsIndex = React.createClass({
                   <label className="control-label" htmlFor="location">Location</label>
                   <select name="location" id="location" className="form-control">
                     <option value=""></option>
-                    <option value="San Francisco, United States">San Francisco, United States</option>
-                    <option value="Naniwa-ku, Japan">Naniwa-ku, Japan</option>
-                    <option value="Toronto, Canada">Toronto, Canada</option>
+                    {locationOptions}
                   </select>
                 </div>
                 <button type="button" className="btn btn-primary search-button" onClick={this.handleSearch}>Search</button>

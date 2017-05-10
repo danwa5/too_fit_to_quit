@@ -1,7 +1,7 @@
 class RunsController < ApplicationController
 
   def index
-    @locations = Activity::FitbitRun.where(user: current_user).select('city, country').distinct
+    @locations = Activity::FitbitRun.where(user: current_user).locations
     @monthly_breakdown = current_user.user_activities.monthly_breakdown(Date.today.year)
   end
 

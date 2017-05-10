@@ -7,6 +7,8 @@ class Activity::FitbitRun < ActiveRecord::Base
   validates :user, presence: true
   validates :user_activity, presence: true
 
+  scope :locations, -> { pluck(:city, :country).uniq.select { |x| x.first.present? } }
+
   def self.search(options = {})
     finder = joins(:user_activity).where(nil)
     finder = finder.number_within_range(:distance, options[:distance_min], options[:distance_max])

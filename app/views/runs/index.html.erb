@@ -10,7 +10,7 @@ var dataset = <%= raw @monthly_breakdown.to_json %>;
   </div>
 </div>
 
-<%= react_component 'RunsIndex', { }, { prerender: true } %>
+<%= react_component 'RunsIndex', { locations: @locations.to_s }, { prerender: true } %>
 
 <script>
 renderCharts(dataset);

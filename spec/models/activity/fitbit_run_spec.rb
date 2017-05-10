@@ -11,6 +11,19 @@ RSpec.describe Activity::FitbitRun, type: :model do
     it { is_expected.to validate_presence_of(:user_activity) }
   end
 
+  describe 'scopes' do
+    describe '.locations' do
+      before do
+        create(:activity_fitbit_run, city: 'SF', country: 'USA')
+        create(:activity_fitbit_run, city: 'Toronto', country: 'Canada')
+        create(:activity_fitbit_run, city: 'SF', country: 'USA')
+      end
+      it 'returns distinct locations' do
+        expect(described_class.locations).to eq([['SF', 'USA'], ['Toronto', 'Canada']])
+      end
+    end
+  end
+
   describe '#location' do
     context 'when city and country are nil' do
       let(:run) { build(:activity_fitbit_run, city: nil, country: nil) }
