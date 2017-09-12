@@ -53,7 +53,7 @@ RSpec.describe Strava::CreateRunService do
           expect(user_activity.distance).to eq(14620.6)
           expect(user_activity.duration).to eq(4111)
           expect(user_activity.start_time).to eq('2016-07-17T22:28:43')
-          expect(user_activity.start_time_rounded_epoch).to eq(DateTime.parse(activity_hash['start_date']).to_i / 240)
+          expect(user_activity.start_time_rounded_epoch).to eq(1468794600)
           expect(user_activity.activity_data).to be_present
         end
       end

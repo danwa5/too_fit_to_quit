@@ -49,6 +49,11 @@ module Services
       def call
         raise NotImplementedError
       end
+
+      # @datetime is in YYYY-MM-DD HH:MM:SS format
+      def start_time_rounded_epoch(datetime)
+        (DateTime.parse(datetime).to_i / 60).round(-1) * 60
+      end
     end
 
     module ClassMethods

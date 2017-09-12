@@ -14,7 +14,7 @@ module Strava
           distance: activity_hash['distance'].to_f,
           duration: activity_hash['moving_time'].to_i,
           start_time: DateTime.parse(activity_hash['start_date']),
-          start_time_rounded_epoch: DateTime.parse(activity_hash['start_date']).to_i / 240,
+          start_time_rounded_epoch: start_time_rounded_epoch(activity_hash['start_date']),
           activity_data: activity_hash
         }
 

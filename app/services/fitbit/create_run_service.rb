@@ -14,7 +14,7 @@ module Fitbit
           duration: set_duration,
           distance: set_distance,
           start_time: set_start_time,
-          start_time_rounded_epoch: set_start_time_rounded_epoch,
+          start_time_rounded_epoch: start_time_rounded_epoch(@activity_hash['startTime']),
           activity_data: @activity_hash
         }
 
@@ -40,10 +40,6 @@ module Fitbit
 
     def set_start_time
       DateTime.parse(@activity_hash['startTime'])
-    end
-
-    def set_start_time_rounded_epoch
-      DateTime.parse(@activity_hash['startTime']).to_i / 240
     end
 
     def set_distance
