@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.2.3'
 
-gem 'rails', '4.2.6'
+gem 'rails', '4.2.10'
 gem 'pg', '~> 0.18.4'
 
 # authentication
@@ -18,6 +18,7 @@ gem 'figaro'
 gem 'geocoder'
 gem 'httparty'
 gem 'jquery-rails'
+gem 'nokogiri', '~> 1.8.1'
 gem 'react-rails', '~> 1.11'
 gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-namespace', '~> 1.5', '>= 1.5.2'
