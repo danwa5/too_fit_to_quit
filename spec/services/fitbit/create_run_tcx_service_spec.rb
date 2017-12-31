@@ -112,5 +112,14 @@ RSpec.describe Fitbit::CreateRunTcxService do
       expect(res.success?).to eq(true)
       expect(res.value).to eq(true)
     end
+
+    context 'failure parsing tcx data' do
+      let(:tcx_data) { 1 }
+
+      it 'returns Try::Failure' do
+        res = service_call
+        expect(res.success?).to eq(false)
+      end
+    end
   end
 end

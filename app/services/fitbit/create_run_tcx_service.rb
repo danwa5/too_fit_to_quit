@@ -34,29 +34,33 @@ module Fitbit
       bounds = {}
       markers = []
 
-      @tcx_data['TrainingCenterDatabase']['Activities']['Activity']['Lap'].each do |lap|
-        lap['Track']['Trackpoint'].each_with_index do |track_point, index|
-          position = [track_point['Position']['LongitudeDegrees'].to_f, track_point['Position']['LatitudeDegrees'].to_f]
+      begin
+        @tcx_data['TrainingCenterDatabase']['Activities']['Activity']['Lap'].each do |lap|
+          lap['Track']['Trackpoint'].each_with_index do |track_point, index|
+            position = [track_point['Position']['LongitudeDegrees'].to_f, track_point['Position']['LatitudeDegrees'].to_f]
 
-          # Take the first, last, and every 15th data point in between
-          if index == 0 || index % 15 == 0 || index == (lap['Track']['Trackpoint'].length-1)
-            raw << {
-              'datetime' => track_point['Time'],
-              'coordinate' => position,
-              'distance' => track_point['DistanceMeters'],
-              'altitude' => track_point['AltitudeMeters'],
-              'heart_rate' => track_point['HeartRateBpm']['Value']
-            }
+            # Take the first, last, and every 15th data point in between
+            if index == 0 || index % 15 == 0 || index == (lap['Track']['Trackpoint'].length-1)
+              raw << {
+                'datetime' => track_point['Time'],
+                'coordinate' => position,
+                'distance' => track_point['DistanceMeters'],
+                'altitude' => track_point['AltitudeMeters'],
+                'heart_rate' => track_point['HeartRateBpm']['Value']
+              }
+            end
+
+            markers << position if index == (lap['Track']['Trackpoint'].length-1)
+
+            # Determine the route's maximum boundaries
+            bounds['north'] = get_max_bounds(bounds['north'], position[1])
+            bounds['east'] = get_max_bounds(bounds['east'], position[0])
+            bounds['south'] = get_min_bounds(bounds['south'], position[1])
+            bounds['west'] = get_min_bounds(bounds['west'], position[0])
           end
-
-          markers << position if index == (lap['Track']['Trackpoint'].length-1)
-
-          # Determine the route's maximum boundaries
-          bounds['north'] = get_max_bounds(bounds['north'], position[1])
-          bounds['east'] = get_max_bounds(bounds['east'], position[0])
-          bounds['south'] = get_min_bounds(bounds['south'], position[1])
-          bounds['west'] = get_min_bounds(bounds['west'], position[0])
         end
+      rescue StandardError => e
+        raise "Fitbit::CreateRunTcxService could not parse GPS data: #{e}"
       end
 
       derived['bounds'] = bounds
