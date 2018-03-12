@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe UserActivity, type: :model do
+  let(:user_activity) { create(:user_activity, :fitbit) }
+  subject { user_activity }
+
+  it 'sets initial state to "pending"' do
+    expect(subject.state).to eq('pending')
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:user) }
     it { is_expected.to belong_to(:activity) }

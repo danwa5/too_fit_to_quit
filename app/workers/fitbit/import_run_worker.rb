@@ -11,10 +11,15 @@ module Fitbit
       # all required keys should be present
       raise "RuntimeError: missing required key in activity (logId #{activity_hash['logId']})" unless (required_keys - keys).empty?
 
-      res = Fitbit::CreateRunService.call(user: user, activity_hash: activity_hash)
-      raise res.exception if res.failure?
+      Fitbit::CreateRunService.call(user: user, activity_hash: activity_hash) do |m|
+        m.success do |user_activity|
+          Fitbit::ImportRunTcxWorker.perform_async(user.id, activity_hash['logId']) if user_activity.present?
+        end
 
-      Fitbit::ImportRunTcxWorker.perform_async(user.id, activity_hash['logId'])
+        m.failure do |v|
+          raise v.exception
+        end
+      end
     end
   end
 end

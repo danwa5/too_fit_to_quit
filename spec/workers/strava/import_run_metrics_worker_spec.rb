@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
   let(:user) { create(:user) }
   let!(:identity) { create(:identity, :strava, user: user) }
-  let(:user_activity) { create(:user_activity, :strava, user: user, uid: '1234') }
+  let(:user_activity) { create(:user_activity, :strava, user: user, uid: '1234', state: 'processing') }
   let!(:activity_strava_run) { create(:activity_strava_run, user: user, user_activity: user_activity) }
 
   def make_request(response)
@@ -31,6 +31,13 @@ RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
         expect {
           subject.perform(user.id, 'fake_uid')
         }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when user_activity has a state besides "processing"' do
+      let_override(:user_activity) { |ua| ua.state = %w(pending processed).sample }
+      it 'returns false' do
+        expect(run_worker).to eq(false)
       end
     end
 
@@ -102,8 +109,10 @@ RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
         )
       end
 
-      it 'returns true' do
+      it 'sets state to "processed" and returns true' do
         expect(run_worker).to eq(true)
+        user_activity.reload
+        expect(user_activity.state).to eq('processed')
       end
     end
   end

@@ -46,8 +46,7 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
 
     context 'when Strava::CreateRunService returns failure' do
       before do
-        failure = double('Failure', failure?: true)
-        allow(Strava::CreateRunService).to receive(:call).and_return(failure)
+        allow(Strava::CreateRunService).to receive(:call).and_raise
       end
       it 'raises Exception' do
         expect {
@@ -57,10 +56,6 @@ RSpec.describe Strava::ImportRunWorker, type: :model do
     end
 
     context 'when Strava::CreateRunService returns success' do
-      before do
-        success = double('Failure', failure?: false)
-        allow(Strava::CreateRunService).to receive(:call).and_return(success)
-      end
       it 'enqueues a Strava::ImportRunMetricsWorker' do
         expect {
           run_worker

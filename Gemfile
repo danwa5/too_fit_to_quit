@@ -25,6 +25,7 @@ gem 'redis-namespace', '~> 1.5', '>= 1.5.2'
 gem 'sass-rails', '~> 5.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'sidekiq', '~> 4.1', '>= 4.1.4'
+gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'turbolinks', '~> 2.5'
 gem 'uglifier', '>= 1.3.0'
 gem 'underscore-rails', '~> 1.8', '>= 1.8.3'
@@ -35,7 +36,7 @@ group :production do
 end
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.4', '>= 3.4.2'
+  gem 'rspec-rails', '~> 3.5', '>= 3.5.2'
   gem 'capybara', '~> 2.6', '>= 2.6.2'
   gem 'factory_girl_rails', '~> 4.6'
   gem 'faker'

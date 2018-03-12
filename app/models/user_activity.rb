@@ -29,4 +29,14 @@ class UserActivity < ActiveRecord::Base
       order by month;"
     ).as_json
   }
+
+  state_machine :initial => :pending do
+    event :processing do
+      transition [:pending, :processing] => :processing
+    end
+
+    event :processed do
+      transition :processing => :processed
+    end
+  end
 end

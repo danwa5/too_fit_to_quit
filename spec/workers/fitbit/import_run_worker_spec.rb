@@ -41,8 +41,7 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
 
     context 'when Fitbit::CreateRunService returns failure' do
       before do
-        failure = double('Failure', failure?: true)
-        allow(Fitbit::CreateRunService).to receive(:call).and_return(failure)
+        allow(Fitbit::CreateRunService).to receive(:call).and_raise
       end
       it 'raises an exception' do
         expect {
@@ -52,10 +51,6 @@ RSpec.describe Fitbit::ImportRunWorker, type: :model do
     end
 
     context 'when Fitbit::CreateRunService returns success' do
-      before do
-        success = double('Success', failure?: false)
-        allow(Fitbit::CreateRunService).to receive(:call).and_return(success)
-      end
       it 'enqueues a Fitbit::ImportRunTcxWorker' do
         expect {
           run_worker

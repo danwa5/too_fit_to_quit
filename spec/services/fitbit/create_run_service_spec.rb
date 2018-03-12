@@ -37,6 +37,12 @@ RSpec.describe Fitbit::CreateRunService do
         }.to change(Activity::FitbitRun, :count).by(1)
       end
 
+      it 'sets UserActivity state to "processing"' do
+        service_call
+        user_activity = UserActivity.last
+        expect(user_activity.state).to eq('processing')
+      end
+
       it 'creates a new UserActivity record with the correct attributes' do
         service_call
         user_activity = UserActivity.last
@@ -71,7 +77,8 @@ RSpec.describe Fitbit::CreateRunService do
           distance: 0,
           duration: 0,
           start_time: '2016-07-10 00:00:00',
-          activity_data: nil
+          activity_data: nil,
+          state: %w(pending processing).sample
         )
       end
 
@@ -116,6 +123,14 @@ RSpec.describe Fitbit::CreateRunService do
           expect(fitbit_run.user_id).to eq(user.id)
           expect(fitbit_run.activity_type_id).to eq(90009)
           expect(fitbit_run.steps).to eq(12000)
+        end
+      end
+
+      context 'and the user_activity has a "processed" state' do
+        let_override(:user_activity) { |ua| ua.state = 'processed' }
+        it 'returns nil' do
+          res = service_call
+          expect(res.value).to be_nil
         end
       end
     end

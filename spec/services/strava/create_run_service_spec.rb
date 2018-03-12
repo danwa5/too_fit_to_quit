@@ -42,6 +42,12 @@ RSpec.describe Strava::CreateRunService do
         }.to change(Activity::StravaRun, :count).by(1)
       end
 
+      it 'sets UserActivity state to "processing"' do
+        service_call
+        user_activity = UserActivity.last
+        expect(user_activity.state).to eq('processing')
+      end
+
       it 'creates a new UserActivity record with the correct attributes' do
         service_call
         user_activity = UserActivity.last
@@ -84,7 +90,8 @@ RSpec.describe Strava::CreateRunService do
           distance: 0,
           duration: 0,
           start_time: '2016-07-10 00:00:00',
-          activity_data: nil
+          activity_data: nil,
+          state: %w(pending processing).sample
         )
       end
 
@@ -128,6 +135,14 @@ RSpec.describe Strava::CreateRunService do
         expect(strava_run.total_elevation_gain).to eq(65.0)
         expect(strava_run.elevation_high).to eq(31.0)
         expect(strava_run.elevation_low).to eq(8.4)
+      end
+
+      context 'and the user_activity has a "processed" state' do
+        let_override(:user_activity) { |ua| ua.state = 'processed' }
+        it 'returns nil' do
+          res = service_call
+          expect(res.value).to be_nil
+        end
       end
     end
   end

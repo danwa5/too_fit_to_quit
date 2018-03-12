@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
   let(:user) { create(:user) }
   let!(:identity) { create(:identity, :fitbit, user: user) }
-  let(:user_activity) { create(:user_activity, :fitbit, user: user, uid: '1234') }
+  let(:user_activity) { create(:user_activity, :fitbit, user: user, uid: '1234', state: 'processing') }
   let!(:activity_fitbit_run) { create(:activity_fitbit_run, user: user, user_activity: user_activity) }
   let(:tcx_data) do
     {
@@ -45,6 +45,13 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
       end
     end
 
+    context 'when user_activity has a state besides "processing"' do
+      let_override(:user_activity) { |ua| ua.state = %w(pending processed).sample }
+      it 'returns false' do
+        expect(run_worker).to eq(false)
+      end
+    end
+
     context 'when no data is returned' do
       it 'returns false' do
         make_request(nil)
@@ -73,8 +80,10 @@ RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
           success = double('Success', failure?: false)
           allow(Fitbit::CreateRunTcxService).to receive(:call).and_return(success)
         end
-        it 'returns true' do
+        it 'sets state to "processed" and returns true' do
           expect(run_worker).to eq(true)
+          user_activity.reload
+          expect(user_activity.state).to eq('processed')
         end
       end
     end

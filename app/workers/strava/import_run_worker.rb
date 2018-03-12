@@ -11,10 +11,15 @@ module Strava
       # all required keys should be present
       raise "RuntimeError: missing required key in activity (ID #{activity_hash['id']})" unless (required_keys - keys).empty?
 
-      res = Strava::CreateRunService.call(user: user, activity_hash: activity_hash)
-      raise res.exception if res.failure?
+      Strava::CreateRunService.call(user: user, activity_hash: activity_hash) do |m|
+        m.success do |user_activity|
+          Strava::ImportRunMetricsWorker.perform_async(user.id, activity_hash['id']) if user_activity.present?
+        end
 
-      Strava::ImportRunMetricsWorker.perform_async(user.id, activity_hash['id'])
+        m.failure do |v|
+          raise v.exception
+        end
+      end
     end
   end
 end
