@@ -22,7 +22,7 @@ gem 'nokogiri', '~> 1.8.1'
 gem 'react-rails', '~> 1.11'
 gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-namespace', '~> 1.5', '>= 1.5.2'
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '~> 5.0.7'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'sidekiq', '~> 4.1', '>= 4.1.4'
 gem 'state_machines-activerecord', '~> 0.5.0'
