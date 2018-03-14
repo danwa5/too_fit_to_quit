@@ -42,7 +42,7 @@ function renderCharts(dataset) {
 
   var months = { 1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec' };
 
-  var colors = ["#8a89a6", "#d0743c", "#98D03C"];
+  var colors = ["#AF7AC5", "#EB984E", "#52BE80", "#5499C7"];
 
   var margin = { top: 20, right: 50, left: 50, bottom: 40 }, width, height, maxTotal;
 
@@ -70,6 +70,7 @@ function renderCharts(dataset) {
         d.total_2015 = +d.total_2015;
         d.total_2016 = +d.total_2016;
         d.total_2017 = +d.total_2017;
+        d.total_2018 = +d.total_2018;
 
         d.totals = years.map(function(name) { return {name: name, total: +d[name]}; });
         maxTotalsByMonth.push(Math.max(d[years[0]], d[years[1]]));
@@ -88,6 +89,7 @@ function renderCharts(dataset) {
       path_2015 = chartWrapper.append('path').datum(data).classed('line_2015', true);
       path_2016 = chartWrapper.append('path').datum(data).classed('line_2016', true);
       path_2017 = chartWrapper.append('path').datum(data).classed('line_2017', true);
+      path_2018 = chartWrapper.append('path').datum(data).classed('line_2018', true);
       xAxis = chartWrapper.append('g').classed('x-axis', true);
       yAxis = chartWrapper.append('g').classed('y-axis', true);
       yAxisLabel = chartWrapper.select('.y-axis').append('text');
@@ -118,6 +120,10 @@ function renderCharts(dataset) {
       line_2017 = d3.line()
         .x(function(d) { return xScale(d.month) })
         .y(function(d) { return yScale(d.total_2017) });
+
+      line_2018 = d3.line()
+        .x(function(d) { return xScale(d.month) })
+        .y(function(d) { return yScale(d.total_2018) });
 
       // render the chart
       render();
@@ -176,6 +182,11 @@ function renderCharts(dataset) {
           .attr("stroke", colors[2])
           .attr("stroke-width", 1.5);
 
+      path_2018.attr('d', line_2018)
+          .attr("fill", "none")
+          .attr("stroke", colors[3])
+          .attr("stroke-width", 1.5);
+
       // update legend
       legendRect.attr("x", width - 18)
         .attr("width", 16)
@@ -202,7 +213,7 @@ function renderCharts(dataset) {
 
     var data_2, svg_2, chartWrapper_2, xScale_2, yScale_2a, yScale_2b, xAxis_2, yAxis_2a, yAxis_2b, yAxisLabel_2a, yAxisLabel_2b;
     var xGrid_2, yGrid_2, bkgdA, bkgdB, bkgdC, path_2a, path_2b, line_2a, line_2b;
-    var bkgdColors = ["#e2e2e9", "#f5e2d6", "#e9f5d6"];
+    var bkgdColors = ["#F4ECF7", "#FDEBD0", "#D5F5E3", "#D6EAF8"];
 
     init(dataset_2); //load data, then initialize chart
 
@@ -225,6 +236,7 @@ function renderCharts(dataset) {
       bkgdA = chartWrapper_2.append("rect");
       bkgdB = chartWrapper_2.append("rect");
       bkgdC = chartWrapper_2.append("rect");
+      bkgdD = chartWrapper_2.append("rect");
       path_2a = chartWrapper_2.append('path').datum(data_2).classed('line_2a', true);
       path_2b = chartWrapper_2.append('path').datum(data_2).style("stroke-dasharray", ("3, 3")).classed('line_2b', true);
       xAxis_2 = chartWrapper_2.append('g').classed('x-axis', true);
@@ -300,21 +312,27 @@ function renderCharts(dataset) {
       // update backgrounds
       bkgdA.attr("x",0)
         .attr("y",0)
-        .attr("width", (width * (gridSpace[today.getFullYear()-2]/totalGridSpace)))
+        .attr("width", (width * (gridSpace[today.getFullYear()-3]/totalGridSpace)))
         .attr("height",height)
         .style("fill", bkgdColors[0]);
 
-      bkgdB.attr("x",(width * (gridSpace[today.getFullYear()-2]/totalGridSpace)))
+      bkgdB.attr("x",(width * (gridSpace[today.getFullYear()-3]/totalGridSpace)))
         .attr("y",0)
         .attr("width", (width * (gridSpace[today.getFullYear()-1]/totalGridSpace)))
         .attr("height",height)
         .style("fill", bkgdColors[1]);
 
-      bkgdC.attr("x",(width * ((gridSpace[today.getFullYear()-2]/totalGridSpace) + (gridSpace[today.getFullYear()-1]/totalGridSpace))))
+      bkgdC.attr("x",(width * ((gridSpace[today.getFullYear()-3]/totalGridSpace) + (gridSpace[today.getFullYear()-2]/totalGridSpace))))
+        .attr("y",0)
+        .attr("width", (width * (gridSpace[today.getFullYear()-1]/totalGridSpace)))
+        .attr("height",height)
+        .style("fill", bkgdColors[2]);
+
+      bkgdD.attr("x",(width * ((gridSpace[today.getFullYear()-3]/totalGridSpace) + (gridSpace[today.getFullYear()-2]/totalGridSpace) + (gridSpace[today.getFullYear()-1]/totalGridSpace))))
         .attr("y",0)
         .attr("width", (width * (gridSpace[today.getFullYear()]/totalGridSpace)))
         .attr("height",height)
-        .style("fill", bkgdColors[2]);
+        .style("fill", bkgdColors[3]);
 
       // update lines
       path_2a.attr('d', line_2a)
