@@ -8,7 +8,7 @@ module Api
       runs = Activity::FitbitRun.includes(:user_activity)
                                 .select('user_activities.id, user_activities.start_time, user_activities.distance, user_activities.duration, activity_fitbit_runs.steps, activity_fitbit_runs.city, activity_fitbit_runs.country')
                                 .where(user: current_user)
-                                .search(search_params)
+                                .search(search_params.compact)
                                 .order('user_activities.start_time')
 
       dataset = runs.map { |run| Api::RunPresenter.new(run) }
@@ -50,13 +50,13 @@ module Api
     end
 
     def start_date
-      date = runs_params[:start_date].present? ? runs_params[:start_date] : Date.today - 90
-      parse_date(date)
+      return nil unless runs_params[:start_date].present?
+      parse_date(runs_params[:start_date])
     end
 
     def end_date
-      date = runs_params[:end_date].present? ? runs_params[:end_date] : Date.today
-      parse_date(date)
+      return nil unless runs_params[:end_date].present?
+      parse_date(runs_params[:end_date])
     end
 
     def parse_date(date)
