@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::RunsController, type: :controller do
+RSpec.describe Api::V1::RunsController, type: :controller do
   let(:user_activity) { create(:user_activity, :fitbit) }
   let!(:run) { create(:activity_fitbit_run, user_activity: user_activity) }
 
@@ -29,5 +29,4 @@ RSpec.describe Api::RunsController, type: :controller do
       end
     end
   end
-
 end

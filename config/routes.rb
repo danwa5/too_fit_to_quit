@@ -14,7 +14,9 @@ Rails.application.routes.draw do
   end
 
   namespace :api, defaults: {format: 'json'} do
-    resources :runs, only: [:index, :show]
+    namespace 'v1' do
+      resources :runs, only: [:index, :show]
+    end
     resources :workers, only: [:create]
   end
 

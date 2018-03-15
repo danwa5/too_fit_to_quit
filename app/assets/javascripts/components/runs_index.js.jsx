@@ -9,7 +9,7 @@ var RunsIndex = React.createClass({
 
   handleSearch() {
     $.ajax({
-      url: '/api/runs',
+      url: '/api/v1/runs',
       type: 'GET',
       data: $(".run-search-form").serialize(),
       success: (response) => {
