@@ -3,13 +3,13 @@ var Runs = React.createClass({
     var runs = this.props.runs.map((run) => {
       return (
         <tr key={run.id}>
-          <td className="runs-date">{run.start_time}</td>
-          <td className="runs-distance">{run.distance}</td>
-          <td className="runs-duration">{run.duration}</td>
-          <td className="runs-pace">{run.pace}</td>
+          <td className="runs-date">{run.user_activity.start_time}</td>
+          <td className="runs-distance">{run.user_activity.distance}</td>
+          <td className="runs-duration">{run.user_activity.duration}</td>
+          <td className="runs-pace">{run.user_activity.pace}</td>
           <td className="runs-steps">{run.steps}</td>
           <td className="runs-location">{run.location}</td>
-          <td className="text-center"><a href={"/runs/" + run.id}>Details</a></td>
+          <td className="text-center"><a href={"/runs/" + run.user_activity.id}>Details</a></td>
         </tr>
       )
     });

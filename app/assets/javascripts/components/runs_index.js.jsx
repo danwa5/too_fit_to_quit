@@ -4,16 +4,18 @@ var RunsIndex = React.createClass({
   },
 
   componentDidMount() {
-    $.getJSON('/api/runs.json', (response) => { this.setState({ runs: response }) });
+    $.getJSON('/api/v2/runs.json', (response) => {
+      this.setState({ runs: response['activity/fitbit_runs'] })
+    });
   },
 
   handleSearch() {
     $.ajax({
-      url: '/api/v1/runs',
+      url: '/api/v2/runs',
       type: 'GET',
       data: $(".run-search-form").serialize(),
       success: (response) => {
-        this.setState({ runs: response })
+        this.setState({ runs: response['activity/fitbit_runs'] })
       }
     });
   },
