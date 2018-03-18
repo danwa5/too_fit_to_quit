@@ -17,6 +17,9 @@ Rails.application.routes.draw do
     namespace 'v1' do
       resources :runs, only: [:index, :show]
     end
+    namespace 'v2' do
+      resources :runs, only: [:index]
+    end
     resources :workers, only: [:create]
   end
 
