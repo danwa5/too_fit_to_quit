@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
   let(:user) { create(:user) }
-  let!(:identity) { create(:identity, :strava, user: user) }
   let(:user_activity) { create(:user_activity, :strava, user: user, uid: '1234', state: 'processing') }
   let!(:activity_strava_run) { create(:activity_strava_run, user: user, user_activity: user_activity) }
 
@@ -82,7 +81,7 @@ RSpec.describe Strava::ImportRunMetricsWorker, type: :model do
       end
 
       it 'saves splits data' do
-        expect(user_activity.activity.splits).to be_nil
+        expect(user_activity.activity.splits['standard']).to be_empty
         run_worker
         user_activity.activity.reload
         expect(user_activity.activity.splits).to eq(

@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Strava::FindActivityWorker, type: :model do
   let(:user) { create(:user) }
-  let!(:identity) { create(:identity, :strava, user: user) }
   let(:response) { nil }
 
   it { is_expected.to be_kind_of(Sidekiq::Worker) }

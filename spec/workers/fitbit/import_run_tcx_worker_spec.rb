@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Fitbit::ImportRunTcxWorker, type: :model do
   let(:user) { create(:user) }
-  let!(:identity) { create(:identity, :fitbit, user: user) }
   let(:user_activity) { create(:user_activity, :fitbit, user: user, uid: '1234', state: 'processing') }
   let!(:activity_fitbit_run) { create(:activity_fitbit_run, user: user, user_activity: user_activity) }
   let(:tcx_data) do

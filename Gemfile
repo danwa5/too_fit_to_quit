@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-ruby '2.2.3'
+ruby '2.4.3'
 
-gem 'rails', '4.2.10'
+gem 'rails', '~> 5.1', '>= 5.1.5'
 gem 'pg', '~> 0.18.4'
 
 # authentication
@@ -39,7 +39,7 @@ end
 group :development, :test do
   gem 'rspec-rails', '~> 3.5', '>= 3.5.2'
   gem 'capybara', '~> 2.6', '>= 2.6.2'
-  gem 'factory_girl_rails', '~> 4.6'
+  gem 'factory_bot_rails'
   gem 'faker'
   gem 'byebug'
   gem 'awesome_print'

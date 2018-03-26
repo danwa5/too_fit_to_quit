@@ -1,8 +1,13 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
     password 'abc123'
     password_confirmation 'abc123'
+
+    after(:create) do |user|
+      create(:identity, :fitbit, user: user)
+      create(:identity, :strava, user: user)
+    end
   end
 
   factory :identity do
@@ -12,6 +17,7 @@ FactoryGirl.define do
 
     trait :fitbit do
       provider { 'fitbit_oauth2' }
+      expires_at { Time.now.to_i + 100 }
     end
 
     trait :strava do
@@ -71,5 +77,9 @@ FactoryGirl.define do
   factory :activity_strava_run, class: 'Activity::StravaRun' do
     association :user
     association :user_activity, :strava
+
+    splits do
+      { 'standard' => [] }
+    end
   end
 end

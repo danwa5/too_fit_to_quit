@@ -11,26 +11,16 @@ RSpec.describe User, type: :model do
   end
 
   describe '#fitbit_identity' do
-    context 'user does not have a fitbit identity' do
-      it 'returns nil' do
-        expect(subject.fitbit_identity).to be_nil
-      end
-    end
-    context 'user has a fitbit identity' do
-      let!(:identity) { create(:identity, :fitbit, user: user) }
-      it { expect(subject.fitbit_identity).to eq(identity) }
+    example do
+      expect(subject.fitbit_identity).to be_present
+      expect(subject.fitbit_identity.provider).to eq('fitbit_oauth2')
     end
   end
 
   describe '#strava_identity' do
-    context 'user does not have a strava identity' do
-      it 'returns nil' do
-        expect(subject.strava_identity).to be_nil
-      end
-    end
-    context 'user has a strava identity' do
-      let!(:identity) { create(:identity, :strava, user: user) }
-      it { expect(subject.strava_identity).to eq(identity) }
+    example do
+      expect(subject.strava_identity).to be_present
+      expect(subject.strava_identity.provider).to eq('strava')
     end
   end
 end
