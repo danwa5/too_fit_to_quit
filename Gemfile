@@ -11,7 +11,7 @@ gem 'omniauth-fitbit-oauth2'
 gem 'omniauth-strava-oauth2', '~> 0.0.2'
 
 gem 'active_model_serializers'
-gem 'bootstrap-sass', '~> 3.3.6'
+gem 'bootstrap', '~> 4.0.0'
 gem 'dry-initializer'
 gem 'dry-monads'
 gem 'dry-transaction'
