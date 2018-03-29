@@ -4,12 +4,6 @@
 var dataset = <%= raw @monthly_breakdown.to_json %>;
 </script>
 
-<div class="page-header">
-  <div class="pod">
-    <h2 class="is-2">Runs</h2>
-  </div>
-</div>
-
 <%= react_component 'RunsIndex', { locations: @locations.to_s }, { prerender: true } %>
 
 <script>

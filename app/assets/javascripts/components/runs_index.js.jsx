@@ -31,58 +31,8 @@ var RunsIndex = React.createClass({
 
     return (
       <div className="foo">
-        <div className="columns is-multiline">
-          <div className="column is-one-quarter">
-            <div className="pod">
-              <form className="run-search-form" action="/runs" acceptCharset="UTF-8" method="get">
-                <div className="form-group">
-                  <label className=" col-xs-12 control-label" htmlFor="date">Date</label>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="start_date" id="start_date" className="form-control" placeholder="From" />
-                  </div>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="end_date" id="end_date" className="form-control" placeholder="To" />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="col-xs-12 control-label" htmlFor="distance">Distance (miles)</label>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="distance_min" id="distance_min" className="form-control" placeholder="min" />
-                  </div>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="distance_max" id="distance_max" className="form-control" placeholder="max" />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="col-xs-12 control-label" htmlFor="duration">Duration (minutes)</label>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="duration_min" id="duration_min" className="form-control" placeholder="min" />
-                  </div>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="duration_max" id="duration_max" className="form-control" placeholder="max" />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="col-xs-12 control-label" htmlFor="steps">Steps</label>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="steps_min" id="steps_min" className="form-control" placeholder="min" />
-                  </div>
-                  <div className="col-xs-6 col-sm-6">
-                    <input type="text" name="steps_max" id="steps_max" className="form-control" placeholder="max" />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="control-label" htmlFor="location">Location</label>
-                  <select name="location" id="location" className="form-control">
-                    <option value=""></option>
-                    {locationOptions}
-                  </select>
-                </div>
-                <button type="button" className="btn btn-primary search-button" onClick={this.handleSearch}>Search</button>
-              </form>
-            </div>
-          </div>
-          <div className="column is-three-quarters">
+        <div className="jumbotron">
+          <div className="container">
             <div className="pod">
               <div className="has-text-centered">
                 <h5>Monthly Breakdown&nbsp;
@@ -97,11 +47,89 @@ var RunsIndex = React.createClass({
             </div>
           </div>
         </div>
-        <div className="columns">
-          <div className="column">
-            <div className="pod">
+
+        <div className="container">
+          <div className="row">
+            <div className="col-md-3">
+              <form className="run-search-form" action="/runs" acceptCharset="UTF-8" method="get">
+
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <label for="start_date">Date</label>
+                    <div className="form-row">
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="start_date" name="start_date" placeholder="From" />
+                      </div>
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="end_date" name="end_date" placeholder="To" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <label>Distance (miles)</label>
+                    <div className="form-row">
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="distance_min" name="distance_min" placeholder="Min" />
+                      </div>
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="distance_max" name="distance_max" placeholder="Max" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <label>Duration (minutes)</label>
+                    <div className="form-row">
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="duration_min" name="duration_min" placeholder="Min" />
+                      </div>
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="duration_max" name="duration_max" placeholder="Max" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <label>Steps</label>
+                    <div className="form-row">
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="steps_min" name="steps_min" placeholder="Min" />
+                      </div>
+                      <div className="col-md-6">
+                        <input type="text" className="form-control" id="steps_max" name="steps_max" placeholder="Max" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <label for="location">Location</label>
+                    <select name="location" id="location" className="form-control">
+                      <option value=""></option>
+                      {locationOptions}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <button type="button" className="btn btn-primary search-button" onClick={this.handleSearch}>Search</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="col-md-9">
               <div className="table-responsive">
-                <table id="runs-table" className="table table-condensed table-hover">
+                <table id="runs-table" className="table table-sm table-hover">
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -110,7 +138,6 @@ var RunsIndex = React.createClass({
                       <th>Pace<br/>(min/mile)</th>
                       <th>Steps</th>
                       <th>Location</th>
-                      <th></th>
                     </tr>
                   </thead>
                   <Runs runs={this.state.runs} />
@@ -118,6 +145,7 @@ var RunsIndex = React.createClass({
               </div>
             </div>
           </div>
+          <hr/>
         </div>
       </div>
     )

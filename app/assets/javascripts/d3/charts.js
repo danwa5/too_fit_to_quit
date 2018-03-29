@@ -366,7 +366,7 @@ function renderCharts(dataset) {
       margin.right = 50;
     }
 
-    aspectRatio  = chartParentWidth < 500 ? 0.55 : 0.47;
+    aspectRatio  = chartParentWidth < 500 ? 0.55 : 0.35;
     width = chartParentWidth - margin.left - margin.right;
     height = aspectRatio * width;
   }
