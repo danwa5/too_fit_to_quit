@@ -34,7 +34,7 @@ var RunsIndex = React.createClass({
         <div className="jumbotron">
           <div className="container">
             <div className="pod">
-              <div className="has-text-centered">
+              <div className="text-center">
                 <h5>Monthly Breakdown&nbsp;
                   <label className="switch" style={{"marginBottom":"-4px"}}>
                     <input type="checkbox"/>
@@ -130,7 +130,7 @@ var RunsIndex = React.createClass({
             <div className="col-md-9">
               <div className="table-responsive">
                 <table id="runs-table" className="table table-sm table-hover">
-                  <thead>
+                  <thead className="thead-light">
                     <tr>
                       <th>Date</th>
                       <th>Distance<br/>(miles)</th>

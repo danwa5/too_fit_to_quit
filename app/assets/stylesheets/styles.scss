@@ -16,7 +16,7 @@ body {
 
 .pod {
   background-color: #fff;
-  padding: 10px 15px;
+  padding: 25px 15px 10px;
   margin-bottom: 10px;
   border-radius: 3px;
 }
@@ -281,6 +281,12 @@ div.bar {
 
 /*  Media Variations
 ----------------------------------------------------------*/
+
+@media (min-width: 576px) {
+  .jumbotron {
+    padding: 2rem 1rem;
+  }
+}
 
 @media screen and (max-width: 1200px) {
   .columns .is-one-quarter {
