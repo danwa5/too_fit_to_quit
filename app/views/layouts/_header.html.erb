@@ -1,61 +1,51 @@
 <!-- HEADER -->
 <% if signed_in? %>
-<header id="header" class="header">
-  <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <%= link_to runs_path, class: 'navbar-brand' do %>
-          <strong>Too Fit</strong> To Quit
-        <% end %>
-      </div>
-
-      <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right">
-          <% if user_signed_in? %>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Activity <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><%= link_to 'Runs', runs_path %></li>
-                <li><%= link_to 'Steps', steps_path %></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Import Data <span class="caret"></span></a>
-              <ul id="import-runs-dropdown" class="dropdown-menu" aria-labelledby="dLabel">
-                <div id="import-runs-form">
-                  <p class="text-muted">Import activity data from Fitbit and Strava beginning on the following date</p>
-                  <%= form_tag(imports_path, class: 'form-inline') do %>
-                    <div class="form-group">
-                      <%= text_field_tag(:import_date, Date.today.strftime('%Y-%m-%d'), id: "import-date", class: "form-control", placeholder: "YYYY-MM-DD") %>
-                    </div>
-                    <%= submit_tag("Import Data", class: 'btn btn-primary') %>
-                  <% end %>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <%= link_to runs_path, class: 'navbar-brand' do %>
+    Too Fit To Quit
+  <% end %>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <% if user_signed_in? %>
+        <li class="nav-item">
+          <%= link_to('Runs', runs_path, class: 'nav-link') %>
+        </li>
+        <li class="nav-item">
+          <%= link_to('Steps', steps_path, class: 'nav-link') %>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Import Data</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown01">
+            <div id="import-runs-form">
+              <p class="text-muted">Import activity data from Fitbit and Strava beginning on the following date</p>
+              <%= form_tag(imports_path, class: 'form-inline') do %>
+                <div class="form-group">
+                  <%= text_field_tag(:import_date, Date.today.strftime('%Y-%m-%d'), id: "import-date", class: "form-control", placeholder: "YYYY-MM-DD") %>
                 </div>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Authentication <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="/users/auth/fitbit_oauth2">Fitbit</a></li>
-                <li><a href="/users/auth/strava">Strava</a></li>
-                <li class="divider"></li>
-                <li><%= link_to('Logout', destroy_user_session_path, :method => :delete) %></li>
-              </ul>
-            </li>
-          <% else %>
-            <li><%= link_to('Sign Up', new_user_registration_path) %></li>
-            <li><%= link_to('Login', new_user_session_path) %></li>
-          <% end %>
-        </ul>
-      </div><!--/.navbar-collapse -->
-    </div>
-  </nav>
-</header>
+                <%= submit_tag("Import Data", class: 'btn btn-primary') %>
+              <% end %>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Authentication</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown02">
+            <a class="dropdown-item" href="/users/auth/fitbit_oauth2">Fitbit</a>
+            <a class="dropdown-item" href="/users/auth/strava">Strava</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <%= link_to('Logout', destroy_user_session_path, method: :delete, class: 'nav-link') %>
+        </li>
+      <% else %>
+        <li class="nav-item"><%= link_to('Sign Up', new_user_registration_path, class: 'nav-link') %></li>
+        <li class="nav-item"><%= link_to('Login', new_user_session_path, class: 'nav-link') %></li>
+      <% end %>
+    </ul>
+  </div>
+</nav>
 <% end %>
 <!-- /HEADER -->

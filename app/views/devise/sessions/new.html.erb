@@ -1,28 +1,32 @@
-<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-11">
-  <div class="metric-box">
-    <%= render 'layouts/messages' %>
-    <h2>Too Fit To Quit</h2>
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class:"form-horizontal" }) do |f| %>
-      <div class="form-group">
-        <div class="col-sm-12">
-          <%= f.email_field :email, { class: 'form-control', placeholder: 'Email', autofocus: true } %>
-        </div>
+<div className="container">
+  <div className="row justify-content-center">
+    <div class="col-md-4 offset-md-4 col-sm-8 offset-sm-2 col-10">
+      <div class="metric-box">
+        <%= render 'layouts/messages' %>
+        <h2>Too Fit To Quit</h2>
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class:"form-horizontal" }) do |f| %>
+          <div class="form-group">
+            <div class="col">
+              <%= f.email_field :email, { class: 'form-control', placeholder: 'Email', autofocus: true } %>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col">
+              <%= f.password_field :password, { class: 'form-control', placeholder: 'Password', autocomplete: 'off' } %>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col">
+              <%= f.submit "Log in", { class: 'btn btn-primary col-sm-12' } %>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col">
+              Don't have an account? <%= link_to('Sign up', new_user_registration_path) %>
+            </div>
+          </div>
+        <% end %>
       </div>
-      <div class="form-group">
-        <div class="col-sm-12">
-          <%= f.password_field :password, { class: 'form-control', placeholder: 'Password', autocomplete: 'off' } %>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="col-sm-12">
-          <%= f.submit "Log in", { class: 'btn btn-primary col-sm-12' } %>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="col-sm-12">
-          Don't have an account? <%= link_to('Sign up', new_user_registration_path) %>
-        </div>
-      </div>
-    <% end %>
+    </div>
   </div>
 </div>

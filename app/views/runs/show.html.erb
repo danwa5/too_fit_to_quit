@@ -1,19 +1,21 @@
-<div class="page-header">
-  <div class="pod">
-    <h3><%= @decorated_run.formatted_distance %> mile run on <%= @decorated_run.formatted_long_start_time %> <%= @decorated_run.location %></h3>
-  </div>
-</div>
-
-<div class="columns is-gapless is-multiline">
-  <div class="column is-three-quarters">
-    <div class="pod">
-      <%= react_component 'Map', { }, { prerender: true } %>
+<div class="container">
+  <div class="row">
+    <div class="page-header">
+      <div class="pod">
+        <h3><%= @decorated_run.formatted_distance %> mile run on <%= @decorated_run.formatted_long_start_time %> <%= @decorated_run.location %></h3>
+      </div>
     </div>
   </div>
-  <div class="column is-one-quarter">
-    <div class="pod">
-      <div id="splits">
-        <table id="splits-table" class="table table-condensed table-hover">
+
+  <div class="row">
+    <div class="col-12 col-sm-12 col-md-9">
+      <div class="pod">
+        <%= react_component 'Map', { }, { prerender: true } %>
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-3">
+      <div class="pod">
+        <table id="splits-table" class="table table-sm table-hover">
           <thead>
             <tr>
               <th>Mile</th>
@@ -34,17 +36,12 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="columns is-multiline">
-  <div class="column is-three-quarters">
-    <div class="pod">
-      <div id="chart-runs"></div>
-    </div>
-  </div>
-  <div class="column is-one-quarter">
-    <div class="pod">
-      Put 2nd chart here
+  <div class="row">
+    <div class="col">
+      <div class="pod">
+        <div id="chart-runs"></div>
+      </div>
     </div>
   </div>
 </div>
